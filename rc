@@ -8,6 +8,7 @@ export GH_USER=KonstantinSKY
 
 #paths
 export TOOLS_PATH="$HOME/Tools"
+export CONFIGS_PATH="$HOME/Configs"
 export PROJECTS_PATH="$HOME/Projects"
 export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH
 
@@ -15,6 +16,7 @@ export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH
 export GH_HOST="github.com"
 # Tools environmen paths
 
+export PATH=$PATH:"$Home/Configs/"
 export PATH=$PATH:$TOOLS_PATH/pkgs
 export PATH=$PATH:$TOOLS_PATH/ssh
 export PATH=$PATH:$TOOLS_PATH/git
@@ -26,7 +28,7 @@ export PATH=$PATH:$TOOLS_PATH/pass
 export PYTHONPATH=$PYTHONPATH:$PROJECTS_PATH/BerkleyDB
 
 # Open alias file
-alias ali="cat $TOOLS_PATH/rc.sh"
+alias ali="cat $CONFIGS_PATH/rc"
 
 #ALIASES
 #package aliases
