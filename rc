@@ -5,10 +5,10 @@ WORK="$HOME"
 
 [[ -d "$HOME/Work" ]] && WORK="$HOME/Work" || "WORK=$HOME"
 
-echo "Work: $WORK"
+#echo "Work: $WORK"
+
 #Environment variables
 #main
-
 
 export USER_NAME=SKY
 export EMAIL=sky012877@gmail.com
@@ -20,6 +20,7 @@ export CONFIGS_PATH="$WORK/Configs"
 export PROJECTS_PATH="$WORK/Projects"
 export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH:$CONFIGS_PATH
 # echo $PATH
+
 #git
 export GH_HOST="github.com"
 # Tools environmen paths
