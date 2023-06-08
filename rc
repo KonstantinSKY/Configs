@@ -1,22 +1,29 @@
 # Part of .bashrc and other .rc files
 
+#checking if Work directory is exists
+WORK="$HOME"
+
+[[ -d "$HOME/Work" ]] && WORK="$HOME/Work" || "WORK=$HOME"
+
+echo "Work: $WORK"
 #Environment variables
 #main
+
+
 export USER_NAME=SKY
 export EMAIL=sky012877@gmail.com
 export GH_USER=KonstantinSKY
 
 #paths
-export TOOLS_PATH="$HOME/Tools"
-export CONFIGS_PATH="$HOME/Configs"
-export PROJECTS_PATH="$HOME/Projects"
-export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH
-
+export TOOLS_PATH="$WORK/Tools"
+export CONFIGS_PATH="$WORK/Configs"
+export PROJECTS_PATH="$WORK/Projects"
+export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH:$CONFIGS_PATH
+# echo $PATH
 #git
 export GH_HOST="github.com"
 # Tools environmen paths
 
-export PATH=$PATH:"$Home/Configs/"
 export PATH=$PATH:$TOOLS_PATH/pkgs
 export PATH=$PATH:$TOOLS_PATH/ssh
 export PATH=$PATH:$TOOLS_PATH/git
@@ -40,8 +47,8 @@ alias commit="commit.sh"
 alias delete="delete.sh"
 alias new_clone="new_repo_clone.sh"
 alias pull="git pull"
-alias add_gi="gitignore.sh"
-alias link_gi="ln $TOOLS_PATH/git/gitignore .gitignore"
+#alias add_gi="gitignore.sh"
+alias add_gi="ln $CONFIGS_PATH/gitignore .gitignore; ls -la"
 
 # GitHub
 alias gh_del="gh_delete_repo.sh $1"
