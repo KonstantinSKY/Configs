@@ -10,7 +10,7 @@ chmod_list=""
 echo Adding additional environment variables an rc aliases
 
 link=". $PWD/rc"
-rc_files=".bashrc .testrc .zhsrc .zshrc"
+rc_files=".bashrc .zhsrc .zshrc"
 
 echo Copying $rc_files to Config directory..
 
