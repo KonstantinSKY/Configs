@@ -49,7 +49,7 @@ alias delete="delete.sh"
 alias new_clone="new_repo_clone.sh"
 alias pull="git pull"
 #alias add_gi="gitignore.sh"
-alias add_gi="ln $CONFIGS_PATH/gitignore .gitignore; ls -la"
+alias add_gi="rm .gitignore; ln $CONFIGS_PATH/gitignore .gitignore; ls -la"
 
 # GitHub
 alias gh_del="gh_delete_repo.sh $1"
@@ -102,10 +102,10 @@ alias g_d='py ~/Projects/gbt/gpt_description.py $@'
 
 #
 #python env
-alias venv='python -m venv .venv'
+alias venv='python -m venv .venv; activate;  pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
 alias activate='source .venv/bin/activate'
-alias freeze='pipreqs .'
-
+alias freeze='activate; pip freeze > requirements.txt; cat requirements.txt'
+alias reqs='activate; pip install -r requirements.txt; pip list; echo "Outdating packages:"; pip list -o'
 
 # TODO
 #EOF
