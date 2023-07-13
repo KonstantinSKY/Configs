@@ -15,7 +15,7 @@ mkdir -vp $path
 
 [ -f $path/config ] && mv $path/config $path/config.old
 
-ln -sf $PWD/i3.config $path/config
+ln -sfv $PWD/i3.config $path/config
 readlink $path/config
 
 
