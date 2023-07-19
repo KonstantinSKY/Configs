@@ -101,11 +101,16 @@ alias t2w='$TOOLS_PATH/festival/t2w.sh $@'
 alias g_d='py ~/Projects/gbt/gpt_description.py $@'
 
 #
-#python env
+#python env  and pipenv
 alias venv='python -m venv .venv; activate;  pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
 alias activate='source .venv/bin/activate'
 alias freeze='activate; pip freeze > requirements.txt; cat requirements.txt'
 alias reqs='activate; pip install -r requirements.txt; pip list; echo "Outdating packages:"; pip list -o'
+
+alias penv='mkdir .venv;  pipenv install; source .venv/bin/activate; pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
+
+#alias penv_upd="pipi install --upgrade pip";
+
 
 # TODO
 #EOF
