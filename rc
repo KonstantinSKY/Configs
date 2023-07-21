@@ -109,6 +109,12 @@ alias reqs='activate; pip install -r requirements.txt; pip list; echo "Outdating
 
 alias penv='mkdir .venv;  pipenv install; source .venv/bin/activate; pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
 
+#Django
+#
+alias django='source .venv/bin/activate; pip install Django; pip list; django-admin startproject base . ; python manage.py migrate; python manage.py runserver'
+alias runserv='python manage.py runserver'
+alias migrate='python manage.py migrate'
+
 #alias penv_upd="pipi install --upgrade pip";
 
 
