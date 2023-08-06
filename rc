@@ -76,9 +76,11 @@ alias Trash="trash --help; ls -la ~/.local/share/Trash/files"
 alias prjs="cd ~/Projects"
 alias pylib="cd ~/Projects/py.libs"
 alias skyai="cd ~/Projects/skyai"
+alias main="cd ~/Projects/drv_school; activate"
 
 #ssh
 alias rsss="remote_start_sudo_script.sh"
+alias server="ssh server"
 
 #tar
 alias tarb="tarb.sh $1" #archive bzip2 format
@@ -112,9 +114,9 @@ alias penv='mkdir .venv;  pipenv install; source .venv/bin/activate; pip install
 #Django
 #
 alias django='source .venv/bin/activate; pip install Django; pip list; django-admin startproject base . ; python manage.py migrate; python manage.py runserver'
-alias runserv='python manage.py runserver'
-alias migrate='python manage.py migrate'
-
+alias runserv='python manage.py runserver 127.0.0.1:9000'
+alias migrate='python manage.py makemigrations && python manage.py migrate'
+allias static='python manage.py collectstatic'
 #alias penv_upd="pipi install --upgrade pip";
 
 
