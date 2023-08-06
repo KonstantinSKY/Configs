@@ -1,5 +1,6 @@
 # gitignore file
-
+security.py
+**/security.py
 .idea
 .gitignore
 .venv/
@@ -9,5 +10,8 @@ logs/
 *.log
 DB/
 *.db
+*.sqlite3
+db.sqlite3
 **/__pycache/
 TODO
+
