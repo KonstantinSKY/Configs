@@ -28,6 +28,17 @@ ln -sfv $PWD/i3.profile $HOME/.profile
 #ls -la $HOME
 readlink $HOME/.profile
 
+
+#cp  -vf i3.config $path/config
+ls -la $path
+
+echo Creating symbolic link for i3 mimeapps.list  profile config ...
+
+ln -sfv $PWD/mimeapps.list $HOME/.config/mimeapps.list
+#ls -la $HOME
+readlink $HOME/.config/mimeapps.list
+
+
 echo Done!
 
 
