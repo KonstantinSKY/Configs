@@ -113,7 +113,7 @@ alias penv='mkdir .venv;  pipenv install; source .venv/bin/activate; pip install
 #Django
 #
 alias django='source .venv/bin/activate; pip install Django; pip list; django-admin startproject base . ; python manage.py migrate; python manage.py runserver'
-alias runserv='python manage.py runserver 127.0.0.1:9000'
+alias runserv='python manage.py runserver 192.168.1.50:8000'
 alias migrate='python manage.py makemigrations && python manage.py migrate'
 alias static='python manage.py collectstatic'
 #alias penv_upd="pip install --upgrade pip";
