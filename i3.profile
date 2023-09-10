@@ -6,4 +6,4 @@ export BROWSER=/usr/bin/google-chrome
 
 #$PATH add new paths to environment
 #export PATH=$PATH:/usr/bin/google-chrome-stable
-JB_MAX_INSTANCE_COUNT=2 usr/bin/pycharm
+export JB_MAX_INSTANCE_COUNT=2 usr/bin/pycharm
