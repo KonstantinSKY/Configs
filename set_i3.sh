@@ -38,6 +38,13 @@ ln -sfv $PWD/mimeapps.list $HOME/.config/mimeapps.list
 #ls -la $HOME
 readlink $HOME/.config/mimeapps.list
 
+echo Creating symbolic link for .ideavimrc config ...
+
+ln -sfv $PWD/.ideavimrc $HOME/.ideavimrc
+#ls -la $HOME
+readlink $HOME/.config/mimeapps.list
+
+
 
 echo Done!
 
