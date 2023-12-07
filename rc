@@ -35,6 +35,8 @@ export PATH=$PATH:$TOOLS_PATH/pass
 #PYTHONPATH
 export PYTHONPATH=$PYTHONPATH:$PROJECTS_PATH/BerkleyDB
 
+#soure to nvm manager
+
 # Open alias file
 alias ali="cat $CONFIGS_PATH/rc"
 
