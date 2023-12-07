@@ -33,3 +33,8 @@ Plug 'tpope/vim-commentary'
 "" Map \b to toggle the breakpoint on the current line
 "map \b <Action>(ToggleLineBreakpoint)
 inoremap jj <Esc>
+
+" to first sym
+nnoremap 0 ^
+nnoremap ^ 0
+nnoremap <Tab> i<Tab>
