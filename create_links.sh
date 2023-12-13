@@ -8,6 +8,10 @@
 
 directories="Tools Downloads Security Documents .password-store Music Pictures Projects Videos Configs Obsidian"
 
+echo Chown for work disk
+chown sky:sky ~/Work
+chmod 700 ~/Work
+
 echo Creating symbolic links from ~/ to ~/Work ...
 echo $directories
 
