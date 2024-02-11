@@ -3,9 +3,15 @@ node_modules
 /dist
 security.js
 
+
+__pycache__
+.gitignore
+
 # local env files
 .env.local
 .env.*.local
+.env
+.venv
 
 # Log files
 npm-debug.log*
