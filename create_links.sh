@@ -6,7 +6,7 @@
 # Description : Create symbolic link to Work disk                          #
 ############################################################################
 
-directories="Tools Downloads Security Documents .password-store Music Pictures Projects Videos Configs Obsidian"
+directories="Tools Downloads Security Documents .password-store Music Pictures Projects Videos Configs Obsidian BackUps"
 
 echo Chown for work disk
 chown sky:sky ~/Work
