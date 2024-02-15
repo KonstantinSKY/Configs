@@ -21,6 +21,7 @@ export PROJECTS_PATH="$WORK/Projects"
 export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH:$CONFIGS_PATH
 # echo $PATH
 
+
 #git
 export GH_HOST="github.com"
 # Tools environmen paths
@@ -32,8 +33,6 @@ export PATH=$PATH:$TOOLS_PATH/helpers
 export PATH=$PATH:$TOOLS_PATH/tar
 export PATH=$PATH:$TOOLS_PATH/pass
 
-#PYTHONPATH
-export PYTHONPATH=$PYTHONPATH:$PROJECTS_PATH/BerkleyDB
 
 #soure to nvm manager
 
@@ -57,7 +56,7 @@ alias add_gi="rm .gitignore; ln $CONFIGS_PATH/gitignore .gitignore; ls -la"
 alias gh_del="gh_delete_repo.sh $1"
 alias gh_login="gh auth login"
 alias gh_list="gh repo list"
-alias gh_create="gh repo create"
+alias gh_create="~/Tools/git/create_repo_gh.sh"
 alias gh_clone="gh_clone_repo.sh $1"
 alias gh_descr="gh_descr_repo.sh"
 
@@ -116,10 +115,19 @@ alias penv='mkdir .venv;  pipenv install; source .venv/bin/activate; pip install
 #
 alias django='source .venv/bin/activate; pip install Django; pip list; django-admin startproject base . ; python manage.py migrate; python manage.py runserver'
 alias runserv='python manage.py runserver 192.168.1.50:8000'
-alias migrate='python manage.py makemigrations && python manage.py migrate'
+alias migrate_='python manage.py makemigrations && python manage.py migrate'
 alias static='python manage.py collectstatic'
 #alias penv_upd="pip install --upgrade pip";
 
+#Projects
+alias fast_api_learn='cd ~/Projects/fast_api_learn; deactivate; poetry shell'
+alias revision='python scripts/revision.py $@'
+alias migrate='echo "alembic uprade head"; alembic upgrade head'
+alias shell='poetry shell'
+alias uvi='cd src; uvicorn main:app --reload'
+
+#Command file buatiful executer
+alias exe='~/Tools/executer.sh $@'
 
 # TODO
 #EOF
