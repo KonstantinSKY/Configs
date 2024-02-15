@@ -21,6 +21,12 @@ export PROJECTS_PATH="$WORK/Projects"
 export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH:$CONFIGS_PATH
 # echo $PATH
 
+#pyenv setting
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
+
+
 #git
 export GH_HOST="github.com"
 # Tools environmen paths
@@ -55,7 +61,7 @@ alias add_gi="rm .gitignore; ln $CONFIGS_PATH/gitignore .gitignore; ls -la"
 alias gh_del="gh_delete_repo.sh $1"
 alias gh_login="gh auth login"
 alias gh_list="gh repo list"
-alias gh_create="gh repo create"
+alias gh_create="~/Tools/git/create_repo_gh.sh"
 alias gh_clone="gh_clone_repo.sh $1"
 alias gh_descr="gh_descr_repo.sh"
 
@@ -124,6 +130,9 @@ alias revision='python scripts/revision.py $@'
 alias migrate='echo "alembic uprade head"; alembic upgrade head'
 alias shell='poetry shell'
 alias uvi='cd src; uvicorn main:app --reload'
+
+#Command file buatiful executer
+alias exe='~/Tools/executer.sh $@'
 
 # TODO
 #EOF
