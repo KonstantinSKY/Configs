@@ -21,11 +21,6 @@ export PROJECTS_PATH="$WORK/Projects"
 export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH:$CONFIGS_PATH
 # echo $PATH
 
-#pyenv setting
-export PYENV_ROOT="$HOME/.pyenv"
-command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
-eval "$(pyenv init -)"
-
 
 #git
 export GH_HOST="github.com"
