@@ -7,3 +7,8 @@ export BROWSER=/usr/bin/google-chrome
 #$PATH add new paths to environment
 #export PATH=$PATH:/usr/bin/google-chrome-stable
 export JB_MAX_INSTANCE_COUNT=2 usr/bin/pycharm
+
+#pyenv
+export PYENV_ROOT="$HOME/.pyenv"
+command -v pyenv >/dev/null || export PATH="$PYENV_ROOT/bin:$PATH"
+eval "$(pyenv init -)"
