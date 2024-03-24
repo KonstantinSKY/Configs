@@ -130,4 +130,12 @@ alias uvi='cd src; uvicorn main:app --reload'
 alias exe='~/Tools/executer.sh $@'
 
 # TODO
+#
+#Virtual Machines RC
+source $TOOLS_PATH/vms/rc
+# Projects shorts
+source $PROJECTS_PATH/Project/scripts/rc
+
+
+#
 #EOF
