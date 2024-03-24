@@ -132,7 +132,7 @@ alias exe='~/Tools/executer.sh $@'
 # TODO
 #
 #Virtual Machines RC
-source ~/Tools/vms/rc
+source $TOOLS_PATH/vms/rc
 # Projects shorts
 source $PROJECTS_PATH/Project/scripts/rc
 
