@@ -1,140 +1,73 @@
+#!/bin/bash
+
 # Part of .bashrc and other .rc files
 
 #checking if Work directory is exists
-WORK="$HOME"
-
-[[ -d "$HOME/Work" ]] && WORK="$HOME/Work" || "WORK=$HOME"
-
-#echo "Work: $WORK"
+# Checking if Work directory exists
+# WORK="$HOME"
+[[ -d "$HOME/Work" ]] && WORK="$HOME/Work" || WORK="$HOME"
 
 #Environment variables
 #main
-
 export USER_NAME=SKY
 export EMAIL=sky012877@gmail.com
-export GH_USER=KonstantinSKY
 
 #paths
 export TOOLS_PATH="$WORK/Tools"
 export CONFIGS_PATH="$WORK/Configs"
 export PROJECTS_PATH="$WORK/Projects"
-export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH:$CONFIGS_PATH
-# echo $PATH
 
-
-#git
-export GH_HOST="github.com"
-# Tools environmen paths
-
-export PATH=$PATH:$TOOLS_PATH/pkgs
-export PATH=$PATH:$TOOLS_PATH/ssh
-export PATH=$PATH:$TOOLS_PATH/git
-export PATH=$PATH:$TOOLS_PATH/helpers
-export PATH=$PATH:$TOOLS_PATH/tar
-export PATH=$PATH:$TOOLS_PATH/pass
-
-
-#soure to nvm manager
+# export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH:$CONFIGS_PATH
 
 # Open alias file
-alias ali="cat $CONFIGS_PATH/rc"
-
-#ALIASES
-#package aliases
-alias upd="upd.sh"
-alias unlockdb="sudo rm /var/lib/pacman/db.lck; rm -R /var/lib/pacman/sync; pamac update --force-refresh"
-
-# git aliases
-alias commit="commit.sh"
-alias delete="delete.sh"
-alias new_clone="new_repo_clone.sh"
-alias pull="git pull"
-#alias add_gi="gitignore.sh"
-alias add_gi="rm .gitignore; ln $CONFIGS_PATH/gitignore .gitignore; ls -la"
-
-# GitHub
-alias gh_del="gh_delete_repo.sh $1"
-alias gh_login="gh auth login"
-alias gh_list="gh repo list"
-alias gh_create="~/Tools/git/create_repo_gh.sh"
-alias gh_clone="gh_clone_repo.sh $1"
-alias gh_descr="gh_descr_repo.sh"
-
-#python
-alias py="python $1"
-
-#nvim
-alias vi="nvim $1"
+alias ali='cat $CONFIGS_PATH/rc'
 
 #shell
-alias ls="ls -la --color=auto $1"
-alias chx="chmod u+x $1"
-alias rmall="rm"
+# shellcheck disable=SC2317
+la() { command ls "$@" -la --color=auto ; }
+# shellcheck disable=SC2317
+chx() { command chmod u+x "$@"; }
+
+#Trash
 alias rm=trash
 alias Trash="trash --help; ls -la ~/.local/share/Trash/files"
-
-#Short paths
-alias prjs="cd ~/Projects"
-alias pylib="cd ~/Projects/py.libs"
-alias skyai="cd ~/Projects/skyai"
-alias main="cd ~/Projects/drv_school; activate"
-
 #ssh
 alias rsss="remote_start_sudo_script.sh"
 alias server="ssh server"
 
-#tar
-alias tarb="tarb.sh $1" #archive bzip2 format
+## RC sources
+# Tools RC
+source "$TOOLS_PATH/rc"
+# Project rc
+# shellcheck disable=SC1091
+source "$PROJECTS_PATH/Project/scripts/rc"
 
-#pass
-alias inspass="insert_password.sh"
-alias genpass="pass generate last_generated 15 -f"
-alias pushpass="pass git push"
-alias pullpass="pass git pull"
 
-#vms
-alias vserver="VBoxManage startvm vserver --type headless"
-alias k="VBoxManage startvm K"
-alias vserveroff="VBoxManage controlvm vserver poweroff"
-
-#festival text2wave
-alias t2w='$TOOLS_PATH/festival/t2w.sh $@'
-
-###
-alias g_d='py ~/Projects/gbt/gpt_description.py $@'
 
 #
-#python env  and pipenv
-alias venv='python -m venv .venv; activate;  pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
-alias activate='source .venv/bin/activate'
-alias freeze='activate; pip freeze > requirements.txt; cat requirements.txt'
-alias reqs='activate; pip install -r requirements.txt; pip list; echo "Outdating packages:"; pip list -o'
-alias penv='mkdir .venv;  pipenv install; source .venv/bin/activate; pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
+# #python env  and pipenv
+# alias venv='python -m venv .venv; activate;  pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
+# alias activate='source .venv/bin/activate'
+# alias freeze='activate; pip freeze > requirements.txt; cat requirements.txt'
+# alias reqs='activate; pip install -r requirements.txt; pip list; echo "Outdating packages:"; pip list -o'
+# alias penv='mkdir .venv;  pipenv install; source .venv/bin/activate; pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
 
-#Django
-#
-alias django='source .venv/bin/activate; pip install Django; pip list; django-admin startproject base . ; python manage.py migrate; python manage.py runserver'
-alias runserv='python manage.py runserver 192.168.1.50:8000'
-alias migrate_='python manage.py makemigrations && python manage.py migrate'
-alias static='python manage.py collectstatic'
+# #Django
+# #
+# alias django='source .venv/bin/activate; pip install Django; pip list; django-admin startproject base . ; python manage.py migrate; python manage.py runserver'
+# alias runserv='python manage.py runserver 192.168.1.50:8000'
+# alias migrate_='python manage.py makemigrations && python manage.py migrate'
+# alias static='python manage.py collectstatic'
+# manage.py runserver'
+# 
 #alias penv_upd="pip install --upgrade pip";
 
-#Projects
-alias fast_api_learn='cd ~/Projects/fast_api_learn; deactivate; poetry shell'
-alias revision='python scripts/revision.py $@'
-alias migrate='echo "alembic uprade head"; alembic upgrade head'
-alias shell='poetry shell'
-alias uvi='cd src; uvicorn main:app --reload'
-
-#Command file buatiful executer
-alias exe='~/Tools/executer.sh $@'
-
-# TODO
-#
-#Virtual Machines RC
-source $TOOLS_PATH/vms/rc
-# Projects shorts
-source $PROJECTS_PATH/Project/scripts/rc
+# #Projects
+# alias fast_api_learn='cd ~/Projects/fast_api_learn; deactivate; poetry shell'
+# alias revision='python scripts/revision.py $@'
+# alias migrate='echo "alembic uprade head"; alembic upgrade head'
+# alias shell='poetry shell'
+# alias uvi='cd src; uvicorn main:app --reload'
 
 
 #
