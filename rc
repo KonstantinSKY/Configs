@@ -40,7 +40,7 @@ alias server="ssh server"
 source "$TOOLS_PATH/rc"
 # Project rc
 # shellcheck disable=SC1091
-source "$PROJECTS_PATH/Project/scripts/rc"
+source "$PROJECTS_PATH/Project/rc"
 
 
 
@@ -59,7 +59,7 @@ source "$PROJECTS_PATH/Project/scripts/rc"
 # alias migrate_='python manage.py makemigrations && python manage.py migrate'
 # alias static='python manage.py collectstatic'
 # manage.py runserver'
-# 
+#
 #alias penv_upd="pip install --upgrade pip";
 
 # #Projects
