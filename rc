@@ -16,19 +16,18 @@ export EMAIL=sky012877@gmail.com
 export TOOLS_PATH="$WORK/Tools"
 export CONFIGS_PATH="$WORK/Configs"
 export PROJECTS_PATH="$WORK/Projects"
-
 alias Tools='cd $TOOLS_PATH; ls -ls'
 alias Configs='cd $CONFIGS_PATH; ls -ls'
 alias Projects='cd $PROJECTS_PATH; ls -ls'
 
-#nvm for node js setting 
+#nvm for node js setting
 export NVM_DIR="$HOME/.nvm"
 # shellcheck disable=SC1091
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 
-
-# export PATH=$PATH:$TOOLS_PATH:$PROJECTS_PATH:$CONFIGS_PATH
+# paths
+export PATH=$PATH:$HOME
 
 # Open alias file
 alias ali='cat $CONFIGS_PATH/rc'
