@@ -14,9 +14,25 @@
     "window.commandCenter": false,
     "window.customTitleBarVisibility": "auto",
     "window.closeWhenEmpty": false,
-    
+    "window.menuBarVisibility": "hidden",
+    "apc.menubar.compact": true,
+    "apc.activityBar": {
+        "size": 24,
+        "itemSize": 24,
+        "itemMargin": 3
+    },
+
     //Workbench
     "workbench.activityBar.location": "top",
+    "workbench.colorCustomizations": {
+        // "editorSuggestWidget.background": "#ff0000",
+        "list.activeSelectionBackground": "#5d3e96",
+        "list.inactiveFocusOutline": "#43257b",
+        "list.focusBackground": "#634b8f",
+        "list.hoverBackground": "#4a3670"
+
+    },
+    "explorer.compactFolders": false,
 
     //Editor
     "editor.minimap.enabled": false,
@@ -30,11 +46,14 @@
     //cursor
     "editor.cursorBlinking": "expand",
     "editor.cursorStyle": "line",
-
+    "editor.cursorSmoothCaretAnimation": "on",
     "emmet.excludeLanguages": [
         "python"
     ],
     
+
+
+
     //Shell scripts
     "[shellscript]": {
         "editor.defaultFormatter": "foxundermoon.shell-format",
@@ -214,5 +233,6 @@
     },
     "[jsonc]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode"
-    }
+    },
+    "workbench.iconTheme": "material-icon-theme"
 }
