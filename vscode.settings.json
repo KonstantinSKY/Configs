@@ -37,7 +37,7 @@
     //Editor
     "editor.minimap.enabled": false,
     "editor.bracketPairColorization.enabled": true,
-    "editor.fontFamily": "'Fira Code', Consolas, 'Courier New', monospace",
+    "editor.fontFamily": "'JetBrains Mono', 'Fira Code', 'Noto Sans Mono', monospace",
     "editor.fontLigatures": true,
     "editor.glyphMargin": false,
     "editor.smoothScrolling": true,
@@ -222,6 +222,9 @@
         "autofetch",
         "Consolas",
         "esbenp",
+        "Fira",
+        "foxundermoon",
+        "Noto",
         "Pylance",
         "pylint",
         "shellcheck",
@@ -240,5 +243,6 @@
     "files.associations": {
         "*.list": "config",
         "*.config": "config"
-    }
+    },
+    "explorer.confirmDelete": false
 }
