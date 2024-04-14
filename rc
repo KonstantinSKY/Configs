@@ -43,7 +43,7 @@ chx() { command chmod u+x "$@"; }
 
 #packages
 alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
-alias remove="sudo pamac remove $@"
+alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"
 
 #Trash
 alias rm=trash
