@@ -41,6 +41,10 @@ la() { command ls "$@" -la --color=auto ; }
 # shellcheck disable=SC2317
 chx() { command chmod u+x "$@"; }
 
+#packages
+alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
+alias remove="sudo pamac remove $@"
+
 #Trash
 alias rm=trash
 alias Trash="trash --help; ls -la ~/.local/share/Trash/files"
