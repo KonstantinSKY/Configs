@@ -6,7 +6,7 @@
 # Description :                                                            #
 ############################################################################
 
-source "$EXE"
+source $HOME/.exe
 start "$0"
 
 path=$HOME/.i3
