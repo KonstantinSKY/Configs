@@ -23,8 +23,8 @@ alias Projects='cd $PROJECTS_PATH; ls -ls'
 #nvm for node js setting
 export NVM_DIR="$HOME/.nvm"
 # shellcheck disable=SC1091
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
 
 #QT5 setting
 #export QT_QPA_PLATFORMTHEME=qt5ct
@@ -37,9 +37,13 @@ alias ali='cat $CONFIGS_PATH/rc'
 
 #shell
 # shellcheck disable=SC2317
-la() { command ls "$@" -la --color=auto ; }
+la() { command ls "$@" -la --color=auto; }
 # shellcheck disable=SC2317
 chx() { command chmod u+x "$@"; }
+
+#packages
+alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
+alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"
 
 #Trash
 alias rm=trash
@@ -53,11 +57,9 @@ alias server="ssh server"
 source "$TOOLS_PATH/rc"
 # Project rc
 # shellcheck disable=SC1091
-source "$PROJECTS_PATH/Project/rc"
 
-
-
-#
+project_rc="$PROJECTS_PATH/Project/rc"
+[[ -f "$project_rc" ]] && . "$project_rc"
 # #python env  and pipenv
 # alias venv='python -m venv .venv; activate;  pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
 # alias activate='source .venv/bin/activate'
@@ -81,7 +83,6 @@ source "$PROJECTS_PATH/Project/rc"
 # alias migrate='echo "alembic uprade head"; alembic upgrade head'
 # alias shell='poetry shell'
 # alias uvi='cd src; uvicorn main:app --reload'
-
 
 #
 #EOF
