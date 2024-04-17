@@ -247,5 +247,6 @@
         "*.list": "config",
         "*.config": "config"
     },
-    "explorer.confirmDelete": false
+    "explorer.confirmDelete": false,
+    "explorer.confirmDragAndDrop": false
 }
