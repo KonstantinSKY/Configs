@@ -249,5 +249,7 @@
         "*.sh": "shellscript"
     },
     "explorer.confirmDelete": false,
-    "explorer.confirmDragAndDrop": false
+    "explorer.confirmDragAndDrop": false,
+
+    "path-intellisense.activationOnLanguage": ["shellscript"]
 }
