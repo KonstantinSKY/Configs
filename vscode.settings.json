@@ -245,7 +245,8 @@
     //files associations
     "files.associations": {
         "*.list": "config",
-        "*.config": "config"
+        "*.config": "config",
+        "*.sh": "shellscript"
     },
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false
