@@ -42,6 +42,10 @@ la() { command ls "$@" -la --color=auto; }
 # shellcheck disable=SC2317
 chx() { command chmod u+x "$@"; }
 
+cdl() { 
+    cd "$@" && ls -la --color=auto 
+    }
+
 #packages
 alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
 alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"
