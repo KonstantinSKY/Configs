@@ -51,7 +51,7 @@
         "python"
     ],
     
-
+    "todohighlight.isEnable": true,
 
 
     //Shell scripts
@@ -219,19 +219,25 @@
     },
     //Spell check setting
     "cSpell.userWords": [
+        "aiohttp",
+        "aioredis",
         "autofetch",
         "Consolas",
         "devel",
+        "dotenv",
         "esbenp",
         "Fira",
         "flameshot",
         "foxundermoon",
+        "fxpractice",
         "galculator",
         "Noto",
+        "oanda",
         "Pylance",
         "pylint",
         "shellcheck",
-        "timonwong"
+        "timonwong",
+        "todohighlight"
     ],
     "[json]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
