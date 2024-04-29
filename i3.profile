@@ -25,3 +25,4 @@ export BROWSER=/usr/bin/google-chrome
 export JB_MAX_INSTANCE_COUNT=2 usr/bin/pycharm
 
 
+. "$HOME/.cargo/env"
