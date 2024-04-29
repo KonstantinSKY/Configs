@@ -221,8 +221,10 @@
     "cSpell.userWords": [
         "aiohttp",
         "aioredis",
+        "arrayvec",
         "autofetch",
         "Consolas",
+        "Datetime",
         "devel",
         "dotenv",
         "esbenp",
@@ -235,7 +237,9 @@
         "oanda",
         "Pylance",
         "pylint",
+        "reqwest",
         "shellcheck",
+        "simd",
         "timonwong",
         "todohighlight"
     ],
@@ -257,5 +261,7 @@
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
 
-    "path-intellisense.activationOnLanguage": ["shellscript"]
+    "path-intellisense.activationOnLanguage": [
+        "shellscript"
+    ]
 }
