@@ -51,7 +51,7 @@
         "python"
     ],
     
-
+    "todohighlight.isEnable": true,
 
 
     //Shell scripts
@@ -219,19 +219,29 @@
     },
     //Spell check setting
     "cSpell.userWords": [
+        "aiohttp",
+        "aioredis",
+        "arrayvec",
         "autofetch",
         "Consolas",
+        "Datetime",
         "devel",
+        "dotenv",
         "esbenp",
         "Fira",
         "flameshot",
         "foxundermoon",
+        "fxpractice",
         "galculator",
         "Noto",
+        "oanda",
         "Pylance",
         "pylint",
+        "reqwest",
         "shellcheck",
-        "timonwong"
+        "simd",
+        "timonwong",
+        "todohighlight"
     ],
     "[json]": {
         "editor.defaultFormatter": "esbenp.prettier-vscode",
@@ -251,5 +261,7 @@
     "explorer.confirmDelete": false,
     "explorer.confirmDragAndDrop": false,
 
-    "path-intellisense.activationOnLanguage": ["shellscript"]
+    "path-intellisense.activationOnLanguage": [
+        "shellscript"
+    ]
 }
