@@ -26,10 +26,10 @@
         "when": "editorTextFocus && vim.mode != 'Insert'"
     },
     {
-        "key": "ctrl+alt+u",
+        "key": "shift+alt+s",
         "command": "workbench.action.terminal.sendSequence",
         "args": {
-            "text": "echo Hello\n"
+            "text": "exe code sync\n"
         }
     },
 ]
