@@ -32,4 +32,11 @@
             "text": "exe code sync\n"
         }
     },
+    {
+        "key": "shift+alt+d",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": {
+            "text": "cargo run --bin exe deploy\n"
+        }
+    }
 ]
