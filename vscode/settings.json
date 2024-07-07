@@ -1,0 +1,207 @@
+{
+    // Sycn gist - Seting Syncronization
+    // "sync.gist": "a98ed9dc6423805678006ef8a6addb23",
+    // Security
+    "security.workspace.trust.untrustedFiles": "prompt",
+    // Files
+    "files.autoSave": "afterDelay",
+    //bred crumbs
+    "breadcrumbs.enabled": false,
+    // Window
+    "window.density.editorTabHeight": "compact",
+    "window.titleBarStyle": "native",
+    "window.commandCenter": false,
+    "window.customTitleBarVisibility": "auto",
+    "window.closeWhenEmpty": false,
+    "window.menuBarVisibility": "hidden",
+    //Workbench
+    "workbench.colorCustomizations": {
+        "terminal.background": "#1e1e1e",
+        "editor.background": "#1e1e1e", // Replace with your desired color code
+        "activityBar.background": "#333333", // Background color for the activity bar
+        "sideBar.background": "#252526", // Background color for the sidebar
+        "tab.activeBackground": "#3f485a",
+        "tab.activeBorder": "#139c11",
+    },
+    "workbench.iconTheme": "material-icon-theme",
+    "workbench.colorTheme": "Manjaro OneDark",
+    // Terminal
+    "terminal.integrated.fontFamily": "Fira Code",
+    "terminal.integrated.fontWeight": 200,
+    "terminal.integrated.fontSize": 14,
+    "terminal.integrated.cursorBlinking": true,
+    "terminal.integrated.smoothScrolling": true,
+    "terminal.integrated.cursorStyle": "line",
+    // Explorer
+    "explorer.confirmDragAndDrop": false,
+    // // APC -Extension
+    // "apc.electron": {
+    //     "titleBarStyle": "hidden"
+    // },
+    // "apc.menubar.compact": true,
+    // "apc.activityBar": {
+    //     "position": "top",
+    //     "size": 25,
+    //     "itemSize": 25,
+    //     "itemMargin": 3,
+    // },
+    // Editor
+    "editor.minimap.enabled": false,
+    "editor.bracketPairColorization.enabled": true,
+    "editor.fontFamily": "'JetBrains Mono', 'Fira Code', 'Noto Sans Mono', monospace",
+    "editor.fontSize": 14,
+    "editor.fontWeight": 200,
+    "editor.fontLigatures": true,
+    "editor.glyphMargin": false,
+    "editor.smoothScrolling": true,
+    "editor.autoClosingQuotes": "always",
+    "editor.autoClosingBrackets": "always",
+    "editor.folding": true,
+    "editor.showFoldingControls": "always",
+    /// cursor
+    "editor.renderLineHighlight": "gutter",
+    "editor.cursorBlinking": "expand",
+    "editor.cursorStyle": "line",
+    "editor.cursorSmoothCaretAnimation": "on",
+    "editor.formatOnSave": true,
+    "[rust]": {
+        "editor.foldingImportsByDefault": true,
+        "editor.rulers": [
+            100
+        ],
+        "editor.defaultFormatter": "rust-lang.rust-analyzer"
+    },
+    "[python]": {
+        "editor.rulers": [
+            80,
+        ],
+    },
+    "rust-analyzer.check.command": "clippy",
+    /// font schema colorize
+    "editor.tokenColorCustomizations": {
+        "textMateRules": [
+            { // Comments
+                "scope": "comment",
+                "settings": {
+                    "fontStyle": "italic",
+                    "foreground": "#666666",
+                }
+            },
+            {
+                "scope": "keyword.other",
+                "settings": {
+                    "foreground": "#a774bd" // General color for keywords
+                }
+            },
+            {
+                "scope": "keyword.other.fn.rust",
+                "settings": {
+                    "foreground": "#e70e0e" // Red color for the fn keyword in Rust
+                }
+            },
+            {
+                "scope": "keyword.operator",
+                "settings": {
+                    "foreground": "#b4ae31" // Red color for operators
+                }
+            },
+            {
+                "scope": "string",
+                "settings": {
+                    "foreground": "#5c9161",
+                    "fontStyle": "italic"
+                }
+            },
+            {
+                "scope": "variable",
+                "settings": {
+                    "foreground": "#59a8b3",
+                    // "fontStyle": "bold"
+                }
+            },
+            {
+                "scope": "variable.other.rust",
+                "settings": {
+                    "foreground": "#d76854",
+                    // "fontStyle": "underline"
+                }
+            },
+            {
+                "scope": "entity.name",
+                "settings": {
+                    "foreground": "#924d4d" // DodgerBlue color for attributes like #[tokio::main]
+                }
+            },
+            {
+                "scope": "entity.name.function",
+                "settings": {
+                    "foreground": "#6dbaf5", // DodgerBlue color for attributes like #[tokio::main]
+                    "fontStyle": "italic"
+                }
+            },
+            {
+                "scope": "entity.name.method",
+                "settings": {
+                    "foreground": "#2d13c2" // DodgerBlue color for attributes like #[tokio::main]
+                }
+            },
+            {
+                "scope": [
+                    "entity.name.namespace",
+                ],
+                "settings": {
+                    "foreground": "#877659", // Orange color for namespace and module paths
+                    "fontStyle": "italic bold"
+                }
+            },
+            // {
+            //     "scope": "entity.name.type.numeric",
+            //     "settings": {
+            //         "foreground": "#7f514c"  // Gold color for struct fields
+            //     }
+            // },
+            // // {
+            //     "scope": "entity.name.function.macro.rust",
+            //     "settings": {
+            //         "foreground": "#ca4925" 
+            //     }
+            // },
+            {
+                "scope": "entity.name.type.struct.rust",
+                "settings": {
+                    "foreground": "#989adc",
+                    "fontStyle": "italic"
+                }
+            }
+        ]
+    },
+    "cSpell.userWords": [
+        "antd",
+        "bignumber",
+        "blockies",
+        "checkupdates",
+        "chrono",
+        "clippy",
+        "crossterm",
+        "devchain",
+        "dotenv",
+        "Fira",
+        "Founde",
+        "Insertable",
+        "jsonwebtoken",
+        "mdbreact",
+        "moralis",
+        "noconfirm",
+        "Noto",
+        "pamac",
+        "papaparse",
+        "partitionmanager",
+        "proto",
+        "readlink",
+        "thiserror",
+        "tlsv",
+        "walletconnect"
+    ],
+    "git.enableSmartCommit": true,
+    "git.autofetch": true,
+}
