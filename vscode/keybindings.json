@@ -24,5 +24,12 @@
         "key": "ctrl+k ctrl+w",
         "command": "workbench.action.closeAllEditors",
         "when": "editorTextFocus && vim.mode != 'Insert'"
-    }
+    },
+    {
+        "key": "ctrl+alt+u",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": {
+            "text": "echo Hello\n"
+        }
+    },
 ]

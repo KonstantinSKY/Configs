@@ -11,7 +11,7 @@
     "window.commandCenter": false,
     "window.customTitleBarVisibility": "auto",
     "window.closeWhenEmpty": false,
-    "window.menuBarVisibility": "hidden",
+    "window.menuBarVisibility": "toggle",
     //Workbench
     "workbench.colorCustomizations": {
         "terminal.background": "#1e1e1e",
