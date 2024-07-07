@@ -1,6 +1,4 @@
 {
-    // Sycn gist - Seting Syncronization
-    // "sync.gist": "a98ed9dc6423805678006ef8a6addb23",
     // Security
     "security.workspace.trust.untrustedFiles": "prompt",
     // Files
@@ -32,19 +30,11 @@
     "terminal.integrated.cursorBlinking": true,
     "terminal.integrated.smoothScrolling": true,
     "terminal.integrated.cursorStyle": "line",
+    "terminal.integrated.env.linux": {
+        "DOCKER_HOST": "unix:///var/run/docker.sock"
+    },
     // Explorer
     "explorer.confirmDragAndDrop": false,
-    // // APC -Extension
-    // "apc.electron": {
-    //     "titleBarStyle": "hidden"
-    // },
-    // "apc.menubar.compact": true,
-    // "apc.activityBar": {
-    //     "position": "top",
-    //     "size": 25,
-    //     "itemSize": 25,
-    //     "itemMargin": 3,
-    // },
     // Editor
     "editor.minimap.enabled": false,
     "editor.bracketPairColorization.enabled": true,
@@ -179,6 +169,7 @@
         "antd",
         "bignumber",
         "blockies",
+        "buildx",
         "checkupdates",
         "chrono",
         "clippy",
@@ -198,8 +189,10 @@
         "partitionmanager",
         "proto",
         "readlink",
+        "systemclt",
         "thiserror",
         "tlsv",
+        "usermod",
         "walletconnect"
     ],
     "git.enableSmartCommit": true,
