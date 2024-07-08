@@ -39,4 +39,11 @@
             "text": "cargo run --bin exe deploy\n"
         }
     }
+    {
+        "key": "shift+alt+c",
+        "command": "workbench.action.terminal.sendSequence",
+        "args": {
+            "text": "git add . -v; git commit -a -m 'fast commit' -v; git push -v\n"
+        }
+    }
 ]
