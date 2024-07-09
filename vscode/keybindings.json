@@ -11,6 +11,11 @@
         "when": "editorTextFocus && vim.mode != 'Insert'"
     },
     {
+        "key": "ctrl+w", // Replace with your desired key combination
+        "command": "workbench.action.closeActiveEditor",
+        "when": "editorTextFocus && vim.mode != 'Insert'"
+    },
+    {
         "key": "ctrl+k ctrl+j",
         "command": "editor.unfoldAll",
         "when": "editorTextFocus && vim.mode != 'Insert'"
