@@ -192,6 +192,7 @@
         "partitionmanager",
         "proto",
         "readlink",
+        "rustc",
         "systemclt",
         "thiserror",
         "tlsv",
