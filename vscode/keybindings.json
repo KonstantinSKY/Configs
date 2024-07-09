@@ -38,7 +38,7 @@
         "args": {
             "text": "cargo run --bin exe deploy\n"
         }
-    }
+    },
     {
         "key": "shift+alt+c",
         "command": "workbench.action.terminal.sendSequence",
