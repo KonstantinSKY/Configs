@@ -182,6 +182,7 @@
         "fasttrack",
         "findfs",
         "Fira",
+        "fontconfig",
         "Founde",
         "Insertable",
         "jsonwebtoken",
@@ -201,7 +202,8 @@
         "thiserror",
         "tlsv",
         "usermod",
-        "walletconnect"
+        "walletconnect",
+        "zhsrc"
     ],
     "git.enableSmartCommit": true,
     "git.autofetch": true,
