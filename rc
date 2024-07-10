@@ -63,7 +63,7 @@ alias server="ssh server"
 
 ## RC sources
 # Tools RC
-source "$TOOLS_PATH/rc"
+#source "$TOOLS_PATH/rc"
 # Project rc
 # shellcheck disable=SC1091
 
