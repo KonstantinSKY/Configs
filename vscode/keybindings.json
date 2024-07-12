@@ -34,7 +34,7 @@
         "key": "shift+alt+s",
         "command": "workbench.action.terminal.sendSequence",
         "args": {
-            "text": "exe code sync\n"
+            "text": "exe sync\n"
         }
     },
     {
