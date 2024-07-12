@@ -67,6 +67,23 @@ alias server="ssh server"
 # Project rc
 # shellcheck disable=SC1091
 
+
+
+
+#fn to choose editor 
+choose_editor() {
+  if command -v nvim >/dev/null 2>&1;
+	 then  
+	       nvim "$@"
+          else
+         vi "$@" 
+    fi
+} 
+
+#alias 'vi' to use 'choose_editor'
+alias vi=choose_editor 
+
+
 project_rc="$PROJECTS_PATH/Project/rc"
 [[ -f "$project_rc" ]] && . "$project_rc"
 # #python env  and pipenv
