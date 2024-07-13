@@ -62,6 +62,8 @@
         "editor.defaultFormatter": "rust-lang.rust-analyzer"
     },
     "[python]": {
+        "editor.defaultFormatter": "ms-python.black-formatter",
+        "editor.formatOnSave": true,
         "editor.rulers": [
             80,
         ],
@@ -202,10 +204,13 @@
         "readlink",
         "rustc",
         "systemclt",
+        "tempdir",
+        "tempfile",
         "tesseract",
         "thiserror",
         "timedatectl",
         "tlsv",
+        "Unrequired",
         "urxvt",
         "usermod",
         "walletconnect",
