@@ -1,0 +1,4 @@
+[paths]
+code = "code.toml"
+nvim = "nvim.toml"
+
