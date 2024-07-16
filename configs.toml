@@ -1,4 +1,4 @@
 [paths]
-code = "code.toml"
-nvim = "nvim.toml"
+code = "vscode/vscode.toml"
+nvim = "nvim/nvim.toml"
 
