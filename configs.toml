@@ -1,4 +1,4 @@
 [paths]
 code = "vscode/vscode.toml"
 nvim = "nvim/nvim.toml"
-
+megasync = "megasync.toml"
