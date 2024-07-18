@@ -1,4 +1,5 @@
 [paths]
-code = "vscode/vscode.toml"
-nvim = "nvim/nvim.toml"
-megasync = "megasync.toml"
+code = "Configs/vscode/vscode.toml"
+nvim = "Configs/nvim/nvim.toml"
+megasync = "Configs/megasync.toml"
+pass = "Security/pass.toml"
