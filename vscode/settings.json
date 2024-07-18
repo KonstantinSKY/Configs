@@ -205,6 +205,7 @@
         "pamac",
         "papaparse",
         "partitionmanager",
+        "pkill",
         "proto",
         "readlink",
         "rustc",
