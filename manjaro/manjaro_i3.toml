@@ -1,5 +1,4 @@
-[manjaro_i3]
-
+[packages]
 requirements = ["trash-cli", "manjaro-settings-manager", "materia-gtk-theme"]
 
 requirements_2 = ["base-devel", "unzip", "font-manager", "galculator", "xorg-xev", "keepass"]
@@ -10,5 +9,3 @@ communication = ["slack-desktop", "zoom"]
 
 
 
-
-[ubuntu]
