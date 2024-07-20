@@ -236,4 +236,5 @@
     "python.testing.pytestPath": "/home/sky/.pyenv/shims/pytest",
     "python.testing.cwd": "${workspaceFolder}/tests",
     "python.testing.autoTestDiscoverOnSaveEnabled": true,
+    "git.openRepositoryInParentFolders": "never",
 }

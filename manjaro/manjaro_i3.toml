@@ -2,12 +2,12 @@
 
 unneeded = "bmenu palemoon pacui pcmanfm mupdf libmupdf tesseract-data-afr tesseract"
 
-requirements = ["trash-cli", "manjaro-settings-manager", "materia-gtk-theme"]
+requirements = "trash-cli manjaro-settings-manager materia-gtk-theme"
 
-requirements_2 = ["base-devel", "unzip", "font-manager", "galculator", "xorg-xev", "keepass"]
+requirements_2 = "base-devel unzip font-manager galculator xorg-xev keepass"
 
-internet = ["google-chrome", "firefox", "lsof", "nmap", "transmission-gtk"]
+internet = "google-chrome firefox lsof nmap transmission-gtk"
 
-communication = ["slack-desktop", "zoom"]
+communication = "slack-desktop zoom"
 
 
