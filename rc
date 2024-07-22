@@ -17,6 +17,7 @@ export TOOLS_PATH="$WORK/Tools"
 export CONFIGS_PATH="$WORK/Configs"
 export PROJECTS_PATH="$WORK/Projects"
 export BACKUPS_PATH="$WORK/BackUps"
+
 alias Tools='cd $TOOLS_PATH; ls -ls'
 alias Configs='cd $CONFIGS_PATH; ls -ls'
 alias Projects='cd $PROJECTS_PATH; ls -ls'
@@ -26,6 +27,13 @@ if [ -d "$HOME/.nvm" ]; then
 	export NVM_DIR="$HOME/.nvm"
 	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
 	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+fi
+
+#pyenv fpr Python setting
+if [ -d "$HOME/.pyenv" ]; then
+	export PATH="$HOME/.pyenv/bin:$PATH"
+	eval "$(pyenv init --path)"
+	eval "$(pyenv init -)"
 fi
 
 #QT5 setting
@@ -48,8 +56,11 @@ cdl() {
     }
 
 #packages
-alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
-alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"
+
+alias upd="exe linux update"
+
+#alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
+#alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"
 
 #Trash
 if command -v trash > /dev/null 2>&1;
@@ -62,13 +73,6 @@ fi
 alias rsss="remote_start_sudo_script.sh"
 alias server="ssh server"
 
-## RC sources
-# Tools RC
-#source "$TOOLS_PATH/rc"
-# Project rc
-# shellcheck disable=SC1091
-
-
 
 
 #fn to choose editor
@@ -80,13 +84,12 @@ choose_editor() {
          vi "$@"
     fi
 }
-
 #alias 'vi' to use 'choose_editor'
 alias vi=choose_editor
 
 
-project_rc="$PROJECTS_PATH/Project/rc"
-[[ -f "$project_rc" ]] && . "$project_rc"
+#project_rc="$PROJECTS_PATH/Project/rc"
+#[[ -f "$project_rc" ]] && . "$project_rc"
 # #python env  and pipenv
 # alias venv='python -m venv .venv; activate;  pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
 # alias activate='source .venv/bin/activate'
