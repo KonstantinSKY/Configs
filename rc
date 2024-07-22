@@ -22,10 +22,11 @@ alias Configs='cd $CONFIGS_PATH; ls -ls'
 alias Projects='cd $PROJECTS_PATH; ls -ls'
 
 #nvm for node js setting
-export NVM_DIR="$HOME/.nvm"
-# shellcheck disable=SC1091
-[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+if [ -d "$HOME/.nvm" ]; then
+	export NVM_DIR="$HOME/.nvm"
+	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
+	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+fi
 
 #QT5 setting
 #export QT_QPA_PLATFORMTHEME=qt5ct
@@ -70,18 +71,18 @@ alias server="ssh server"
 
 
 
-#fn to choose editor 
+#fn to choose editor
 choose_editor() {
   if command -v nvim >/dev/null 2>&1;
-	 then  
+	 then
 	       nvim "$@"
           else
-         vi "$@" 
+         vi "$@"
     fi
-} 
+}
 
 #alias 'vi' to use 'choose_editor'
-alias vi=choose_editor 
+alias vi=choose_editor
 
 
 project_rc="$PROJECTS_PATH/Project/rc"
