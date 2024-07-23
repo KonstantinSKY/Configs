@@ -209,6 +209,7 @@
         "partitionmanager",
         "pkill",
         "proto",
+        "pyenv",
         "readlink",
         "rustc",
         "systemclt",
