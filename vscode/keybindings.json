@@ -31,6 +31,11 @@
         "when": "editorTextFocus && vim.mode != 'Insert'"
     },
     {
+        "key": "ctrl+alt+t",
+        "command": "workbench.action.terminal.new",
+        "when": "vim.mode != 'Insert'"
+    },
+    {
         "key": "shift+alt+s",
         "command": "workbench.action.terminal.sendSequence",
         "args": {
