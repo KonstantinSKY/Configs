@@ -22,11 +22,15 @@ alias Tools='cd $TOOLS_PATH; ls -ls'
 alias Configs='cd $CONFIGS_PATH; ls -ls'
 alias Projects='cd $PROJECTS_PATH; ls -ls'
 
+#rust cargo path settingd setting
+# if [ -d "$HOME/.cargo" ]; then
+# 	export PATH="$HOME/.cargo/bin"
+# fi
+
 #nvm for node js setting
-if [ -d "$HOME/.nvm" ]; then
-	export NVM_DIR="$HOME/.nvm"
-	[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"                   # This loads nvm
-	[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion" # This loads nvm bash_completion
+
+if [ -d "/usr/share/nvm" ]; then
+	source "/usr/share/nvm/init-nvm.sh"
 fi
 
 #pyenv fpr Python setting
