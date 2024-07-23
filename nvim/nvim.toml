@@ -3,10 +3,9 @@ packages = 'neovim neovim-plug'
 
 [paths]
 config_dir = '.config/nvim'
-config_source_dir = 'nvim'
+config_source_dir = 'Configs/nvim'
 
 [files]
 init_vim = 'init.vim'
-configs_init_vim = 'nvim/init.vim'
 
 

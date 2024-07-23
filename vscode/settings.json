@@ -1,6 +1,6 @@
 {
     // Security
-    "security.workspace.trust.untrustedFiles": "prompt",
+    "security.workspace.trust.untrustedFiles": "open",
     // Files
     "files.autoSave": "afterDelay",
     //bred crumbs
