@@ -3,7 +3,7 @@
     {
         "key": "ctrl+shift+i",
         "command": "editor.action.formatDocument",
-        "when": "editorLangId == 'rust'"
+        "when": "editorLangId == 'rust' || editorLangId == 'python'"
     },
     {
         "key": "ctrl+k ctrl+0",

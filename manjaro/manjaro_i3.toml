@@ -8,6 +8,6 @@ requirements_2 = "base-devel unzip font-manager galculator xorg-xev keepass"
 
 internet = "google-chrome firefox lsof nmap transmission-gtk"
 
-communication = "slack-desktop zoom"
+communication = "slack-desktop zoom telegram-desktop"
 
 
