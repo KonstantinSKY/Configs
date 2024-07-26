@@ -1,7 +1,7 @@
 #!/bin/bash
 
 export QT_QPA_PLATFORMTHEME="qt5ct"
-
+export QT_STYLE_OVERRIDE="kvantum"
 #export GTK_THEME="Dracula"
 #export GTK_THEME_NAME="Dracula"
 #export GTK_THEME_NAME=Materia-dark
@@ -22,7 +22,7 @@ export BROWSER=/usr/bin/google-chrome-stable
 
 #$PATH add new paths to environment
 #export PATH=$PATH:/usr/bin/google-chrome-stable
-export JB_MAX_INSTANCE_COUNT=2 usr/bin/pycharm
+#export JB_MAX_INSTANCE_COUNT=2 usr/bin/pycharm
 
 
 . "$HOME/.cargo/env"
