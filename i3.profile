@@ -1,6 +1,7 @@
 #!/bin/bash
 
 export QT_QPA_PLATFORMTHEME="qt5ct"
+export QT_STYLE_OVERRIDE="kvantum"
 #export GTK_THEME="Dracula"
 #export GTK_THEME_NAME="Dracula"
 #export GTK_THEME_NAME=Materia-dark
