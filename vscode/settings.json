@@ -1,241 +1,239 @@
 {
-    // Security
-    "security.workspace.trust.untrustedFiles": "open",
-    // Files
-    "files.autoSave": "afterDelay",
-    //bred crumbs
-    "breadcrumbs.enabled": false,
-    // Window
-    "window.density.editorTabHeight": "compact",
-    "window.titleBarStyle": "native",
-    "window.commandCenter": false,
-    "window.customTitleBarVisibility": "auto",
-    "window.closeWhenEmpty": false,
-    "window.menuBarVisibility": "toggle",
-    //Workbench
-    "workbench.colorCustomizations": {
-        "terminal.background": "#1e1e1e",
-        "editor.background": "#1e1e1e", // Replace with your desired color code
-        "activityBar.background": "#333333", // Background color for the activity bar
-        "sideBar.background": "#252526", // Background color for the sidebar
-        "tab.activeBackground": "#3f485a",
-        "tab.activeBorder": "#139c11",
-    },
-    "workbench.iconTheme": "material-icon-theme",
-    "workbench.colorTheme": "Manjaro OneDark",
-    // Terminal
-    "terminal.integrated.fontFamily": "Fira Code",
-    "terminal.integrated.fontWeight": 200,
-    "terminal.integrated.fontSize": 14,
-    "terminal.integrated.cursorBlinking": true,
-    "terminal.integrated.smoothScrolling": true,
-    "terminal.integrated.cursorStyle": "line",
-    "terminal.integrated.env.linux": {
-        "DOCKER_HOST": "unix:///var/run/docker.sock"
-    },
-    // Explorer
-    "explorer.confirmDragAndDrop": false,
-    // Editor
-    "editor.minimap.enabled": false,
-    "editor.bracketPairColorization.enabled": true,
-    "editor.fontFamily": "'JetBrains Mono', 'Fira Code', 'Noto Sans Mono', monospace",
-    "editor.fontSize": 14,
-    "editor.fontWeight": 200,
-    "editor.fontLigatures": true,
-    "editor.glyphMargin": false,
-    "editor.smoothScrolling": true,
-    "editor.autoClosingQuotes": "always",
-    "editor.autoClosingBrackets": "always",
-    "editor.folding": true,
-    "editor.showFoldingControls": "always",
-    /// cursor
-    "editor.renderLineHighlight": "gutter",
-    "editor.cursorBlinking": "expand",
-    "editor.cursorStyle": "line",
-    "editor.cursorSmoothCaretAnimation": "on",
+  // Security
+  "security.workspace.trust.untrustedFiles": "open",
+  // Files
+  "files.autoSave": "afterDelay",
+  //bred crumbs
+  "breadcrumbs.enabled": false,
+  // Window
+  "window.density.editorTabHeight": "compact",
+  "window.titleBarStyle": "native",
+  "window.commandCenter": false,
+  "window.customTitleBarVisibility": "auto",
+  "window.closeWhenEmpty": false,
+  "window.menuBarVisibility": "toggle",
+  //Workbench
+  "workbench.colorCustomizations": {
+    "terminal.background": "#1e1e1e",
+    "editor.background": "#1e1e1e", // Replace with your desired color code
+    "activityBar.background": "#333333", // Background color for the activity bar
+    "sideBar.background": "#252526", // Background color for the sidebar
+    "tab.activeBackground": "#3f485a",
+    "tab.activeBorder": "#139c11"
+  },
+  "workbench.iconTheme": "material-icon-theme",
+  "workbench.colorTheme": "Manjaro OneDark",
+  // Terminal
+  "terminal.integrated.fontFamily": "Fira Code",
+  "terminal.integrated.fontWeight": 200,
+  "terminal.integrated.fontSize": 14,
+  "terminal.integrated.cursorBlinking": true,
+  "terminal.integrated.smoothScrolling": true,
+  "terminal.integrated.cursorStyle": "line",
+  "terminal.integrated.env.linux": {
+    "DOCKER_HOST": "unix:///var/run/docker.sock"
+  },
+  // Explorer
+  "explorer.confirmDragAndDrop": false,
+  // Editor
+  "editor.minimap.enabled": false,
+  "editor.bracketPairColorization.enabled": true,
+  "editor.fontFamily": "'JetBrains Mono', 'Fira Code', 'Noto Sans Mono', monospace",
+  "editor.fontSize": 14,
+  "editor.fontWeight": 200,
+  "editor.fontLigatures": true,
+  "editor.glyphMargin": false,
+  "editor.smoothScrolling": true,
+  "editor.autoClosingQuotes": "always",
+  "editor.autoClosingBrackets": "always",
+  "editor.folding": true,
+  "editor.showFoldingControls": "always",
+  /// cursor
+  "editor.renderLineHighlight": "gutter",
+  "editor.cursorBlinking": "expand",
+  "editor.cursorStyle": "line",
+  "editor.cursorSmoothCaretAnimation": "on",
+  "editor.formatOnSave": true,
+  "[rust]": {
+    "editor.foldingImportsByDefault": true,
+    "editor.rulers": [100],
+    "editor.defaultFormatter": "rust-lang.rust-analyzer"
+  },
+  "[python]": {
+    "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true,
-    "[rust]": {
-        "editor.foldingImportsByDefault": true,
-        "editor.rulers": [
-            100
-        ],
-        "editor.defaultFormatter": "rust-lang.rust-analyzer"
-    },
-    "[python]": {
-        "editor.defaultFormatter": "ms-python.black-formatter",
-        "editor.formatOnSave": true,
-        "editor.rulers": [
-            80,
-        ],
-    },
-    "rust-analyzer.check.command": "clippy",
-    /// font schema colorize
-    "editor.tokenColorCustomizations": {
-        "textMateRules": [
-            { // Comments
-                "scope": "comment",
-                "settings": {
-                    "fontStyle": "italic",
-                    "foreground": "#666666",
-                }
-            },
-            {
-                "scope": "keyword.other",
-                "settings": {
-                    "foreground": "#a774bd" // General color for keywords
-                }
-            },
-            {
-                "scope": "keyword.other.fn.rust",
-                "settings": {
-                    "foreground": "#e70e0e" // Red color for the fn keyword in Rust
-                }
-            },
-            {
-                "scope": "keyword.operator",
-                "settings": {
-                    "foreground": "#b4ae31" // Red color for operators
-                }
-            },
-            {
-                "scope": "string",
-                "settings": {
-                    "foreground": "#5c9161",
-                    "fontStyle": "italic"
-                }
-            },
-            {
-                "scope": "variable",
-                "settings": {
-                    "foreground": "#59a8b3",
-                    // "fontStyle": "bold"
-                }
-            },
-            {
-                "scope": "variable.other.rust",
-                "settings": {
-                    "foreground": "#d76854",
-                    // "fontStyle": "underline"
-                }
-            },
-            {
-                "scope": "entity.name",
-                "settings": {
-                    "foreground": "#924d4d" // DodgerBlue color for attributes like #[tokio::main]
-                }
-            },
-            {
-                "scope": "entity.name.function",
-                "settings": {
-                    "foreground": "#6dbaf5", // DodgerBlue color for attributes like #[tokio::main]
-                    "fontStyle": "italic"
-                }
-            },
-            {
-                "scope": "entity.name.method",
-                "settings": {
-                    "foreground": "#2d13c2" // DodgerBlue color for attributes like #[tokio::main]
-                }
-            },
-            {
-                "scope": [
-                    "entity.name.namespace",
-                ],
-                "settings": {
-                    "foreground": "#877659", // Orange color for namespace and module paths
-                    "fontStyle": "italic bold"
-                }
-            },
-            // {
-            //     "scope": "entity.name.type.numeric",
-            //     "settings": {
-            //         "foreground": "#7f514c"  // Gold color for struct fields
-            //     }
-            // },
-            // // {
-            //     "scope": "entity.name.function.macro.rust",
-            //     "settings": {
-            //         "foreground": "#ca4925" 
-            //     }
-            // },
-            {
-                "scope": "entity.name.type.struct.rust",
-                "settings": {
-                    "foreground": "#989adc",
-                    "fontStyle": "italic"
-                }
-            }
-        ]
-    },
-    "cSpell.userWords": [
-        "antd",
-        "autofetch",
-        "bignumber",
-        "blkid",
-        "blockies",
-        "btrfs",
-        "buildx",
-        "canonicalize",
-        "checkupdates",
-        "chrono",
-        "clippy",
-        "crossterm",
-        "devchain",
-        "dotenv",
-        "fasttrack",
-        "findfs",
-        "Fira",
-        "fontconfig",
-        "Founde",
-        "inet",
-        "Insertable",
-        "jsonwebtoken",
-        "Konstantin",
-        "makereport",
-        "mangaro",
-        "mdbreact",
-        "megasync",
-        "mimeapps",
-        "moralis",
-        "neovim",
-        "networkidle",
-        "noconfirm",
-        "Noto",
-        "nvim",
-        "ownertrust",
-        "pacman",
-        "pamac",
-        "papaparse",
-        "partitionmanager",
-        "pkill",
-        "proto",
-        "pyenv",
-        "readlink",
-        "rustc",
-        "systemclt",
-        "tempdir",
-        "tempfile",
-        "tesseract",
-        "thiserror",
-        "timedatectl",
-        "tlsv",
-        "trustdb",
-        "Unrequired",
-        "urxvt",
-        "usermod",
-        "walletconnect",
-        "Xresources",
-        "zhsrc"
-    ],
-    "git.enableSmartCommit": true,
-    "git.autofetch": true,
-    // "playwright.reuseBrowser": false,
-    // "playwright.showTrace": true,
-    "python.testing.pytestArgs": [],
-    "python.testing.unittestEnabled": false,
-    "python.testing.pytestEnabled": true,
-    "python.testing.pytestPath": "/home/sky/.pyenv/shims/pytest",
-    "python.testing.cwd": "${workspaceFolder}/tests",
-    "python.testing.autoTestDiscoverOnSaveEnabled": true,
-    "git.openRepositoryInParentFolders": "never",
+    "editor.rulers": [80]
+  },
+  "rust-analyzer.check.command": "clippy",
+  /// font schema colorize
+  "editor.tokenColorCustomizations": {
+    "textMateRules": [
+      {
+        // Comments
+        "scope": "comment",
+        "settings": {
+          "fontStyle": "italic",
+          "foreground": "#666666"
+        }
+      },
+      {
+        "scope": "keyword.other",
+        "settings": {
+          "foreground": "#a774bd" // General color for keywords
+        }
+      },
+      {
+        "scope": "keyword.other.fn.rust",
+        "settings": {
+          "foreground": "#e70e0e" // Red color for the fn keyword in Rust
+        }
+      },
+      {
+        "scope": "keyword.operator",
+        "settings": {
+          "foreground": "#b4ae31" // Red color for operators
+        }
+      },
+      {
+        "scope": "string",
+        "settings": {
+          "foreground": "#5c9161",
+          "fontStyle": "italic"
+        }
+      },
+      {
+        "scope": "variable",
+        "settings": {
+          "foreground": "#59a8b3"
+          // "fontStyle": "bold"
+        }
+      },
+      {
+        "scope": "variable.other.rust",
+        "settings": {
+          "foreground": "#d76854"
+          // "fontStyle": "underline"
+        }
+      },
+      {
+        "scope": "entity.name",
+        "settings": {
+          "foreground": "#924d4d" // DodgerBlue color for attributes like #[tokio::main]
+        }
+      },
+      {
+        "scope": "entity.name.function",
+        "settings": {
+          "foreground": "#6dbaf5", // DodgerBlue color for attributes like #[tokio::main]
+          "fontStyle": "italic"
+        }
+      },
+      {
+        "scope": "entity.name.method",
+        "settings": {
+          "foreground": "#2d13c2" // DodgerBlue color for attributes like #[tokio::main]
+        }
+      },
+      {
+        "scope": ["entity.name.namespace"],
+        "settings": {
+          "foreground": "#877659", // Orange color for namespace and module paths
+          "fontStyle": "italic bold"
+        }
+      },
+      // {
+      //     "scope": "entity.name.type.numeric",
+      //     "settings": {
+      //         "foreground": "#7f514c"  // Gold color for struct fields
+      //     }
+      // },
+      // // {
+      //     "scope": "entity.name.function.macro.rust",
+      //     "settings": {
+      //         "foreground": "#ca4925"
+      //     }
+      // },
+      {
+        "scope": "entity.name.type.struct.rust",
+        "settings": {
+          "foreground": "#989adc",
+          "fontStyle": "italic"
+        }
+      }
+    ]
+  },
+  "cSpell.userWords": [
+    "antd",
+    "autofetch",
+    "bignumber",
+    "blkid",
+    "blockies",
+    "btrfs",
+    "buildx",
+    "canonicalize",
+    "checkupdates",
+    "chrono",
+    "clippy",
+    "crossterm",
+    "devchain",
+    "dotenv",
+    "fasttrack",
+    "findfs",
+    "Fira",
+    "fontconfig",
+    "Founde",
+    "inet",
+    "Insertable",
+    "jsonwebtoken",
+    "Konstantin",
+    "makereport",
+    "mangaro",
+    "mdbreact",
+    "megasync",
+    "mimeapps",
+    "moralis",
+    "neovim",
+    "networkidle",
+    "noconfirm",
+    "Noto",
+    "nvim",
+    "ownertrust",
+    "pacman",
+    "pamac",
+    "papaparse",
+    "partitionmanager",
+    "pkill",
+    "prepopulated",
+    "proto",
+    "pyenv",
+    "readline",
+    "readlink",
+    "rustc",
+    "rustyline",
+    "systemclt",
+    "tempdir",
+    "tempfile",
+    "tesseract",
+    "thiserror",
+    "timedatectl",
+    "tlsv",
+    "trustdb",
+    "Unrequired",
+    "urxvt",
+    "usermod",
+    "walletconnect",
+    "Xresources",
+    "zhsrc"
+  ],
+  "git.enableSmartCommit": true,
+  "git.autofetch": true,
+  // "playwright.reuseBrowser": false,
+  // "playwright.showTrace": true,
+  "python.testing.pytestArgs": [],
+  "python.testing.unittestEnabled": false,
+  "python.testing.pytestEnabled": true,
+  "python.testing.pytestPath": "/home/sky/.pyenv/shims/pytest",
+  "python.testing.cwd": "${workspaceFolder}/tests",
+  "python.testing.autoTestDiscoverOnSaveEnabled": true,
+  "git.openRepositoryInParentFolders": "never"
 }

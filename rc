@@ -91,6 +91,8 @@ choose_editor() {
 #alias 'vi' to use 'choose_editor'
 alias vi=choose_editor
 
+#git
+alias commit="exe commit"
 
 #project_rc="$PROJECTS_PATH/Project/rc"
 #[[ -f "$project_rc" ]] && . "$project_rc"
