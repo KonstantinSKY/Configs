@@ -65,6 +65,28 @@
     "editor.rulers": [80]
   },
   "rust-analyzer.check.command": "clippy",
+  
+  // Typescript
+
+  "typescript.tsdk": "node_modules/typescript/lib",
+  // "volar.
+  "files.exclude": {
+    "node_modules": true,
+    "dist": true,
+    "build": true,
+    "coverage": true,
+    "public": true,
+    ".nuxt": true
+  },
+  "search.exclude": {
+    "node_modules": true,
+    "dist": true,
+    "build": true,
+    "coverage": true,
+    "public": true,
+    ".nuxt": true
+  },
+  
   /// font schema colorize
   "editor.tokenColorCustomizations": {
     "textMateRules": [
@@ -196,6 +218,7 @@
     "networkidle",
     "noconfirm",
     "Noto",
+    "nuxt",
     "nvim",
     "ownertrust",
     "pacman",
