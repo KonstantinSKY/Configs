@@ -75,7 +75,7 @@
     "dist": true,
     "build": true,
     "coverage": true,
-    "public": true,
+    "public": false,
     ".nuxt": true
   },
   "search.exclude": {
@@ -83,7 +83,7 @@
     "dist": true,
     "build": true,
     "coverage": true,
-    "public": true,
+    "public": false,
     ".nuxt": true
   },
   
