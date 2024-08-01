@@ -28,12 +28,20 @@ alias Projects='cd $PROJECTS_PATH; ls -ls'
 # fi
 
 #nvm for node js setting
+# Lazy load NVM
+load_nvm() {
+  if [ -d "/usr/share/nvm" ]; then
+    source "/usr/share/nvm/init-nvm.sh"
+  fi
+}
+#alias nvm="load_nvm && nvm"
+nvm() {
+  load_nvm
+  unfunction nvm
+  nvm "$@"
+}
 
-if [ -d "/usr/share/nvm" ]; then
-	source "/usr/share/nvm/init-nvm.sh"
-fi
-
-#pyenv fpr Python setting
+#pyenv for Python setting
 if [ -d "$HOME/.pyenv" ]; then
 	export PATH="$HOME/.pyenv/bin:$PATH"
 	eval "$(pyenv init --path)"

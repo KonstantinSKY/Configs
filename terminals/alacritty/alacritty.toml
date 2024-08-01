@@ -1,0 +1,110 @@
+
+
+live_config_reload = true
+
+[env]
+TERM = "xterm-256color"
+
+[shell]
+program = "/bin/zsh"
+args = ["-l"]
+
+
+[font]
+size = 10.0
+
+[font.normal]
+family = "JetBrainsMono"
+style = "Medium"
+
+[font.bold]
+family = "JetBrainsMono"
+style = "Heavy"
+
+[font.bold_italic]
+family = "JetBrainsMono"
+style = "Heavy Italic"
+
+[font.italic]
+family = "JetBrainsMono"
+style = "Medium Italic"
+
+
+
+# Default colors
+[colors.primary]
+background = '#222D31'
+foreground = '#d8d8d8'
+
+# Cursor colors
+[colors.cursor]
+cursor = '#1ABB9B'
+text = '#ffffff'
+
+# Normal colors
+[colors.normal]
+black = '#000000'
+blue = '#6699cc'
+cyan = '#5fb4b4'
+green = '#99c794'
+magenta = '#c695c6'
+red = '#ec5f66'
+white = '#f7f7f7'
+yellow = '#f9ae58'
+
+# Bright colors
+[colors.bright]
+black = '#333333'
+blue = '#85add6'
+cyan = '#82c4c4'
+green = '#acd1a8'
+magenta = '#d8b6d8'
+red = '#f97b58'
+white = '#ffffff'
+yellow = '#fac761'
+
+# Selection colors
+[colors.selection]
+background = '#4e5a65'
+text = '#d8dee9'
+
+
+[window]
+padding = { x = 5, y = 5 }
+dynamic_padding = true
+opacity = 0.8
+dynamic_title = true
+
+
+[scrolling]
+history = 50000
+multiplier = 4
+
+[cursor]
+style = { shape = "Block", blinking = "On"}
+vi_mode_style = { shape = "Beam", blinking = "On"}
+blink_interval = 750
+
+[keyboard]
+#Toggle vi mode   -
+bindings = [
+	{ key = "Space", mods = "Control", mode = "~Vi", action = "ToggleViMode" },
+	{ key = "Escape", mode = "Vi", action = "ToggleViMode" },
+	 # Key bindings for copy and paste   -
+	{ key = "V", mods = "Control|Shift", action = "Paste" },
+	{ key = "C", mods = "Control|Shift", action = "Copy" }
+]
+
+[mouse]
+hide_when_typing = true
+bindings = [
+	{ mouse = "Right", mods = "Control", action = "Paste" },
+	{ mouse = "Left", mods = "Control", action = "Copy" }
+]
+
+[selection]
+save_to_clipboard = true
+
+[terminal]
+osc52 = "CopyPaste"
+

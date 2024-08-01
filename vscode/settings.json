@@ -24,6 +24,7 @@
   "workbench.iconTheme": "material-icon-theme",
   "workbench.colorTheme": "Manjaro OneDark",
   // Terminal
+  "terminal.integrated.defaultProfile.linux": "zsh",
   "terminal.integrated.fontFamily": "Fira Code",
   "terminal.integrated.fontWeight": 200,
   "terminal.integrated.fontSize": 14,
