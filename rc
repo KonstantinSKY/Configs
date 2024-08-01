@@ -42,11 +42,22 @@ nvm() {
 }
 
 #pyenv for Python setting
-if [ -d "$HOME/.pyenv" ]; then
-	export PATH="$HOME/.pyenv/bin:$PATH"
-	eval "$(pyenv init --path)"
-	eval "$(pyenv init -)"
-fi
+
+# Lazy load Pyenv
+load_pyenv() {
+  if [ -d "$HOME/.pyenv" ]; then
+    export PATH="$HOME/.pyenv/bin:$PATH"
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+  fi
+}
+# Define the pyenv function to lazy load Pyenv
+pyenv() {
+  load_pyenv
+  # Redefine the pyenv command to call the actual pyenv function
+  unfunction pyenv
+  pyenv "$@"
+}
 
 #QT5 setting
 #export QT_QPA_PLATFORMTHEME=qt5ct
