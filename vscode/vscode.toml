@@ -1,0 +1,16 @@
+config_dir = "Work/Configs/vscode/"
+local_config_dir = ".config/Code - OSS/User/"
+
+config_files = "settings.json keybindings.json"
+
+extensions = [
+	"vscodevim.vim",                        #vim
+    "asapdotid.manjaro-dark",				#theme
+    "rust-lang.rust-analyzer",
+    "pkief.material-icon-theme",
+    "bungcip.better-toml",
+    "serayuzgur.crates",
+    "streetsidesoftware.code-spell-checker",
+    "ms-azuretools.vscode-docker",
+    "ms-python.python"
+]
