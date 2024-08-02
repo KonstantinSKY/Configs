@@ -1,0 +1,40 @@
+[Added Associations]
+application/pdf=okular.desktop;epdfview.desktop;
+application/x-bittorrent=deluge.desktop;
+application/x-extension-htm=google-chrome-stable.desktop;palemoon.desktop;
+application/x-extension-html=google-chrome-stable.desktop;palemoon.desktop;
+application/x-extension-shtml=google-chrome-stable.desktop;palemoon.desktop;
+application/x-extension-xht=google-chrome-stable.desktop;palemoon.desktop;
+application/x-extension-xhtml=google-chrome-stable.desktop;palemoon.desktop;
+application/xhtml+xml=google-chrome-stable.desktop;palemoon.desktop;
+image/jpeg=viewnior.desktop;gpicview.desktop;
+image/png=viewnior.desktop;gpicview.desktop;
+message/rfc822=userapp-Thunderbird.desktop;
+text/html=google-chrome-stable.desktop; palemoon.desktop;
+text/plain=code.desktop;mousepad.desktop;
+x-scheme-handler/chrome=google-chrome-stable.desktop;palemoon.desktop
+x-scheme-handler/ftp=google-chrome-stable.desktop;palemoon.desktop;
+x-scheme-handler/http=google-chrome-stable.desktop;palemoon.desktop;
+x-scheme-handler/https=google-chrome-stable.desktop;palemoon.desktop;
+x-scheme-handler/mailto=userapp-Thunderbird.desktop;
+
+[Default Applications]
+application/pdf=okular.desktop;
+application/x-bittorrent=deluge.desktop
+application/x-extension-htm=google-chrome-stable.desktop
+application/x-extension-html=google-chrome-stable.desktop
+application/x-extension-shtml=google-chrome-stable.desktop
+application/x-extension-xht=google-chrome-stable.desktop
+application/x-extension-xhtml=google-chrome-stable.desktop
+application/xhtml+xml=google-chrome-stable.desktop
+image/jpeg=viewnior.desktop
+image/png=viewnior.desktop
+message/rfc822=userapp-Thunderbird.desktop
+text/html=google-chrome-stable.desktop
+text/plain=code.desktop;
+x-scheme-handler/chrome=google-chrome-stable.desktop
+x-scheme-handler/ftp=google-chrome-stable.desktop
+x-scheme-handler/http=google-chrome-stable.desktop
+x-scheme-handler/https=google-chrome-stable.desktop
+x-scheme-handler/mailto=userapp-Thunderbird.desktop
+x-scheme-handler/postman=Postman.desktop
