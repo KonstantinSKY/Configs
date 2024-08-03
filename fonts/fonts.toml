@@ -1,0 +1,3 @@
+local_dir = ".local/share/fonts"
+config_dir = "Work/Configs/fonts"
+cache_dir = ".cache/fontconfig/"
