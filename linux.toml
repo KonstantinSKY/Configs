@@ -13,10 +13,12 @@ work_dirs = [
     "VMs",
 ]
 
-[config_files]
 rc = "Work/Configs/rc"
 profile = "Work/Configs/profile"
 mimeapps_list = "Work/Configs/mimeapps.list"
-rc_files = "bashrc zshrc"
+rc_files = [
+	".bashrc",
+	".zshrc"
+	]
 delete_files = ".bash_profile"
 
