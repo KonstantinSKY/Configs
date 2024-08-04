@@ -1,10 +1,10 @@
 [packages]
 
-unneeded = "bmenu palemoon pacui pcmanfm mupdf libmupdf tesseract-data-afr tesseract"
+unneeded = "bmenu palemoon"
 
 sound = "alsa-utils pulseaudio pavucontrol"
 
-requirements = "trash-cli manjaro-settings-manager materia-gtk-theme matcha-gtk-theme"
+requirements = "manjaro-settings-manager materia-gtk-theme matcha-gtk-theme"
 
 requirements_2 = "base-devel unzip font-manager galculator xorg-xev keepass"
 
