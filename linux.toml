@@ -22,3 +22,8 @@ rc_files = [
 	]
 delete_files = ".bash_profile"
 
+local_font_dir = ".local/share/fonts"
+config_font_dir = "Work/Configs/fonts"
+font_cache_files= ".cache/fontconfig/*"
+
+trash_dir = "Work/Trash"
