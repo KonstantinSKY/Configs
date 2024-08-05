@@ -27,3 +27,5 @@ config_font_dir = "Work/Configs/fonts"
 font_cache_files= ".cache/fontconfig/*"
 
 trash_dir = "Work/Trash"
+
+packages = "unzip lsof nmap"

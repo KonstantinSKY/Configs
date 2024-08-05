@@ -6,7 +6,7 @@ sound = "alsa-utils pulseaudio pavucontrol"
 
 requirements = "manjaro-settings-manager materia-gtk-theme matcha-gtk-theme"
 
-requirements_2 = "base-devel unzip font-manager galculator xorg-xev keepass"
+requirements_2 = "base-devel font-manager galculator xorg-xev keepass"
 
 internet = "google-chrome firefox lsof nmap transmission-gtk"
 
