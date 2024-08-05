@@ -1,0 +1,19 @@
+
+global_config_file = "/etc/i3/config"
+i3_config_dir = [".config/i3", "Work/Configs/i3"];
+qt5_conf = [".config/qt5ct.conf", "Work/Configs/qt5ct.conf"];
+
+pamac_conf = "/etc/pamac.conf"
+grub_config = "/etc/default/grub";
+grub_theme = "/usr/share/grub/themes/manjaro/theme.txt";
+
+delete_files = ".bash_profile"
+
+[packages]
+unneeded = "bmenu palemoon"
+requirements = "manjaro-settings-manager materia-gtk-theme matcha-gtk-theme"
+requirements_2 = "alsa-utils pulseaudio pavucontrol base-devel font-manager galculator xorg-xev"
+internet = "google-chrome firefox lsof nmap transmission-gtk"
+communication = "slack-desktop zoom telegram-desktop"
+
+

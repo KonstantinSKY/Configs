@@ -66,7 +66,7 @@
     "editor.rulers": [80]
   },
   "rust-analyzer.check.command": "clippy",
-  
+
   // Typescript
 
   "typescript.tsdk": "node_modules/typescript/lib",
@@ -87,7 +87,7 @@
     "public": false,
     ".nuxt": true
   },
-  
+
   /// font schema colorize
   "editor.tokenColorCustomizations": {
     "textMateRules": [
@@ -260,5 +260,6 @@
   "python.testing.pytestPath": "/home/sky/.pyenv/shims/pytest",
   "python.testing.cwd": "${workspaceFolder}/tests",
   "python.testing.autoTestDiscoverOnSaveEnabled": true,
-  "git.openRepositoryInParentFolders": "never"
+  "git.openRepositoryInParentFolders": "never",
+  "vue.server.hybridMode": false
 }
