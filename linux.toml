@@ -14,15 +14,16 @@ work_dirs = [
 ]
 
 rc = "Work/Configs/rc"
-rc_files = [".bashrc", ".zshrc"	]
-profile = [".profile", "Work/Configs/profile"];
+rc_files = [".bashrc", ".zshrc"]
+
+profile = [".profile", "Work/Configs/profile"]
 mimeapps_list = [".config/mimeapps.list", "Work/Configs/mimeapps.list"]
-xresources = [".Xresources", "Work/Configs/Xresources"]
+xresources= [".Xresources", "Work/Configs/Xresources"]
 
 delete_files = ".bash_profile"
 
 font_dir = [".local/share/fonts", "Work/Configs/fonts"]
-font_cache_files= ".cache/fontconfig/*"
+font_cache_files = ".cache/fontconfig/*"
 
 trash_dir = "Work/Trash"
 
