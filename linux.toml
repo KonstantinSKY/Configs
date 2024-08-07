@@ -25,6 +25,6 @@ delete_files = ".bash_profile"
 font_dir = [".local/share/fonts", "Work/Configs/fonts"]
 font_cache_files = ".cache/fontconfig/*"
 
-trash_dir = "Work/Trash"
+trash_dir = ".local/share/Trash"
 
-packages = "unzip lsof nmap"
+packages = "trash-cli unzip lsof nmap"
