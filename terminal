@@ -1,0 +1,11 @@
+#!/bin/bash
+
+# Check if Alacritty is installed
+
+if command -v alacritty > /dev/null; then
+	echo "run alacritty"
+	alacritty
+else
+	echo "run system terminal"
+	/usr/bin/terminal
+fi
