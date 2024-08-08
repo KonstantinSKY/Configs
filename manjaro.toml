@@ -7,10 +7,10 @@ pamac_conf = "/etc/pamac.conf"
 grub_config = "/etc/default/grub"
 grub_theme = "/usr/share/grub/themes/manjaro/theme.txt"
 
-delete_files = ".bash_profile"
+delete_files = ".bash_profile .local/share/keyrings"
 
 [packages]
-unneeded = "bmenu palemoon"
+unneeded = "gnome-keyring bmenu palemoon"
 requirements = "manjaro-settings-manager materia-gtk-theme matcha-gtk-theme"
 requirements_2 = "alsa-utils pulseaudio pavucontrol base-devel font-manager galculator xorg-xev"
 internet = "google-chrome firefox lsof nmap transmission-gtk"
