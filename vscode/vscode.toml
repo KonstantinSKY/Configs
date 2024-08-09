@@ -1,7 +1,8 @@
-config_dir = "Work/Configs/vscode/"
-local_config_dir = ".config/Code - OSS/User/"
+packages="code"
 
-config_files = "settings.json keybindings.json"
+config_dir = ["Work/Configs/vscode/", ".config/Code - OSS/User/"]
+
+config_files = ["settings.json" "keybindings.json"]
 
 extensions = [
 	"vscodevim.vim",                        #vim
