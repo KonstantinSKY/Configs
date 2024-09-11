@@ -450,4 +450,5 @@ mode "$mode_gaps_outer" {
 # autostart
 exec --no-startup-id xset 1800
 exec --no-startup-id flameshot
+exec_always --no-startup-id mega-sync
 exec_always --no-startup-id megasync
