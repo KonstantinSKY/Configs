@@ -57,17 +57,13 @@
   "editor.formatOnSave": true,
   "[rust]": {
     "editor.foldingImportsByDefault": true,
-    "editor.rulers": [
-      100
-    ],
+    "editor.rulers": [100],
     "editor.defaultFormatter": "rust-lang.rust-analyzer"
   },
   "[python]": {
     "editor.defaultFormatter": "ms-python.black-formatter",
     "editor.formatOnSave": true,
-    "editor.rulers": [
-      80
-    ]
+    "editor.rulers": [80]
   },
   "rust-analyzer.check.command": "clippy",
   // Typescript
@@ -159,9 +155,7 @@
         }
       },
       {
-        "scope": [
-          "entity.name.namespace"
-        ],
+        "scope": ["entity.name.namespace"],
         "settings": {
           "foreground": "#877659", // Orange color for namespace and module paths
           "fontStyle": "italic bold"
@@ -252,6 +246,7 @@
     "urxvt",
     "usermod",
     "walletconnect",
+    "weedmaps",
     "Xresources",
     "zhsrc"
   ],
@@ -266,5 +261,8 @@
   "python.testing.cwd": "${workspaceFolder}/tests",
   "python.testing.autoTestDiscoverOnSaveEnabled": true,
   "git.openRepositoryInParentFolders": "never",
-  "vue.server.hybridMode": false
+  "vue.server.hybridMode": false,
+  "[javascript]": {
+    "editor.defaultFormatter": "esbenp.prettier-vscode"
+  }
 }
