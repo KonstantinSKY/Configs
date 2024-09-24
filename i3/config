@@ -304,7 +304,7 @@ exec --no-startup-id clipit
 # exec_always --no-startup-id sbxkb
 exec --no-startup-id start_conky_maia
 # exec --no-startup-id start_conky_green
-exec --no-startup-id xautolock -time 15 -locker blurlock
+exec --no-startup-id xautolock -time 10 -locker blurlock
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 exec_always --no-startup-id stalonetray
@@ -450,5 +450,4 @@ mode "$mode_gaps_outer" {
 # autostart
 exec --no-startup-id xset 1800
 exec --no-startup-id flameshot
-exec_always --no-startup-id mega-sync
 exec_always --no-startup-id megasync
