@@ -7,3 +7,5 @@ ssh = "Security/ssh/ssh.toml"
 git = "Security/git.toml"
 linux = "Configs/linux.toml"
 manjaro = "Configs/manjaro.toml"
+alacritty = "Configs/alacritty.toml"
+

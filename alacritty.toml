@@ -1,0 +1,2 @@
+config_dirs = [".config/alacritty", "Work/Configs/alacritty"]
+terminal_files = [".local/bin/terminal", "Work/Configs/alacritty/terminal"]
