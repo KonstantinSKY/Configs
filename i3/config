@@ -41,7 +41,7 @@ bindsym $mod+d exec --no-startup-id dmenu_recency
 bindsym $mod+z exec --no-startup-id morc_menu
 
 # launch bmenu categorized menu
-bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
+# bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 
 ################################################################################################
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
@@ -308,7 +308,7 @@ exec --no-startup-id xautolock -time 10 -locker blurlock
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 exec_always --no-startup-id stalonetray
-
+exec --no-startup-id export QT_STYLE_OVERRIDE=kvantum
 # Stop blank screen
 exec --no-startup-id xset b off
 #exec --no-startup-id xset s off
