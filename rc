@@ -18,6 +18,10 @@ export CONFIGS_PATH="$WORK/Configs"
 export PROJECTS_PATH="$WORK/Projects"
 export BACKUPS_PATH="$WORK/BackUps"
 
+
+export RUSTC_WRAPPER=cursor-bin
+export RUSTC=cursor-bin
+
 alias Tools='cd $TOOLS_PATH; ls -ls'
 alias Configs='cd $CONFIGS_PATH; ls -ls'
 alias Projects='cd $PROJECTS_PATH; ls -ls'
