@@ -189,6 +189,7 @@
   "cSpell.userWords": [
     "abigen",
     "adausdt",
+    "aibot",
     "alacritty",
     "antd",
     "applecash",
@@ -330,6 +331,7 @@
     "solusdt",
     "splitn",
     "storeu",
+    "supabase",
     "syncmode",
     "syscall",
     "sysinfo",
@@ -391,5 +393,6 @@
   "workbench.colorTheme": "Manjaro Tokyo Dark",
   "cSpell.showSuggestionsLinkInEditorContextMenu": false,
   "workbench.editor.enablePreview": false,
-  "cursor.composer.textSizeScale": 1.15
+  "cursor.composer.textSizeScale": 1.15,
+  "redhat.telemetry.enabled": true
 }
