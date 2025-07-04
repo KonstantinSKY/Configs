@@ -1,0 +1,238 @@
+{
+  // ==========================================
+  // ZED EDITOR CONFIGURATION
+  // ==========================================
+  // For complete documentation: https://zed.dev/docs/configuring-zed
+  // To see all default settings: cmd-shift-p > "zed: open default settings"
+
+  "active_pane_modifiers": {
+    "border_size": 10.0,
+    "inactive_opacity": 1.0,
+    "border_style": "solid",
+    "border_color": "#002000",
+    "border_radius": 5.0,
+    "border_width": 2.0,
+    "border_padding": 5.0,
+    "border_margin": 5.0,
+    "border_opacity": 0.5
+  },
+
+  // ==========================================
+  // AI ASSISTANT SETTINGS
+  // ==========================================
+  "context_servers": {
+    "mcp-server-context7": {
+      "settings": {
+        "default_minimum_tokens": "10000"
+      }
+    }
+  },
+  "agent": {
+    "default_profile": "write",
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4"
+    },
+    "model_parameters": [],
+    "always_allow_tool_actions": true,
+    "version": "2"
+  },
+
+  // ==========================================
+  // EDITOR BEHAVIOR
+  // ==========================================
+  "autosave": "on_focus_change",
+  "vim_mode": true,
+  "format_on_save": "on",
+  "remove_trailing_whitespace_on_save": true,
+  "ensure_final_newline_on_save": true,
+  "soft_wrap": "editor_width",
+  "show_whitespaces": "selection",
+  "show_wrap_guides": true,
+  "wrap_guides": [80, 120],
+  "preferred_line_length": 100,
+
+  // ==========================================
+  // APPEARANCE & FONTS
+  // ==========================================
+  "ui_font_size": 16,
+  "buffer_font_size": 14,
+  "theme": {
+    "mode": "dark",
+    "light": "Gruvbox Light",
+    "dark": "One Dark"
+  },
+  "icon_theme": {
+    "mode": "dark",
+    "light": "Material Icon Theme",
+    "dark": "Material Icon Theme"
+  },
+
+  // ==========================================
+  // CUSTOM SYNTAX HIGHLIGHTING COLORS
+  // ==========================================
+  "experimental.theme_overrides": {
+    "syntax": {
+      "keyword": {
+        "color": "#ff6b6b",
+        "font_weight": "bold"
+      },
+      "function": {
+        "color": "#4ecdc4"
+      },
+      "string": {
+        "color": "#95e1d3",
+        "font_style": "italic"
+      },
+      "comment": {
+        "color": "#6c757d",
+        "font_style": "italic"
+      },
+      "type": {
+        "color": "#ffd93d"
+      },
+      "variable": {
+        "color": "#74b9ff"
+      },
+      "number": {
+        "color": "#fd79a8"
+      },
+      "attribute": {
+        "color": "#fdcb6e"
+      }
+    }
+  },
+
+  // ==========================================
+  // TERMINAL CONFIGURATION
+  // ==========================================
+  "terminal": {
+    "shell": {
+      "program": "/bin/zsh"
+    },
+    "working_directory": "current_project_directory",
+    "blinking": "on"
+  },
+
+  // ==========================================
+  // SPELL CHECK SETTINGS
+  // ==========================================
+  "spell_check": {
+    "enabled": true,
+    "language": "en-US"
+  },
+
+  // ==========================================
+  // GIT INTEGRATION
+  // ==========================================
+  "git": {
+    "git_binary_path": "/usr/bin/git",
+    "inline_blame": {
+      "enabled": true
+    },
+    "gutter_debounce": 1000,
+    "auto_fetch": true,
+    "auto_fetch_interval": 300
+  },
+
+  // ==========================================
+  // GITHUB INTEGRATION
+  // ==========================================
+  "github": {
+    "online_status": true
+  },
+
+  // ==========================================
+  // LANGUAGE-SPECIFIC SETTINGS
+  // ==========================================
+  "languages": {
+    "Rust": {
+      "tab_size": 4,
+      "hard_tabs": false,
+      "formatter": "language_server",
+      "format_on_save": "on",
+      "show_edit_predictions": true
+    },
+    "JavaScript": {
+      "tab_size": 2,
+      "formatter": "prettier"
+    },
+    "TypeScript": {
+      "tab_size": 2,
+      "formatter": "prettier"
+    },
+    "JSON": {
+      "tab_size": 2,
+      "formatter": "prettier"
+    },
+    "TOML": {
+      "tab_size": 4,
+      "hard_tabs": false
+    },
+    "Markdown": {
+      "soft_wrap": "editor_width",
+      "preferred_line_length": 80
+    }
+  },
+
+  // ==========================================
+  // CODE COMPLETIONS & LSP
+  // ==========================================
+  "show_completions_on_input": true,
+  "show_completion_documentation": true,
+  "completion_documentation_secondary_query_debounce": 300,
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true
+  },
+
+  // ==========================================
+  // FILE MANAGEMENT
+  // ==========================================
+  "file_scan_exclusions": [
+    "**/.git",
+    "**/target",
+    "**/node_modules",
+    "**/.next",
+    "**/dist",
+    "**/build",
+    "**/*.log"
+  ],
+
+  // ==========================================
+  // WORKSPACE & SESSION
+  // ==========================================
+  "restore_on_startup": "last_workspace",
+
+  // ==========================================
+  // PRIVACY SETTINGS
+  // ==========================================
+  "telemetry": {
+    "metrics": false,
+    "diagnostics": false
+  },
+
+  // ==========================================
+  // PERFORMANCE & UI
+  // ==========================================
+  "cursor_blink": true,
+  "hover_popover_enabled": true,
+
+  "file_types": {
+    "i3": ["**/i3/config", "**/i3/config.*", "**/.i3/config", "**/.config/i3/config"]
+  },
+
+  "syntax_highlighting": {
+    "i3": {
+      "rules": [
+        { "pattern": "^#.*", "name": "comment" },
+        { "pattern": "\\bset\\b|\\bbindsym\\b|\\bexec\\b|\\bworkspace\\b", "name": "keyword" },
+        { "pattern": "\\$\\w+", "name": "variable" },
+        { "pattern": "\"[^\"]*\"", "name": "string" },
+        { "pattern": "\\b\\d+\\b", "name": "number" },
+        { "pattern": "#[0-9a-fA-F]{6}", "name": "constant" }
+      ]
+    }
+  }
+}
