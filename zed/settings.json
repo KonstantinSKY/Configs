@@ -117,11 +117,6 @@
   //       "default_minimum_tokens": "10000"
   //     }
   //   },
-  //   "mcp-server-github": {
-  //     "settings": {
-  //       "github_personal_access_token": "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"
-  //     }
-  //   }
   // },
 
   // "soft_wrap": "editor_width",
