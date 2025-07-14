@@ -1,0 +1,33 @@
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:514] Logging initialized to file: logs/rag_mcp_server_20250714_171316.log
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:515] Log level set to: INFO
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:516] Log directory: logs
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:535] Created symlink: logs/rag_mcp_server_latest.log -> rag_mcp_server_20250714_171316.log
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:559] === RAG MCP Server Starting ===
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:560] Server version: 0.1.0
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:561] Protocol version: 2024-11-05
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:562] Process ID: 1785476
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:565] Environment variables:
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:568]   RAG_MCP_LOG_LEVEL: info
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:100] RAG MCP Server instance created at 2025-07-14 17:13:16.160121760 UTC
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:574] Server instance created successfully
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:579] I/O handles initialized for stdin/stdout communication
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:584] Entering main communication loop
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:122] Handling request #1: method='initialize', id=Some(Number(0))
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:132] Processing initialize request #1
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:205] Initializing MCP server with protocol version 2024-11-05
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:223] MCP server initialization completed successfully
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:178] Request #1 completed: success=true
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:122] Handling request #2: method='notifications/initialized', id=None
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:147] Processing notifications/initialized request #2
+2025-07-14 17:13:16.160 UTC [INFO] [src/main.rs:178] Request #2 completed: success=true
+2025-07-14 17:13:16.309 UTC [INFO] [src/main.rs:122] Handling request #3: method='tools/list', id=Some(Number(1))
+2025-07-14 17:13:16.309 UTC [INFO] [src/main.rs:137] Processing tools/list request #3
+2025-07-14 17:13:16.309 UTC [INFO] [src/main.rs:238] Listing available tools
+2025-07-14 17:13:16.309 UTC [INFO] [src/main.rs:271] Returning 2 available tools
+2025-07-14 17:13:16.309 UTC [INFO] [src/main.rs:178] Request #3 completed: success=true
+2025-07-14 17:13:20.379 UTC [INFO] [src/main.rs:595] EOF reached on stdin - client disconnected
+2025-07-14 17:13:20.379 UTC [INFO] [src/main.rs:596] Server shutting down gracefully
+2025-07-14 17:13:20.379 UTC [INFO] [src/main.rs:692] === RAG MCP Server Shutdown ===
+2025-07-14 17:13:20.379 UTC [INFO] [src/main.rs:693] Total requests processed: 3
+2025-07-14 17:13:20.379 UTC [INFO] [src/main.rs:700] Server uptime: 4 seconds
+2025-07-14 17:13:20.379 UTC [INFO] [src/main.rs:701] Server shutdown completed
