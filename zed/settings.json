@@ -44,6 +44,88 @@
     "light": "Material Icon Theme",
     "dark": "Material Icon Theme"
   },
+  "experimental.theme_overrides": {
+    "syntax": {
+      "keyword": {
+        "color": "#A18FCB",
+        "font_weight": 200
+      },
+      "variable": {
+        "color": "#B9A37D",
+        "font_weight": 200
+      },
+      "string": {
+        "color": "#8FAA91",
+        "font_weight": 100,
+        "font_style": "italic"
+      },
+      "comment": {
+        "color": "#5C6370",
+        "font_weight": 100,
+        "font_style": "italic"
+      },
+      "number": {
+        "color": "#C9B08F",
+        "font_weight": 100
+      },
+      "operator": {
+        "color": "#8FAA91",
+        "font_weight": 100
+      },
+      "punctuation": {
+        "color": "#FF0000",
+        "font_weight": 100
+      },
+      "boolean": {
+        "color": "#8FAA91",
+        "font_weight": 100
+      },
+      "null": {
+        "color": "#8FAA91",
+        "font_weight": 100
+      },
+      "undefined": {
+        "color": "#8FAA91",
+        "font_weight": 100
+      },
+      "key": {
+        "color": "#8FAA91",
+        "font_weight": 100
+      },
+      "value": {
+        "color": "#8FAA91",
+        "font_weight": 100
+      },
+      "property": {
+        "color": "#E5C07B",
+        "font_weight": 200
+      },
+      "attribute": {
+        "color": "#E5C07B",
+        "font_weight": 100
+      },
+      "namespaces": {
+        "color": "#56B6C2",
+        "font_weight": 200
+      },
+      "names": {
+        "color": "#D19A66",
+        "font_weight": 200
+      },
+      "constant": {
+        "color": "#FF5555",
+        "font_weight": 200
+      },
+      "functions": {
+        "color": "#61AFEF",
+        "font_weight": 200
+      }
+      // "inlayhints": {
+      //   "color": "#FF5555",
+      //   "font_weight": 100
+      // }
+    }
+  },
 
   // ==========================================
   //  FONTS
@@ -57,6 +139,7 @@
 
   "blinking": "on",
   "cursor_blink": true,
+  // "color": "red",
 
   // ==========================================
   // TERMINAL
@@ -93,6 +176,12 @@
 
   "diagnostics": {
     "show_diagnostics": "all"
+  },
+  "inlay_hints": {
+    "enabled": true,
+    "show_type_hints": true,
+    "show_parameter_hints": true,
+    "show_other_hints": true
   }
 
   // "agent": {
