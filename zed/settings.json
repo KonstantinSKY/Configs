@@ -10,11 +10,6 @@
     "metrics": false,
     "diagnostics": false
   },
-  "privacy": {
-    "enabled": true,
-    "anonymize_data": true,
-    "log_level": "info"
-  },
   "private_files": [
     "**/.env*",
     "**/*.pem",
@@ -55,7 +50,6 @@
   "buffer_font_size": 14,
   "buffer_font_weight": 200,
   "buffer_font_fallbacks": ["Noto Color Emoji"],
-  "blinking": "on",
   "cursor_blink": true,
   // "color": "red",
   "experimental.theme_overrides": {
@@ -184,7 +178,8 @@
     "font_size": 14,
     "font_weight": 200,
     "blinking": "on",
-    "cursor_shape": "bar"
+    "cursor_shape": "bar",
+    "max_scroll_history_lines": 100000
   },
   // ==========================================
   //  OUTLINE PANEL
@@ -197,7 +192,6 @@
   // GIT
   // ==========================================
   "git": {
-    "git_binary_path": "/usr/bin/git",
     "inline_blame": {
       "enabled": false // to show when commited line
     },
@@ -207,15 +201,9 @@
 
   "tabs": {
     "git_status": true,
-    "git_status_position": "right",
-    "git_status_icon": "git",
-    "git_status_icon_position": "left",
     "show_diagnostics": "all"
   },
 
-  "diagnostics": {
-    "show_diagnostics": "all"
-  },
   "inlay_hints": {
     "enabled": true,
     "show_type_hints": true,
@@ -230,8 +218,30 @@
       "format_on_save": "on",
       "show_edit_predictions": true,
       "language_servers": ["codebook"]
+    },
+    "Python": {
+      "tab_size": 4,
+      "hard_tabs": false,
+      "formatter": "auto",
+      "format_on_save": "on",
+      "show_edit_predictions": true,
+      "language_servers": ["pyright"]
+    },
+    "JavaScript": {
+      "tab_size": 2,
+      "hard_tabs": false,
+      "formatter": "prettier",
+      "format_on_save": "on",
+      "show_edit_predictions": true,
+      "language_servers": ["typescript"]
     }
+
+    //==========================================
+    // COLLABORATION PANEL
+    // ==========================================
+    // Collaboration Panel
   }
+
   // "agent": {
   //   "model_parameters": [],
   //   "default_profile": "ask",
