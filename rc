@@ -83,7 +83,7 @@ cdl() {
 
 #packages
 
-alias upd="exe linux update"
+alias upd="~/Projects/Scripts/manjaro_update.sh"
 
 #alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
 #alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"
