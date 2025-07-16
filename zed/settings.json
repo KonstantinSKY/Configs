@@ -2,6 +2,9 @@
   // ==========================================
   // COMMON MODES
   // ==========================================
+  "agent": {
+    "default_profile": "write"
+  },
   "vim_mode": true,
   // ==========================================
   // PRIVACY SETTINGS
@@ -235,6 +238,7 @@
       "show_edit_predictions": true,
       "language_servers": ["typescript"]
     }
+    // "file_types": {}
 
     //==========================================
     // COLLABORATION PANEL
