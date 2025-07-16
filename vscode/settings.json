@@ -22,7 +22,6 @@
     "tab.activeBorder": "#139c11"
   },
   "workbench.iconTheme": "material-icon-theme",
-  "workbench.colorTheme": "Manjaro OneDark",
   // Terminal
   "terminal.integrated.defaultProfile.linux": "zsh",
   "terminal.integrated.fontFamily": "Fira Code",
@@ -235,6 +234,7 @@
     "pyenv",
     "readline",
     "readlink",
+    "repr",
     "rustc",
     "rustyline",
     "systemclt",
