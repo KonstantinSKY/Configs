@@ -62,5 +62,9 @@
         "args": {
             "text": "exe get\n"
         }
+    },
+    {
+        "key": "ctrl+i",
+        "command": "composerMode.agent"
     }
 ]

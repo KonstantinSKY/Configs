@@ -1,5 +1,6 @@
 #!/bin/bash
 
+
 # Part of .bashrc and other .rc files
 
 #checking if Work directory is exists
@@ -17,6 +18,8 @@ export TOOLS_PATH="$WORK/Tools"
 export CONFIGS_PATH="$WORK/Configs"
 export PROJECTS_PATH="$WORK/Projects"
 export BACKUPS_PATH="$WORK/BackUps"
+
+
 
 alias Tools='cd $TOOLS_PATH; ls -ls'
 alias Configs='cd $CONFIGS_PATH; ls -ls'
@@ -80,7 +83,7 @@ cdl() {
 
 #packages
 
-alias upd="exe linux update"
+alias upd="~/Projects/Scripts/manjaro_update.sh"
 
 #alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
 #alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"
