@@ -83,10 +83,12 @@ cdl() {
 
 #packages
 
-alias upd="~/Projects/Scripts/manjaro_update.sh"
+alias upd="~/Configs/manjaro/update.sh"
 
 #alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
 #alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"
+# git && github
+alias mkrepo="~/Configs/git/make_private_repo.sh"
 
 #Trash
 if command -v trash > /dev/null 2>&1;
