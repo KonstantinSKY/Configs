@@ -28,5 +28,28 @@ enable-aur:
 	fi
 # Обновление AUR и системных пакетов через yay
 update:
-	@echo "⬆️  Updating AUR and system packages with yay..."
-	@yay -Syyu --noconfirm
+	@echo "⬆️  Full update of AUR and system packages via yay..."
+	yay -Syyu --noconfirm --answerclean None --answerdiff None
+
+	@echo "🧹 Removing unused dependencies..."
+	yay -Rns $$(pacman -Qtdq 2>/dev/null) || echo "✅ No unused dependencies found"
+
+	@echo "🧼 Cleaning yay cache..."
+	yay -Sc --noconfirm
+
+	@echo "✅ Update completed successfully!"
+
+install-base:
+	@echo "📦 Installing essential packages via yay..."
+	yay -S --needed --noconfirm \
+		base-devel \
+		fzf \
+		git \
+		curl \
+		wget \
+		man-db \
+		man-pages \
+		file \
+		which
+
+	@echo "✅ Base packages installed via yay."
