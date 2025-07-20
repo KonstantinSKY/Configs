@@ -4,9 +4,11 @@ words = [
     "dotenv",
     "gimli",
     "manjaro",
+    "pyenv",
     "rustup",
     "serde",
     "swo",
     "swp",
     "vscode",
+    "yay",
 ]

@@ -3,7 +3,8 @@
   // COMMON MODES
   // ==========================================
   "agent": {
-    "play_sound_when_agent_done": true
+    "play_sound_when_agent_done": true,
+    "default_profile": "write"
   },
   "vim_mode": true,
   // ==========================================
@@ -238,6 +239,7 @@
       "show_edit_predictions": true,
       "language_servers": ["typescript"]
     }
+    // "file_types": {}
 
     //==========================================
     // COLLABORATION PANEL
