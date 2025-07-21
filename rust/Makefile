@@ -16,21 +16,26 @@ create:
 		echo "❌ Error: Project name is required."; exit 1; \
 	fi; \
 	echo "📦 Creating Rust project: $$project"; \
-	cargo new "$$project"; \
+	cargo new "$$project" --vcs none; \
 	ln -sf $(RUST_MAKEFILE) "$$project/Makefile"; \
 	echo "🔗 Linked Makefile into project"; \
 	echo "✅ Done."
 
 repo:
 	@project=$(word 2, $(MAKECMDGOALS)); \
-		if [ -z "$$project" ]; then \
-			project=$$(basename $$PWD); \
-		fi; \
-	@echo "Project name: $$project" \
-	make -f $(GIT_MAKEFILE) init
-	make -f $(GIT_MAKEFILE) create_repo $$project
-	make -f $(GIT_MAKEFILE) force_ssh $$project
+	if [ -z "$$project" ]; then \
+		project=$$(basename $$PWD); \
+	fi; \
+	echo "📦 Project and repo name: $$project"; \
+	echo "Initializing Git repository"; \
+	$(MAKE) -f $(GIT_MAKEFILE) init; \
+	echo "📦 Creating repo"; \
+	$(MAKE) -f $(GIT_MAKEFILE) create_repo $$project; \
+	echo "Setting up SSH"; \
+	$(MAKE) -f $(GIT_MAKEFILE) force_ssh $$project; \
+	echo "Copying gitignore"; \
 	$(MAKE) copy_gitignore
+
 
 copy_gitignore:
 	@if [ -f $(GITIGNORE_TEMPLATE) ]; then \
@@ -39,6 +44,6 @@ copy_gitignore:
 	else \
 		echo "⚠️  Warning: gitignore template not found at $(GITIGNORE_TEMPLATE)"; \
 	fi; \
-	make -f $(GIT_MAKEFILE) commit "add gitignore"
+	$(MAKE) -f $(GIT_MAKEFILE) commit "add gitignore"
 %:
 	@:

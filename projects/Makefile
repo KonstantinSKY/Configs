@@ -1,8 +1,11 @@
-.PHONY: rust js python
+.PHONY: setup rust js python
 
 RUST_MAKEFILE := ~/Configs/rust/Makefile
 JS_MAKEFILE   := ~/Configs/js/Makefile
 PY_MAKEFILE   := ~/Configs/python/Makefile
+
+setup:
+	ln -s ~/Configs/projects/Makefile ~/Projects/Makefile
 
 rust:
 	@project=$(word 2, $(MAKECMDGOALS)); \
