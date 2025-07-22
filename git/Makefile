@@ -1,5 +1,5 @@
 
-.PHONY: init create_repo force-ssh
+.PHONY: init create_repo force-ssh commit delete_repo
 
 GITHUB_USER := KonstantinSKY
 GITHUB_EMAIL := sky012877@gmail.com
@@ -21,6 +21,19 @@ create_repo:
 	echo "🌐 Creating private repository '$$project' on GitHub..."; \
 	gh repo create $$project --private --source=. --remote=origin; \
 	echo "✅ Remote 'origin' created by gh (usually SSH)."
+	@echo "-------------------------------------------------------------------"
+
+delete_repo:
+	@project=$(word 2, $(MAKECMDGOALS)); \
+	if [ -z "$$project" ]; then \
+		project=$$(basename $$PWD); \
+	fi; \
+	if [ -z "$$project" ]; then \
+		echo "❌ Error: repository name is required."; exit 1; \
+	fi; \
+	echo "🗑️  Deleting repo: $$project on GitHub..."; \
+	gh repo delete $(GITHUB_USER)/$$project
+	@echo "-------------------------------------------------------------------"
 
 init:
 	@echo "🗂️  Initializing local Git repository..."
@@ -28,6 +41,7 @@ init:
 	git add .
 	git commit -m "Initial commit" || echo "ℹ️  Nothing to commit"
 	@echo "✅ Git repository initialized with 'main' branch."
+	@echo "-------------------------------------------------------------------"
 
 force_ssh:
 	@echo "Forcing ssh"
@@ -43,6 +57,7 @@ force_ssh:
 	\
 	echo "🚀 Pushing main branch..."; \
 	git push -u origin main || echo "⚠️  Push failed — maybe nothing to commit or remote doesn't exist yet."
+	@echo "-------------------------------------------------------------------"
 
 
 commit:
@@ -55,6 +70,7 @@ commit:
 	git commit -m "$$message"; \
 	git push; \
 	echo "✅ Committed and pushed changes to GitHub."
+	@echo "-------------------------------------------------------------------"
 
 %:
 	@:
