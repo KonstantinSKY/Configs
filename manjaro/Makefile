@@ -9,7 +9,6 @@ mirrors:
 	@echo "🔄 Updating mirrors..."
 	sudo pacman-mirrors --fasttrack && sudo pacman -Syy
 
-# Full update with pamac
 pacman-update:
 	@echo "⬆️  Running full system upgrade..."
 	sudo pacman -Syu --noconfirm
@@ -18,7 +17,6 @@ yay-update:
 	@echo "⬆️  Updating AUR and system packages with yay..."
 	@yay -Syu --noconfirm
 
-# Включение AUR (только если используется pamac)
 enable-aur:
 	@echo "⚙️  Enabling AUR support in pamac (if applicable)..."
 	@if command -v pamac >/dev/null 2>&1; then \
@@ -26,7 +24,6 @@ enable-aur:
 	else \
 		echo "ℹ️  pamac not found, skipping AUR GUI enabling..."; \
 	fi
-# Обновление AUR и системных пакетов через yay
 update:
 	@echo "⬆️  Full update of AUR and system packages via yay..."
 	yay -Syyu --noconfirm --answerclean None --answerdiff None
@@ -36,8 +33,8 @@ update:
 
 	@echo "🧼 Cleaning yay cache..."
 	yay -Sc --noconfirm
-
 	@echo "✅ Update completed successfully!"
+	@echo "-------------------------------------------------------------------------------"
 
 install-base:
 	@echo "📦 Installing essential packages via yay..."
@@ -50,6 +47,20 @@ install-base:
 		man-db \
 		man-pages \
 		file \
-		which
+		which \
+		manjaro-settings-manager \
+		materia-gtk-theme \
+		matcha-gtk-theme \
+		lsof \
+		nmap \
+		alsa-utils \
+		pulseaudio \
+		noto-fonts \
+		noto-fonts-emoji \
+		ttf-jetbrans-mono \
+		ttf-hack \
+		ttf-hack-nerd
+
+
 
 	@echo "✅ Base packages installed via yay."
