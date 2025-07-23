@@ -25,11 +25,13 @@ create:
 	fi; \
 	echo "📦 Creating Rust project: $$project"; \
 	cargo new "$$project" --vcs none; \
-
-	ln -sf $(RUST_MAKEFILE) "$$project/Makefile"
+	cd "$$project"
+	ln -sf $(RUST_MAKEFILE) "Makefile"
 	@echo "🔗 Linked Makefile into project"
 	cd "$$project"
 	@echo "✅ Done."
+
+
 
 repo:
 	@project=$(word 2, $(MAKECMDGOALS)); \
