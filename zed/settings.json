@@ -3,8 +3,13 @@
   // COMMON MODES
   // ==========================================
   "agent": {
+    "default_model": {
+      "provider": "zed.dev",
+      "model": "claude-sonnet-4"
+    },
+    "always_allow_tool_actions": true,
     "play_sound_when_agent_done": true,
-    "default_profile": "ask"
+    "default_profile": "write"
   },
   "vim_mode": true,
   // ==========================================
