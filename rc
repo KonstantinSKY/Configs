@@ -83,7 +83,8 @@ cdl() {
 
 #packages
 
-alias upd="~/Configs/manjaro/update.sh"
+alias upd="make --no-print-directory -C ~/Configs/manjaro update"
+
 
 #alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
 #alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"

@@ -27,11 +27,11 @@ enable-aur:
 update:
 	@echo "⬆️  Full update of AUR and system packages via yay..."
 	yay -Syyu --noconfirm --answerclean None --answerdiff None
-
+	@echo "-------------------------------------------------------------------------------"
 	@echo "🧹 Removing unused dependencies..."
 	yay -Rns $$(pacman -Qtdq 2>/dev/null) || echo "✅ No unused dependencies found"
-
-	@echo "🧼 Cleaning yay cache..."
+	@echo "-------------------------------------------------------------------------------"
+	@echo "🧼 Cleaning cache..."
 	yay -Sc --noconfirm
 	@echo "✅ Update completed successfully!"
 	@echo "-------------------------------------------------------------------------------"
