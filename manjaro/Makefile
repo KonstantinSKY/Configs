@@ -5,6 +5,7 @@ help:
 	@echo "  setup          - Full setup: updates mirrors, system, installs yay, enables AUR."
 	@echo "  mirrors        - Updates pacman mirrors for faster downloads."
 	@echo "  pacman-update  - Updates all system packages using pacman."
+	@echo "  install-yay    - Installs yay AUR helper from official repository using pacman only."
 	@echo "  yay-update     - Updates all system and AUR packages using yay."
 	@echo "  enable-aur     - Enables AUR support in the pamac GUI."
 	@echo "  update         - Full update: updates packages, cleans cache, removes orphans."
@@ -19,14 +20,22 @@ setup: mirrors pacman-update install-yay yay-update enable-aur
 mirrors:
 	@echo "🔄 Updating mirrors..."
 	sudo pacman-mirrors --fasttrack && sudo pacman -Syy
+	@echo "-------------------------------------------------------------------------------"
 
 pacman-update:
 	@echo "⬆️  Running full system upgrade..."
 	sudo pacman -Syu --noconfirm
+	@echo "-------------------------------------------------------------------------------"
+
+install-yay:
+	@echo "📦 Installing yay from official repository..."
+	sudo pacman -S --needed --noconfirm yay
+	@echo "-------------------------------------------------------------------------------"
 
 yay-update:
 	@echo "⬆️  Updating AUR and system packages with yay..."
 	@yay -Syu --noconfirm
+	@echo "-------------------------------------------------------------------------------"
 
 enable-aur:
 	@echo "⚙️  Enabling AUR support in pamac (if applicable)..."
@@ -35,6 +44,8 @@ enable-aur:
 	else \
 		echo "ℹ️  pamac not found, skipping AUR GUI enabling..."; \
 	fi
+	@echo "-------------------------------------------------------------------------------"
+
 update:
 	@echo "⬆️  Full update of AUR and system packages via yay..."
 	yay -Syyu --noconfirm --answerclean None --answerdiff None
@@ -72,10 +83,10 @@ install-base:
 		ttf-jetbrans-mono \
 		ttf-hack \
 		ttf-hack-nerd
-
-
-
 	@echo "✅ Base packages installed via yay."
+	@echo "-------------------------------------------------------------------------------"
+
+
 
 check:
 	@echo "🔍 Starting full system diagnostic..."
