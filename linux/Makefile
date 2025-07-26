@@ -1,4 +1,5 @@
-.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep
+# Self-documenting Makefile: http://marmelab.com/blog/2016/02/29/auto-documented-makefile.html
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep symlinks help
 
 LABEL = Work
 DIR = Work
@@ -14,7 +15,18 @@ MOUNT_DIR = $(HOME)/$(DIR)
 # Default target
 all: mount
 
-mount:
+help: ## Shows this help message.
+	@echo "Available commands:"
+	@echo "  mount          - Mounts the work drive, creates mount point, and adds to fstab."
+	@echo "  defrag_work    - Defragments and recompresses the work drive."
+	@echo "  defrag_root    - Defragments and recompresses the root filesystem."
+	@echo "  compress_root  - Adds compression options to the root filesystem in fstab."
+	@echo "  verify_fstab   - Verifies the integrity of /etc/fstab."
+	@echo "  no_beep        - Disables the PC speaker beep."
+	@echo "  symlinks       - Creates symbolic links for configs and directories."
+
+
+mount: ## Mounts the work drive, creates mount point, and adds to fstab.
 	@echo "🔍 Searching for device with label '$(LABEL)'..."
 	@if [ -z "$(UUID)" ]; then \
 		echo "❌ Device with label '$(LABEL)' not found!"; exit 1; \
@@ -60,17 +72,17 @@ mount:
 	@echo "✅ Done. $(DIR) is mounted with options: $(OPTIONS)."
 
 # Manual defragmentation with compression
-defrag_work:
+defrag_work: ## Defragments and recompresses the work drive.
 	@echo "⚙️  Defragmenting and recompressing $(MOUNT_DIR) using zstd..."
 	@sudo btrfs filesystem defragment -r -v -czstd "$(MOUNT_DIR)"
 	@echo "✅ Defragmentation completed."
 
-defrag_root:
+defrag_root: ## Defragments and recompresses the root filesystem.
 	@echo "⚙️  Full system defragmentation and compression (root Btrfs volume)..."
 	sudo btrfs filesystem defragment -r -v -czstd /
 	@echo "✅ Defragmentation of root completed."
 
-compress_root:
+compress_root: ## Adds compression options to the root filesystem in fstab.
 	@echo "🔍 Checking root UUID: $(ROOT_UUID)"
 	@if [ -z "$(ROOT_UUID)" ]; then \
 		echo "❌ Cannot find root UUID"; exit 1; \
@@ -98,7 +110,7 @@ compress_root:
 	@echo "✅ Root is mounted with $(OPTIONS)"
 
 
-verify_fstab:
+verify_fstab: ## Verifies the integrity of /etc/fstab.
 	@echo "🔍 Verifying integrity of $(FSTAB)..."
 	@sudo findmnt --verify || { \
 		echo "❌ fstab verification failed! Restoring backup..."; \
@@ -111,7 +123,7 @@ verify_fstab:
 	sudo cat $(FSTAB)
 	@echo "--------------------------------------------------------------"
 
-no_beep:
+no_beep: ## Disables the PC speaker beep.
 	@echo "🔇 Disabling PC speaker (pcspkr)..."
 	@if [ ! -f /etc/modprobe.d/nobeep.conf ]; then \
 		echo "blacklist pcspkr" | sudo tee /etc/modprobe.d/nobeep.conf >/dev/null; \
@@ -127,7 +139,7 @@ no_beep:
 		echo "✅ pcspkr module is not loaded. Beep is already disabled."; \
 	fi
 
-symlinks:
+symlinks: ## Creates symbolic links for configs and directories.
 	@echo "🔗 Creating system symbolic links..."
 
 	$(call create_symlink,Configs,/home/sky/Work/Configs)
