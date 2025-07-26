@@ -64,3 +64,86 @@ install-base:
 
 
 	@echo "✅ Base packages installed via yay."
+
+check:
+	@echo "🔍 Starting full system diagnostic..."
+	@echo ""
+
+	@echo "👤 User and Host Info:"
+	@echo "User: $$(whoami)"
+	@echo "Host: $$(hostname)"
+	@echo "Home Dir: $$HOME"
+	@echo ""
+
+	@echo "🕒 Uptime and Load:"
+	@uptime
+	@echo ""
+
+	@echo "🧠 Memory and Swap Usage:"
+	@free -h
+	@echo ""
+
+	@echo "💾 Disk Usage for / and /var:"
+	@df -hT -x squashfs -x tmpfs -x devtmpfs
+	@echo ""
+
+	@echo "🔌 Network Interfaces:"
+	@ip -brief address
+	@echo ""
+
+	@echo "🌐 Open Network Ports:"
+	@ss -tuln
+	@echo ""
+
+	@echo "📊 Top Processes Snapshot:"
+	@top -bn1 | head -15
+	@echo ""
+
+	@echo "⚙️  Systemd Services with Errors:"
+	@systemctl --failed --no-pager
+	@echo ""
+
+	@echo "👻 Zombie or Suspicious Processes:"
+	@ps -eo pid,ppid,stat,cmd | awk '$3 ~ /^Z/ { print }' || echo "✔️  No zombie processes found"
+	@echo ""
+
+	@echo "🔐 Running Processes as root:"
+	@ps -U root -u root u
+	@echo ""
+
+	@echo "📄 Recent System Errors (priority 3, current boot):"
+	@journalctl -p 3 -xb -n 20 || echo "✔️  No recent critical errors"
+	@echo ""
+
+	@echo "🚨 Kernel Critical Logs (OOM, segfaults, panics):"
+	@journalctl -k -p 0..3 | grep -Ei 'Out of memory|Kernel panic|segfault' || echo "✔️  No kernel-level issues detected"
+	@echo ""
+
+	@echo "⏱️  Active Timers (Cron/Systemd):"
+	@systemctl list-timers --all --no-pager | head -15
+	@echo ""
+
+	@echo "🔑 Sudo Group Members:"
+	@grep '^sudo:' /etc/group || echo "ℹ️  No 'sudo' group found"
+	@echo ""
+
+	@echo "🔥 Temperature Sensors (if available):"
+	@command -v sensors >/dev/null && sensors || echo "ℹ️  'sensors' command not available"
+	@echo ""
+
+	@echo "🐳 Docker Status:"
+	@if command -v docker >/dev/null; then \
+		echo "Docker is installed."; \
+		docker info --format='Version: {{.ServerVersion}}, OS: {{.OperatingSystem}}'; \
+		systemctl is-active docker && echo "✔️  Docker is running" || echo "❌ Docker is not running"; \
+		echo "Running containers:"; \
+		docker ps --format='  - {{.Names}} ({{.Image}})' || echo "❌ Failed to list containers"; \
+	else \
+		echo "ℹ️  Docker is not installed."; \
+	fi
+	@echo ""
+
+	@echo "\n🧪 Testing Dunst Notification (without emoji):"
+	@notify-send "Notification test" "Dunst is working!"
+
+	@echo "✅ System check completed."
