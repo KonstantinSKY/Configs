@@ -37,14 +37,22 @@ apply_theme: set_gtk2 set_gtk3 set_gtk4
 
 set_gtk2:
 	@echo "🛠️  Applying GTK2 theme..."
-	@echo "gtk-theme-name=\"$(GTK_THEME)\"" > $(GTK2_CONFIG)
+	@if [ -f "$(GTK2_CONFIG)" ]; then cp "$(GTK2_CONFIG)" "$(GTK2_CONFIG).bak"; else echo "" > "$(GTK2_CONFIG)"; fi
+	@sed -i '/^gtk-theme-name=/d' $(GTK2_CONFIG)
+	@sed -i '/^gtk-icon-theme-name=/d' $(GTK2_CONFIG)
+	@sed -i '/^gtk-font-name=/d' $(GTK2_CONFIG)
+	@echo "gtk-theme-name=\"$(GTK_THEME)\"" >> $(GTK2_CONFIG)
 	@echo "gtk-icon-theme-name=\"$(ICON_THEME)\"" >> $(GTK2_CONFIG)
 	@echo "gtk-font-name=\"$(FONT)\"" >> $(GTK2_CONFIG)
 
 set_gtk3:
 	@echo "🛠️  Applying GTK3 theme..."
 	mkdir -p $(GTK3_DIR)
-	@echo "[Settings]" > $(GTK3_CONFIG)
+	@if [ -f "$(GTK3_CONFIG)" ]; then cp "$(GTK3_CONFIG)" "$(GTK3_CONFIG).bak"; else echo "[Settings]" > $(GTK3_CONFIG); fi
+	@sed -i '/^gtk-theme-name=/d' $(GTK3_CONFIG)
+	@sed -i '/^gtk-icon-theme-name=/d' $(GTK3_CONFIG)
+	@sed -i '/^gtk-font-name=/d' $(GTK3_CONFIG)
+	@sed -i '/^gtk-application-prefer-dark-theme=/d' $(GTK3_CONFIG)
 	@echo "gtk-theme-name=$(GTK_THEME)" >> $(GTK3_CONFIG)
 	@echo "gtk-icon-theme-name=$(ICON_THEME)" >> $(GTK3_CONFIG)
 	@echo "gtk-font-name=$(FONT)" >> $(GTK3_CONFIG)
@@ -53,7 +61,11 @@ set_gtk3:
 set_gtk4:
 	@echo "🛠️  Applying GTK4 theme..."
 	mkdir -p $(GTK4_DIR)
-	@echo "[Settings]" > $(GTK4_CONFIG)
+	@if [ -f "$(GTK4_CONFIG)" ]; then cp "$(GTK4_CONFIG)" "$(GTK4_CONFIG).bak"; else echo "[Settings]" > $(GTK4_CONFIG); fi
+	@sed -i '/^gtk-theme-name=/d' $(GTK4_CONFIG)
+	@sed -i '/^gtk-icon-theme-name=/d' $(GTK4_CONFIG)
+	@sed -i '/^gtk-font-name=/d' $(GTK4_CONFIG)
+	@sed -i '/^gtk-application-prefer-dark-theme=/d' $(GTK4_CONFIG)
 	@echo "gtk-theme-name=$(GTK_THEME)" >> $(GTK4_CONFIG)
 	@echo "gtk-icon-theme-name=$(ICON_THEME)" >> $(GTK4_CONFIG)
 	@echo "gtk-font-name=$(FONT)" >> $(GTK4_CONFIG)
