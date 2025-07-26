@@ -1,19 +1,19 @@
-.PHONY: all mount update_fstab defrag
+.PHONY: all mount create_subvolume defrag
 
 LABEL = Work
 DIR = Work
 FS_TYPE = btrfs
-OPTIONS = subvol=@work,compress=zstd,noatime
+SUBVOL = @work
+OPTIONS = subvol=$(SUBVOL),compress=zstd,noatime
 DUMP = 0
 PASS = 2
 FSTAB = /etc/fstab
 UUID = $(shell sudo blkid -s UUID -o value $$(sudo findfs LABEL=$(LABEL)))
 HOME_DIR = $(HOME)/$(DIR)
 
-# Default target (optional)
 all: mount
 
-mount:
+mount: create_subvolume
 	@echo "🔍 Searching for device with label '$(LABEL)'..."
 	@if [ -z "$(UUID)" ]; then echo "❌ Device with label '$(LABEL)' not found!"; exit 1; fi
 	@echo "✅ UUID found: $(UUID)"
@@ -35,7 +35,7 @@ mount:
 	sudo systemctl daemon-reexec
 
 	@echo "📦 Mounting all entries..."
-	sudo mount -a
+	sudo mount -a || echo "❌ Mount failed. Please check /etc/fstab or subvolume existence."
 
 	@echo "🔐 Setting ownership and permissions for $(HOME_DIR)..."
 	sudo chown -R $(USER):$(USER) "$(HOME_DIR)"
@@ -43,7 +43,21 @@ mount:
 
 	@echo "✅ Done. $(DIR) is mounted with options: $(OPTIONS)."
 
-# Separate target for manual defragmentation and recompression
+# Automatically create subvolume if it doesn't exist
+create_subvolume:
+	@echo "🔎 Checking if subvolume $(SUBVOL) exists on $(LABEL)..."
+	@mountpoint -q /mnt || sudo mount -o subvolid=5,ro LABEL=$(LABEL) /mnt
+	@if ! sudo btrfs subvolume list /mnt | grep -q "$(SUBVOL)"; then \
+		echo "➕ Creating subvolume $(SUBVOL)..."; \
+		sudo mount -o subvolid=5 LABEL=$(LABEL) /mnt; \
+		sudo btrfs subvolume create /mnt/$(SUBVOL); \
+		sudo umount /mnt; \
+	else \
+		echo "✅ Subvolume $(SUBVOL) already exists."; \
+		sudo umount /mnt || true; \
+	fi
+
+# Manual defragmentation with compression
 defrag:
 	@echo "⚙️  Defragmenting and recompressing $(HOME_DIR) using zstd..."
 	sudo btrfs filesystem defragment -r -v -czstd "$(HOME_DIR)"
