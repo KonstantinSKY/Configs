@@ -1,4 +1,15 @@
-.PHONY: setup mirrors pacman-update install-yay enable-aur update
+.PHONY: help setup mirrors pacman-update install-yay enable-aur update
+
+help:
+	@echo "Available commands:"
+	@echo "  setup          - Full setup: updates mirrors, system, installs yay, enables AUR."
+	@echo "  mirrors        - Updates pacman mirrors for faster downloads."
+	@echo "  pacman-update  - Updates all system packages using pacman."
+	@echo "  yay-update     - Updates all system and AUR packages using yay."
+	@echo "  enable-aur     - Enables AUR support in the pamac GUI."
+	@echo "  update         - Full update: updates packages, cleans cache, removes orphans."
+	@echo "  install-base   - Installs a base set of essential packages."
+	@echo "  check          - Runs a comprehensive system health and diagnostics check."
 
 # Main target
 setup: mirrors pacman-update install-yay yay-update enable-aur
@@ -40,6 +51,7 @@ install-base:
 	@echo "📦 Installing essential packages via yay..."
 	yay -S --needed --noconfirm \
 		base-devel \
+		manjaro-settings-manager \
 		fzf \
 		git \
 		curl \
