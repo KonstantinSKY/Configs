@@ -1,4 +1,4 @@
-.PHONY: all install_fonts update_fonts check_fonts refresh_fonts help
+.PHONY: all install update check refresh help
 
 FONTS = \
 	noto-fonts \
@@ -11,30 +11,30 @@ all: install_fonts update_fonts refresh_fonts check_fonts
 
 help:
 	@echo "📖 Available targets:"
-	@echo "  make install_fonts   – Install all fonts via yay"
-	@echo "  make update_fonts    – Update system packages"
-	@echo "  make refresh_fonts   – Rebuild font cache (fc-cache)"
-	@echo "  make check_fonts     – Check if fonts are installed"
+	@echo "  make install   – Install all fonts via yay"
+	@echo "  make update    – Update system packages"
+	@echo "  make refresh   – Rebuild font cache (fc-cache)"
+	@echo "  make check     – Check if fonts are installed"
 	@echo "  make all             – Run install, update, refresh, and check"
 	@echo "  make help            – Show this help message"
 
-install_fonts:
+install:
 	@echo "🔤 Installing fonts with yay..."
 	@for font in $(FONTS); do \
 		echo "📦 Installing $$font..."; \
 		yay -S --noconfirm $$font || echo "⚠️  Failed to install $$font"; \
 	done
 
-update_fonts:
+update:
 	@echo "🔁 Updating all packages with yay..."
 	yay -Syu --noconfirm
 
-refresh_fonts:
+refresh:
 	@echo "🔄 Refreshing font cache..."
 	fc-cache -fv
 	@echo "✅ Font cache refreshed."
 
-check_fonts:
+check:
 	@echo "🔍 Checking if fonts are installed and showing examples..."
 	@for font in $(FONTS); do \
 		if yay -Q $$font >/dev/null 2>&1; then \

@@ -72,7 +72,7 @@ set_gtk4:
 	@echo "gtk-application-prefer-dark-theme=true" >> $(GTK4_CONFIG)
 
 check_theme:
-	@echo "🔍 Проверка установки и конфигурации тем GTK..."
+	@echo "🔍 Check instalation and configs GTK..."
 	@if yay -Q matcha-gtk-theme >/dev/null 2>&1; then \
 		echo "✅ GTK theme '$(GTK_THEME)' is installed."; \
 	else \
@@ -86,3 +86,7 @@ check_theme:
 	@echo "📝 GTK2 config:"; grep -E 'gtk-(theme|icon|font)' $(GTK2_CONFIG) || echo "⚠️  Not configured."
 	@echo "📝 GTK3 config:"; grep -E 'gtk-(theme|icon|font)' $(GTK3_CONFIG) || echo "⚠️  Not configured."
 	@echo "📝 GTK4 config:"; grep -E 'gtk-(theme|icon|font)' $(GTK4_CONFIG) || echo "⚠️  Not configured."
+
+
+# sudo mkdir -p /root/.config/gtk-3.0
+# sudo cp ~/.config/gtk-3.0/settings.ini /root/.config/gtk-3.0/
