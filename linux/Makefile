@@ -37,6 +37,18 @@ mount: create_subvolume
 	@echo "📦 Mounting all entries..."
 	sudo mount -a || echo "❌ Mount failed. Please check /etc/fstab or subvolume existence."
 
+
+	@echo "📂 Verifying mount status..."
+	@if mount | grep -q "$(HOME_DIR)"; then \
+		echo "✅ Mounted successfully at $(HOME_DIR)"; \
+	else \
+		echo "❌ Mount failed. Check /etc/fstab and system logs."; \
+		exit 1; \
+		fi
+
+	@echo "📂 Listing contents of $(HOME_DIR)..."
+	@ls -la "$(HOME_DIR)"
+
 	@echo "🔐 Setting ownership and permissions for $(HOME_DIR)..."
 	sudo chown -R $(USER):$(USER) "$(HOME_DIR)"
 	sudo chmod -R 700 "$(HOME_DIR)"
