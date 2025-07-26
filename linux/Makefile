@@ -126,3 +126,44 @@ no_beep:
 	else \
 		echo "✅ pcspkr module is not loaded. Beep is already disabled."; \
 	fi
+
+symlinks:
+	@echo "🔗 Creating system symbolic links..."
+
+	$(call create_symlink,Configs,/home/sky/Work/Configs)
+	$(call create_symlink,Projects,/home/sky/Work/Projects)
+	$(call create_symlink,Prompts,/home/sky/Work/Prompts)
+	$(call create_symlink,Documents,/home/sky/Work/Documents)
+	$(call create_symlink,Downloads,/home/sky/Work/Downloads)
+	$(call create_symlink,.password-store,/home/sky/Work/.password-store)
+	$(call create_symlink,Pictures,/home/sky/Work/Pictures)
+	$(call create_symlink,.profile,/home/sky/Work/Configs/profile)
+	$(call create_symlink,.Xresources,/home/sky/Work/Configs/Xresources)
+	$(call create_symlink,Security,/home/sky/Work/Security)
+
+define create_symlink
+	@echo "➡️  $(1) -> $(2)"
+	@dir=$$(dirname $(2)); \
+	if [ ! -d "$$dir" ]; then \
+		echo "📁 Creating parent directory: $$dir"; \
+		mkdir -p "$$dir"; \
+	fi; \
+	if [ ! -e "$(2)" ]; then \
+		echo "📄 Creating target file: $(2)"; \
+		touch "$(2)"; \
+	fi
+
+	@if [ -L $$HOME/$(1) ]; then \
+		if [ "$$(readlink -f $$HOME/$(1))" = "$(2)" ]; then \
+			echo "✅ Link $$HOME/$(1) already correct."; \
+		else \
+			echo "♻️  Updating incorrect link: $$HOME/$(1)"; \
+			ln -sf "$(2)" $$HOME/$(1); \
+		fi \
+	elif [ -e $$HOME/$(1) ]; then \
+		echo "⚠️  File exists: $$HOME/$(1), not a symlink. Skipping."; \
+	else \
+		echo "➕ Creating symlink: $$HOME/$(1) -> $(2)"; \
+		ln -s "$(2)" $$HOME/$(1); \
+	fi
+endef
