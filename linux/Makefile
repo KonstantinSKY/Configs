@@ -1,4 +1,4 @@
-.PHONY: all mount defrag
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep
 
 LABEL = Work
 DIR = Work
@@ -60,7 +60,7 @@ mount:
 	@echo "✅ Done. $(DIR) is mounted with options: $(OPTIONS)."
 
 # Manual defragmentation with compression
-defrag:
+defrag_work:
 	@echo "⚙️  Defragmenting and recompressing $(MOUNT_DIR) using zstd..."
 	@sudo btrfs filesystem defragment -r -v -czstd "$(MOUNT_DIR)"
 	@echo "✅ Defragmentation completed."
@@ -110,3 +110,19 @@ verify_fstab:
 	}
 	sudo cat $(FSTAB)
 	@echo "--------------------------------------------------------------"
+
+no_beep:
+	@echo "🔇 Disabling PC speaker (pcspkr)..."
+	@if [ ! -f /etc/modprobe.d/nobeep.conf ]; then \
+		echo "blacklist pcspkr" | sudo tee /etc/modprobe.d/nobeep.conf >/dev/null; \
+		echo "✅ Configuration file created: /etc/modprobe.d/nobeep.conf"; \
+	else \
+		echo "⚠️  Configuration already exists: /etc/modprobe.d/nobeep.conf"; \
+	fi
+
+	@if lsmod | grep -q pcspkr; then \
+		echo "⚠️  pcspkr module is currently loaded. Attempting to unload..."; \
+		sudo rmmod pcspkr && echo "✅ Module pcspkr successfully unloaded. No reboot required."; \
+	else \
+		echo "✅ pcspkr module is not loaded. Beep is already disabled."; \
+	fi
