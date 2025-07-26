@@ -72,17 +72,10 @@ install-base:
 		file \
 		which \
 		manjaro-settings-manager \
-		materia-gtk-theme \
-		matcha-gtk-theme \
 		lsof \
 		nmap \
 		alsa-utils \
 		pulseaudio \
-		noto-fonts \
-		noto-fonts-emoji \
-		ttf-jetbrans-mono \
-		ttf-hack \
-		ttf-hack-nerd
 	@echo "✅ Base packages installed via yay."
 	@echo "-------------------------------------------------------------------------------"
 
