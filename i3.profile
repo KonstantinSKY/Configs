@@ -2,7 +2,6 @@
 
 export QT_QPA_PLATFORMTHEME=qt5ct
 export QT_STYLE_OVERRIDE=kvantum
-#export GTK_THEME=Materia-dark
 export GTK_THEME=Matcha-dark-sea
 
 #set editor
