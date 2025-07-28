@@ -224,10 +224,10 @@
     "Rust": {
       "tab_size": 4,
       "hard_tabs": false,
-      "formatter": "language_server",
+      "formatter": "rustfmt",
       "format_on_save": "on",
       "show_edit_predictions": true,
-      "language_servers": ["codebook"]
+      "language_servers": ["rust-analyzer"]
     },
     "Python": {
       "tab_size": 4,
