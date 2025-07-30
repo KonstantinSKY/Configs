@@ -145,6 +145,7 @@ symlinks: ## Creates symbolic links for configs and directories.
 	$(call create_symlink,Configs,/home/sky/Work/Configs)
 	$(call create_symlink,Projects,/home/sky/Work/Projects)
 	$(call create_symlink,Prompts,/home/sky/Work/Prompts)
+	$(call create_symlink,Music,/home/sky/Work/Music)
 	$(call create_symlink,Documents,/home/sky/Work/Documents)
 	$(call create_symlink,Downloads,/home/sky/Work/Downloads)
 	$(call create_symlink,.password-store,/home/sky/Work/.password-store)

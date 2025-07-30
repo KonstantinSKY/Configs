@@ -251,6 +251,21 @@
       "show_edit_predictions": true,
       "language_servers": ["codebook"],
       "hard_tabs": true
+    },
+    "Shell": {
+      "formatter": "language_server",
+      "format_on_save": "on",
+      "show_edit_predictions": true,
+      "language_servers": ["codebook"],
+      "hard_tabs": true
+    },
+    "ini": {
+      "tab_size": 4,
+      "hard_tabs": false,
+      "formatter": "language_server",
+      "format_on_save": "on",
+      "show_edit_predictions": false,
+      "language_servers": ["codebook"]
     }
     // "file_types": {}
 
