@@ -1,5 +1,10 @@
 #!/bin/bash
 
+# Skip if not interactive
+case $- in
+  *i*) ;;
+  *) return ;;
+esac
 
 # Part of .bashrc and other .rc files
 
@@ -10,18 +15,15 @@
 
 #Environment variables
 #main
-export USER_NAME=SKY
-export EMAIL=sky012877@gmail.com
+# export USER_NAME=SKY
+# export EMAIL=sky012877@gmail.com
 
 #Important paths
-export TOOLS_PATH="$WORK/Tools"
 export CONFIGS_PATH="$WORK/Configs"
 export PROJECTS_PATH="$WORK/Projects"
 export BACKUPS_PATH="$WORK/BackUps"
 
 
-
-alias Tools='cd $TOOLS_PATH; ls -ls'
 alias Configs='cd $CONFIGS_PATH; ls -ls'
 alias Projects='cd $PROJECTS_PATH; ls -ls'
 
