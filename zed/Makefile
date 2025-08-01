@@ -1,7 +1,7 @@
 .PHONY: install clean
 
 MANJARO_MAKEFILE = ~/Configs/manjaro/Makefile
-ZED_CONFIG = ~/Configs/zed/config
+ZED_CONFIG = ~/Configs/zed
 ZED_TARGET_CONFIG = ~/.config/zed
 
 install:
