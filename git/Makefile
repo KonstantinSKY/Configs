@@ -20,7 +20,7 @@ setup:
 	@echo "🔧 Configuring Git global settings..."
 
 	@username=$$(whoami); \
-	@echo "👤 Setting user.name to: $$username"; \
+	echo "👤 Setting user.name to: $$username"; \
 	git config --global user.name "$$username"
 	@echo "-------------------------------------------------------------------"
 
