@@ -1,0 +1,149 @@
+#!/bin/bash
+
+
+# Part of .bashrc and other .rc files
+
+#checking if Work directory is exists
+# Checking if Work directory exists
+# WORK="$HOME"
+[[ -d "$HOME/Work" ]] && WORK="$HOME/Work" || WORK="$HOME"
+
+#Environment variables
+#main
+export USER_NAME=SKY
+export EMAIL=sky012877@gmail.com
+
+#Important paths
+export TOOLS_PATH="$WORK/Tools"
+export CONFIGS_PATH="$WORK/Configs"
+export PROJECTS_PATH="$WORK/Projects"
+export BACKUPS_PATH="$WORK/BackUps"
+
+
+
+alias Tools='cd $TOOLS_PATH; ls -ls'
+alias Configs='cd $CONFIGS_PATH; ls -ls'
+alias Projects='cd $PROJECTS_PATH; ls -ls'
+
+#rust cargo path settingd setting
+# if [ -d "$HOME/.cargo" ]; then
+# 	export PATH="$HOME/.cargo/bin"
+# fi
+
+#nvm for node js setting
+# Lazy load NVM
+load_nvm() {
+  if [ -d "/usr/share/nvm" ]; then
+    source "/usr/share/nvm/init-nvm.sh"
+  fi
+}
+#alias nvm="load_nvm && nvm"
+nvm() {
+  load_nvm
+  unfunction nvm
+  nvm "$@"
+}
+
+#pyenv for Python setting
+
+# Lazy load Pyenv
+load_pyenv() {
+  if [ -d "$HOME/.pyenv" ]; then
+    export PATH="$HOME/.pyenv/bin:$PATH"
+    eval "$(pyenv init --path)"
+    eval "$(pyenv init -)"
+  fi
+}
+# Define the pyenv function to lazy load Pyenv
+pyenv() {
+  load_pyenv
+  # Redefine the pyenv command to call the actual pyenv function
+  unfunction pyenv
+  pyenv "$@"
+}
+
+#QT5 setting
+#export QT_QPA_PLATFORMTHEME=qt5ct
+
+# paths
+export PATH=$PATH:$HOME
+
+# Open alias file
+alias ali='cat $CONFIGS_PATH/rc'
+
+#shell
+# shellcheck disable=SC2317
+la() { command ls "$@" -la --color=auto; }
+# shellcheck disable=SC2317
+chx() { command chmod u+x "$@"; }
+
+cdl() {
+    cd "$@" && ls -la --color=auto
+    }
+
+#packages
+
+alias upd="make --no-print-directory -C ~/Configs/manjaro update"
+
+
+#alias add="bash $TOOLS_PATH/packages/Manjaro/install.sh $@"
+#alias remove="sudo pamac remove --no-save $@; echo 'checking for uninstalled' pamac list --installed | grep bmenu"
+# git && github
+alias mkrepo="~/Configs/git/make_private_repo.sh"
+
+#Trash
+if command -v trash > /dev/null 2>&1;
+	then
+		alias rm='trash'
+		alias Trash="trash --help; ls -la ~/.local/share/Trash/files"
+fi
+
+#ssh
+alias rsss="remote_start_sudo_script.sh"
+alias server="ssh server"
+
+
+
+#fn to choose editor
+choose_editor() {
+  if command -v nvim >/dev/null 2>&1;
+	 then
+	       nvim "$@"
+          else
+         vi "$@"
+    fi
+}
+#alias 'vi' to use 'choose_editor'
+alias vi=choose_editor
+
+#git
+alias commit="exe commit"
+
+#project_rc="$PROJECTS_PATH/Project/rc"
+#[[ -f "$project_rc" ]] && . "$project_rc"
+# #python env  and pipenv
+# alias venv='python -m venv .venv; activate;  pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
+# alias activate='source .venv/bin/activate'
+# alias freeze='activate; pip freeze > requirements.txt; cat requirements.txt'
+# alias reqs='activate; pip install -r requirements.txt; pip list; echo "Outdating packages:"; pip list -o'
+# alias penv='mkdir .venv;  pipenv install; source .venv/bin/activate; pip install --upgrade pip; pip install pip-review; pip-review --auto; pip list; echo "Outdating packages:"; pip list -o'
+
+# #Django
+# #
+# alias django='source .venv/bin/activate; pip install Django; pip list; django-admin startproject base . ; python manage.py migrate; python manage.py runserver'
+# alias runserv='python manage.py runserver 192.168.1.50:8000'
+# alias migrate_='python manage.py makemigrations && python manage.py migrate'
+# alias static='python manage.py collectstatic'
+# manage.py runserver'
+#
+#alias penv_upd="pip install --upgrade pip";
+
+# #Projects
+# alias fast_api_learn='cd ~/Projects/fast_api_learn; deactivate; poetry shell'
+# alias revision='python scripts/revision.py $@'
+# alias migrate='echo "alembic uprade head"; alembic upgrade head'
+# alias shell='poetry shell'
+# alias uvi='cd src; uvicorn main:app --reload'
+
+#
+#EOF
