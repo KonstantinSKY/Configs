@@ -1,5 +1,4 @@
-
-.PHONY: help setup init create_repo force-ssh commit delete_repo
+.PHONY: help setup init create_repo force-ssh commit delete_repo install
 
 GITHUB_USER := KonstantinSKY
 GITHUB_EMAIL := sky012877@gmail.com
@@ -10,33 +9,56 @@ help:
 	@echo "Available targets:"
 	@echo "  help            Show this help message"
 	@echo "  setup           Configure global git settings (username, email, branch, ssh)"
+	@echo "  install         Install git and GitHub CLI (gh) via yay"
 	@echo "  init            Initialize local git repo with main branch and first commit"
 	@echo "  create_repo     Create private GitHub repo and link it to local folder"
 	@echo "  delete_repo     Delete GitHub repo by name (or current folder name)"
 	@echo "  force_ssh       Force remote 'origin' to SSH and push main branch"
 	@echo "  commit          Commit and push all changes with a message"
 
+install:
+	@echo "🔄 Updating system packages..."
+	yay -Syu --noconfirm
+	@echo "-------------------------------------------------------------------"
+	@echo "📦 Installing git and GitHub CLI (gh)..."
+	yay -S --noconfirm git github-cli
+	@echo "-------------------------------------------------------------------"
+	@echo "✅ Installation complete:"
+	@git --version
+	@gh --version
+	@echo "-------------------------------------------------------------------"
+
 setup:
 	@echo "🔧 Configuring Git global settings..."
 
-	@username=$$(whoami); \
-	echo "👤 Setting user.name to: $$username"; \
-	git config --global user.name "$$username"
+	@echo "👤 Setting user.name to: $$(whoami)"
+	git config --global user.name "$$(whoami)"
 	@echo "-------------------------------------------------------------------"
 
-	@echo "📧 Setting user.email to: $(GITHUB_EMAIL)"; \
+	@echo "📧 Setting user.email to: $(GITHUB_EMAIL)"
 	git config --global user.email "$(GITHUB_EMAIL)"
 	@echo "-------------------------------------------------------------------"
 
-	@echo "🌿 Setting default branch to: main"; \
+	@echo "🌿 Setting default branch to: main"
 	git config --global init.defaultBranch main
 	@echo "-------------------------------------------------------------------"
 
-	@echo "✅ Git configuration complete:"
-	@git config --global --get user.name
-	@git config --global --get user.email
-	@git config --global --get init.defaultBranch
+	@echo "🔁 Enabling pull.rebase: true"
+	git config --global pull.rebase true
+	@echo "⚠️  This makes 'git pull' rebase instead of merge by default"
+	@echo "-------------------------------------------------------------------"
 
+	@echo "🚦 Setting pull.ff to: only"
+	git config --global pull.ff only
+	@echo "⚠️  This enforces fast-forward only pulls – no accidental merges"
+	@echo "-------------------------------------------------------------------"
+
+	@echo "✅ Git configuration complete:"
+	git config --global --get user.name
+	git config --global --get user.email
+	git config --global --get init.defaultBranch
+	git config --global --get pull.rebase
+	git config --global --get pull.ff
 	@echo "-------------------------------------------------------------------"
 
 create_repo:
