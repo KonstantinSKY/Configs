@@ -1,8 +1,43 @@
 
-.PHONY: init create_repo force-ssh commit delete_repo
+.PHONY: help setup init create_repo force-ssh commit delete_repo
 
 GITHUB_USER := KonstantinSKY
 GITHUB_EMAIL := sky012877@gmail.com
+
+help:
+	@echo "🛠️  Git & GitHub Project Manager"
+	@echo ""
+	@echo "Available targets:"
+	@echo "  help            Show this help message"
+	@echo "  setup           Configure global git settings (username, email, branch, ssh)"
+	@echo "  init            Initialize local git repo with main branch and first commit"
+	@echo "  create_repo     Create private GitHub repo and link it to local folder"
+	@echo "  delete_repo     Delete GitHub repo by name (or current folder name)"
+	@echo "  force_ssh       Force remote 'origin' to SSH and push main branch"
+	@echo "  commit          Commit and push all changes with a message"
+
+setup:
+	@echo "🔧 Configuring Git global settings..."
+
+	@username=$$(whoami); \
+	@echo "👤 Setting user.name to: $$username"; \
+	git config --global user.name "$$username"
+	@echo "-------------------------------------------------------------------"
+
+	@echo "📧 Setting user.email to: $(GITHUB_EMAIL)"; \
+	git config --global user.email "$(GITHUB_EMAIL)"
+	@echo "-------------------------------------------------------------------"
+
+	@echo "🌿 Setting default branch to: main"; \
+	git config --global init.defaultBranch main
+	@echo "-------------------------------------------------------------------"
+
+	@echo "✅ Git configuration complete:"
+	@git config --global --get user.name
+	@git config --global --get user.email
+	@git config --global --get init.defaultBranch
+
+	@echo "-------------------------------------------------------------------"
 
 create_repo:
 	@project=$(word 2, $(MAKECMDGOALS)); \
