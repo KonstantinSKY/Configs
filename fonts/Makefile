@@ -4,10 +4,19 @@ FONTS = \
 	noto-fonts \
 	noto-fonts-emoji \
 	ttf-jetbrains-mono \
+	ttf-jetbrains-mono-nerd \
 	ttf-hack \
-	ttf-hack-nerd
+	ttf-hack-nerd \
+	ttf-ubuntu-font-family \
+	ttf-ubuntu-mono-nerd \
+	ttf-ubuntu-nerd \
+	ttf-fira-code \
+	ttf-firacode-nerd \
+	ttf-sourcecodepro-nerd \
+	ttf-sourcecodepro-nerd
 
-all: install_fonts update_fonts refresh_fonts check_fonts
+
+all: install update refresh check
 
 help:
 	@echo "📖 Available targets:"
@@ -15,8 +24,8 @@ help:
 	@echo "  make update    – Update system packages"
 	@echo "  make refresh   – Rebuild font cache (fc-cache)"
 	@echo "  make check     – Check if fonts are installed"
-	@echo "  make all             – Run install, update, refresh, and check"
-	@echo "  make help            – Show this help message"
+	@echo "  make all       – Run install, update, refresh, and check"
+	@echo "  make help      – Show this help message"
 
 install:
 	@echo "🔤 Installing fonts with yay..."
@@ -36,21 +45,36 @@ refresh:
 
 check:
 	@echo "🔍 Checking if fonts are installed and showing examples..."
+	@if ! command -v pango-view >/dev/null 2>&1; then \
+		echo "⚠️  pango-view is not installed. Previews won't be shown."; \
+	fi
 	@for font in $(FONTS); do \
 		if yay -Q $$font >/dev/null 2>&1; then \
 			echo "✅ $$font is installed."; \
-			MATCHED=$$(fc-match ":family=$${font}" | cut -d: -f1); \
-			if [ -n "$$MATCHED" ]; then \
-				echo "📝 Sample (using $$MATCHED):"; \
-				echo "    → The quick brown fox jumps over the lazy dog." | \
-				PANGOCAIRO_BACKEND=fc \
-				PANGO_FONT="$${MATCHED}" \
-				pango-view --text="The quick brown fox jumps over the lazy dog." \
-					--font="$${MATCHED} 12" \
-					--no-display --annotate=none --dpi=96 --output=/dev/null \
-				|| echo "⚠️  Can't render preview for $$MATCHED."; \
-			fi \
 		else \
 			echo "❌ $$font is NOT installed."; \
 		fi; \
 	done
+	@echo "-------------------------------------------------------------------"
+	@echo "🧪 Testing font cache (fc-list)..."
+		@if ! fc-list > /dev/null 2>&1; then \
+			echo "❌ Font cache seems broken or inaccessible."; \
+		else \
+			echo "✅ Font cache is readable."; \
+		fi
+
+list:
+	@echo "📋 Fonts listed in Makefile:"
+	@for font in $(FONTS); do echo " • $$font"; done
+	@echo "-------------------------------------------------------------------"
+	@echo "📦 Fonts from yay (installed from your list):"
+	@for font in $(FONTS); do \
+		if yay -Q $$font >/dev/null 2>&1; then \
+			echo " ✅ $$font"; \
+		else \
+			echo " ❌ $$font not installed"; \
+		fi \
+	done
+	@echo "-------------------------------------------------------------------"
+	@echo "🖋  Fonts available via fontconfig (fc-list):"
+	@fc-list : family | cut -d',' -f1 | sort | uniq | head -n 2000
