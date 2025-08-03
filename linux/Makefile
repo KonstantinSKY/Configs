@@ -3,6 +3,7 @@
 ## ---------------------------
 ## 🧩 Directory configuration
 ## ---------------------------
+MAKEFLAGS += --no-print-directory
 WORK_DIR = $(HOME)/$(DIR)
 CONFIGS_DIR = $(WORK_DIR)/Configs
 ## ---------------------------
@@ -194,7 +195,7 @@ symlink:  ## Create a symbolic link: make symlink <target> <source>
 	fi; \
 	echo "------------------------------------------------------------"; \
 	echo "🔗 Creating symlink: $$TARGET → $$SOURCE"; \
-	ln -sf "$$SOURCE" "$$TARGET"; \
+	ln -sv "$$SOURCE" "$$TARGET"; \
 	echo "------------------------------------------------------------"; \
 	echo "🔍 Verifying symlink..."; \
 	if [ ! -L "$$TARGET" ]; then \
@@ -207,3 +208,6 @@ symlink:  ## Create a symbolic link: make symlink <target> <source>
 	else \
 		echo "⚠️  Symlink text differs: $$TARGET → $$LINK_TEXT (expected: $$SOURCE)"; \
 	fi
+
+%:
+	@:

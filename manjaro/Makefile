@@ -1,5 +1,7 @@
 .PHONY: help setup mirrors pacman-update install-yay enable-aur update
 
+MAKEFLAGS += --no-print-directory
+
 help:
 	@echo "Available commands:"
 	@echo "  setup          - Full setup: updates mirrors, system, installs yay, enables AUR."
@@ -57,6 +59,36 @@ update:
 	yay -Sc --noconfirm
 	@echo "✅ Update completed successfully!"
 	@echo "-------------------------------------------------------------------------------"
+
+install:
+	@if [ "$(wordlist 2,999,$(MAKECMDGOALS))" = "" ]; then \
+		echo "❌ No packages specified. Usage: make install [list of packages]"; \
+		exit 1; \
+	fi
+	@$(MAKE) yay-update
+	@echo "📦 Installing packages:"
+	@echo "-------------------------------------------------------------------------------"
+	@for pkg in $(wordlist 2,999,$(MAKECMDGOALS)); do \
+		echo "📦 Processing: $$pkg"; \
+		if yay -Qi "$$pkg" >/dev/null 2>&1; then \
+			current_ver=$$(yay -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \
+			echo "🔁 Already installed: $$pkg @ $$current_ver — skipping"; \
+		else \
+			echo "⬇️  Installing: $$pkg"; \
+			if yay -S --noconfirm --needed "$$pkg"; then \
+				if yay -Qi "$$pkg" >/dev/null 2>&1; then \
+					new_ver=$$(yay -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \
+					echo "✅ Installed: $$pkg @ $$new_ver"; \
+				else \
+					echo "❌ Failed to install or not found: $$pkg"; \
+				fi; \
+			else \
+				echo "❌ Failed to install or not found: $$pkg"; \
+			fi; \
+		fi; \
+	done
+	@echo "-------------------------------------------------------------------------------"
+	@echo "✅ Installation process complete."
 
 install-base:
 	@echo "📦 Installing essential packages via yay..."
@@ -163,3 +195,7 @@ check:
 	@notify-send "Notification test" "Dunst is working!"
 
 	@echo "✅ System check completed."
+
+# Prevent make from treating package names as targets
+%:
+	@:
