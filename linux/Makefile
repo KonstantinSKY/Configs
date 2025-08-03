@@ -1,5 +1,13 @@
-.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep symlinks help rc profile setup
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep common_symlinks symlink help rc profile setup
 
+## ---------------------------
+## 🧩 Directory configuration
+## ---------------------------
+WORK_DIR = $(HOME)/$(DIR)
+CONFIGS_DIR = $(WORK_DIR)/Configs
+## ---------------------------
+## 🧩 Mount configuration
+## ---------------------------
 LABEL = Work
 DIR = Work
 FS_TYPE = btrfs
@@ -9,12 +17,25 @@ PASS = 2
 FSTAB = /etc/fstab
 UUID = $(shell sudo blkid -s UUID -o value $$(sudo findfs LABEL=$(LABEL)))
 ROOT_UUID = $(shell findmnt -no UUID /)
-MOUNT_DIR = $(HOME)/$(DIR)
-
-RC_FILE = $(HOME)/Work/Configs/config/linux/rc
+MOUNT_DIR = $(WORK_DIR)
+## ---------------------------
+## 🧩 RC / Profile configuration
+## ---------------------------
+RC_FILE = $(CONFIGS_DIR)/linux/rc
 RC_LINE = [ -f "$(RC_FILE)" ] && source "$(RC_FILE)"
-PROFILE_FILE = $(HOME)/Work/Configs/config/linux/profile
+PROFILE_FILE = $(CONFIGS_DIR)/linux/profile
 PROFILE_LINE = [ -f "$(PROFILE_FILE)" ] && source "$(PROFILE_FILE)"
+## ---------------------------
+## 🧩 Work directory and symlinks
+## ---------------------------
+COMMON_SYMLINKS = \
+	Configs:$(WORK_DIR)/Configs \
+	Projects:$(WORK_DIR)/Projects \
+	Prompts:$(WORK_DIR)/Prompts \
+	Music:$(WORK_DIR)/Music \
+	Documents:$(WORK_DIR)/Documents \
+	Downloads:$(WORK_DIR)/Downloads \
+	Pictures:$(WORK_DIR)/Pictures
 
 # Default target
 all: mount
@@ -27,10 +48,11 @@ help: ## Shows this help message.
 	@echo "  compress_root  - Adds compression options to the root filesystem in fstab."
 	@echo "  verify_fstab   - Verifies the integrity of /etc/fstab."
 	@echo "  no_beep        - Disables the PC speaker beep."
-	@echo "  symlinks       - Creates symbolic links for configs and directories."
+	@echo "  common_symlinks - Creates common symbolic links from Work directory to home."
 	@echo "  rc             - Adds 'source' line to .bashrc and .zshrc for loading shared rc."
 	@echo "  profile        - Adds 'source' line to .profile for loading shared profile."
 	@echo "  setup          - Runs initial setup: symlinks, no_beep, rc, and profile."
+	@echo "  symlink        - Creates a symbolic link: make symlink <target> <source>."
 
 mount: ## Mounts the work drive, creates mount point, and adds to fstab.
 	@echo "🔍 Searching for device with label '$(LABEL)'..."
@@ -121,15 +143,14 @@ no_beep: ## Disables the PC speaker beep.
 		echo "✅ pcspkr not loaded."; \
 	fi
 
-symlinks: ## Creates symbolic links for configs and directories.
-	@echo "🔗 Creating system symbolic links..."
-	$(call create_symlink,Configs,$(HOME)/Work/Configs)
-	$(call create_symlink,Projects,$(HOME)/Work/Projects)
-	$(call create_symlink,Prompts,$(HOME)/Work/Prompts)
-	$(call create_symlink,Music,$(HOME)/Work/Music)
-	$(call create_symlink,Documents,$(HOME)/Work/Documents)
-	$(call create_symlink,Downloads,$(HOME)/Work/Downloads)
-	$(call create_symlink,Pictures,$(HOME)/Work/Pictures)
+common_symlinks: ## Creates common symbolic links from $(WORK_DIR) to $(HOME)
+	@echo "🔗 Creating common symbolic links..."
+	@for pair in $(COMMON_SYMLINKS); do \
+		SOURCE=$${pair#*:}; \
+		TARGET="$(HOME)/$${pair%%:*}"; \
+		echo "🔄 Linking $$TARGET → $$SOURCE"; \
+		$(MAKE) symlink "$$TARGET" "$$SOURCE"; \
+	done
 
 rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
 	@for rcfile in $(HOME)/.bashrc $(HOME)/.zshrc; do \
@@ -153,32 +174,36 @@ profile: ## Adds source to custom profile if not present
 	fi
 
 setup: ## Runs initial setup: symlinks, no_beep, rc, and profile
-	@$(MAKE) symlinks
+	@$(MAKE) common_symlinks
 	@$(MAKE) no_beep
 	@$(MAKE) rc
 	@$(MAKE) profile
 
-# Macro for symbolic linking
-# Params: 1 = link name in $HOME, 2 = target path
-
-define create_symlink
-	@echo "➡️  $(1) -> $(2)"
-	@dir=$$(dirname $(2)); \
-	if [ ! -d "$$dir" ]; then \
-		echo "📁 Creating parent directory: $$dir"; \
-		mkdir -p "$$dir"; \
+symlink:  ## Create a symbolic link: make symlink <target> <source>
+	@TARGET=$(word 2, $(MAKECMDGOALS)); \
+	SOURCE=$(word 3, $(MAKECMDGOALS)); \
+	if [ -z "$$TARGET" ] || [ -z "$$SOURCE" ]; then \
+		echo "❌ Usage: make symlink <target> <source>"; \
+		exit 1; \
 	fi; \
-	if [ -L $$HOME/$(1) ]; then \
-		if [ "$$\(readlink -f $$HOME/$(1))" = "$(2)" ]; then \
-			echo "✅ Link $$HOME/$(1) already correct."; \
-		else \
-			echo "♻️  Updating incorrect link: $$HOME/$(1)"; \
-			ln -sf "$(2)" $$HOME/$(1); \
-		fi; \
-	elif [ -e $$HOME/$(1) ]; then \
-		echo "⚠️  File exists: $$HOME/$(1), not a symlink. Skipping."; \
+	echo "------------------------------------------------------------"; \
+	echo "🔍 Checking if source exists: $$SOURCE"; \
+	if [ ! -e "$$SOURCE" ]; then \
+		echo "🚫 Source does not exist → $$SOURCE"; \
+		exit 1; \
+	fi; \
+	echo "------------------------------------------------------------"; \
+	echo "🔗 Creating symlink: $$TARGET → $$SOURCE"; \
+	ln -sf "$$SOURCE" "$$TARGET"; \
+	echo "------------------------------------------------------------"; \
+	echo "🔍 Verifying symlink..."; \
+	if [ ! -L "$$TARGET" ]; then \
+		echo "❌ Error: $$TARGET is not a symbolic link"; \
+		exit 1; \
+	fi; \
+	LINK_TEXT="$$(readlink "$$TARGET")"; \
+	if [ "$$LINK_TEXT" = "$$SOURCE" ]; then \
+		echo "✅ Symlink text points to correct target: $$TARGET → $$LINK_TEXT"; \
 	else \
-		echo "➕ Creating symlink: $$HOME/$(1) -> $(2)"; \
-		ln -s "$(2)" $$HOME/$(1); \
+		echo "⚠️  Symlink text differs: $$TARGET → $$LINK_TEXT (expected: $$SOURCE)"; \
 	fi
-endef
