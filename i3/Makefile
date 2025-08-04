@@ -1,4 +1,4 @@
-.PHONY: help install clean
+.PHONY: help setup clean
 
 ## ---------------------------
 ## 🧩 i3 configuration paths
@@ -14,12 +14,11 @@ I3_TARGET_CONFIG   := $(I3_CONF_DIR)/config
 I3_SOURCE_CONFIG   := $(SOURCE_I3_CONFIG)/config
 
 ## ---------------------------
-## 🧩 i3 monitor config files
+## 🧩 i3 monitor directory links
 ## ---------------------------
-# I3_MONITOR_DIR           := $(I3_CONF_DIR)/monitor
-I3_TARGET_MONITOR_CONF   := $(I3_CONF_DIR)/monitor
-I3_SOURCE_MONITOR_LAPTOP := $(SOURCE_I3_CONFIG)/laptop/monitor.conf
-I3_SOURCE_MONITOR_DESKTOP := $(SOURCE_I3_CONFIG)/desktop/monitor.conf
+I3_TARGET_MONITOR_LINK     := $(I3_CONF_DIR)/monitor
+I3_SOURCE_MONITOR_LAPTOP   := $(SOURCE_I3_CONFIG)/laptop
+I3_SOURCE_MONITOR_DESKTOP  := $(SOURCE_I3_CONFIG)/desktop
 
 help:
 	@echo "📘 Available targets:"
@@ -63,33 +62,33 @@ setup:
 	@ln -sf "$(I3_SOURCE_CONFIG)" "$(I3_TARGET_CONFIG)"
 	@echo "------------------------------------------------------------"
 
-	@echo "💻 Detecting system type and linking monitor config..."
+	@echo "💻 Detecting system type and linking monitor directory..."
 	@sh -c '\
 		if command -v upower >/dev/null && upower -e | grep -q BAT; then \
 			echo "🖥️  Laptop detected."; \
-			MONITOR_CONF="$(I3_SOURCE_MONITOR_LAPTOP)"; \
+			MONITOR_DIR="$(I3_SOURCE_MONITOR_LAPTOP)"; \
 		else \
 			echo "🖥️  Desktop detected."; \
-			MONITOR_CONF="$(I3_SOURCE_MONITOR_DESKTOP)"; \
+			MONITOR_DIR="$(I3_SOURCE_MONITOR_DESKTOP)"; \
 		fi; \
 		echo "------------------------------------------------------------"; \
-		echo "🔗 Linking monitor config:"; \
-		echo "→ Target : $(I3_TARGET_MONITOR_CONF)"; \
-		echo "→ Source : $$MONITOR_CONF"; \
-		ln -sf "$$MONITOR_CONF" "$(I3_TARGET_MONITOR_CONF)"; \
+		echo "🔗 Linking monitor directory:"; \
+		echo "→ Target : $(I3_TARGET_MONITOR_LINK)"; \
+		echo "→ Source : $$MONITOR_DIR"; \
+		ln -sfn "$$MONITOR_DIR" "$(I3_TARGET_MONITOR_LINK)"; \
 	'
 	@echo "------------------------------------------------------------"
 
 	@echo "🔍 Final validation of full i3 config..."
 	@if ! i3 -C -c "$(I3_TARGET_CONFIG)" >/dev/null 2>&1; then \
 		echo "❌ Final config is invalid! Rolling back symlinks."; \
-		rm -f "$(I3_TARGET_CONFIG)" "$(I3_TARGET_MONITOR_CONF)"; \
+		rm -f "$(I3_TARGET_CONFIG)" "$(I3_TARGET_MONITOR_LINK)"; \
 		exit 1; \
 	else \
 		echo "✅ Final config is valid and active."; \
 	fi
 	@echo "------------------------------------------------------------"
 
-	@echo "🧹 Removing legacy directory if exists: $(OLD_I3_DIR)"
+	@echo "🧹 Removing legacy directory (if exists): $(OLD_I3_DIR)"
 	@rm -rf "$(OLD_I3_DIR)"
 	@echo "✅ Setup complete!"
