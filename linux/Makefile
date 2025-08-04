@@ -151,6 +151,7 @@ common_symlinks: ## Creates common symbolic links from $(WORK_DIR) to $(HOME)
 		TARGET="$(HOME)/$${pair%%:*}"; \
 		echo "🔄 Linking $$TARGET → $$SOURCE"; \
 		$(MAKE) symlink "$$TARGET" "$$SOURCE"; \
+		echo "============================================================================"; \
 	done
 
 rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
@@ -192,6 +193,23 @@ symlink:  ## Create a symbolic link: make symlink <target> <source>
 	if [ ! -e "$$SOURCE" ]; then \
 		echo "🚫 Source does not exist → $$SOURCE"; \
 		exit 1; \
+	fi; \
+	echo "------------------------------------------------------------"; \
+	echo "📁 Checking target path: $$TARGET"; \
+	if [ -L "$$TARGET" ]; then \
+		echo "🔁 Existing symlink found. Removing..."; \
+		rm -f "$$TARGET"; \
+	elif [ -d "$$TARGET" ]; then \
+		if [ -z "$$(ls -A "$$TARGET")" ]; then \
+			echo "🧹 Empty directory found. Removing..."; \
+			rmdir "$$TARGET"; \
+		else \
+			echo "📦 Directory not empty. Creating backup: $$TARGET.back"; \
+			mv "$$TARGET" "$$TARGET.back"; \
+		fi; \
+	elif [ -f "$$TARGET" ]; then \
+		echo "📄 File found. Creating backup: $$TARGET.back"; \
+		mv "$$TARGET" "$$TARGET.back"; \
 	fi; \
 	echo "------------------------------------------------------------"; \
 	echo "🔗 Creating symlink: $$TARGET → $$SOURCE"; \
