@@ -5,13 +5,13 @@
 ## ---------------------------
 I3_CONF_DIR        := $(HOME)/.config/i3           # Target directory for i3
 OLD_I3_DIR         := $(HOME)/.i3                  # Legacy directory
-SOURCE_I3_CONFIG   := $(HOME)/Configs/i3           # Source configs
+SOURCE_I3_CONFIG   := $(HOME)/Work/Configs/i3           # Source configs
 
 ## ---------------------------
 ## 🧩 i3 main config files
 ## ---------------------------
 I3_TARGET_CONFIG   := $(I3_CONF_DIR)/config        # ~/.config/i3/config
-I3_SOURCE_CONFIG   := $(SOURCE_I3_CONFIG)/config   # ~/Configs/i3/config
+I3_SOURCE_CONFIG   := $(SOURCE_I3_CONFIG)/config   # ~/Work/Configs/i3/config
 
 ## ---------------------------
 ## 🧩 i3 monitor config files
