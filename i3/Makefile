@@ -1,3 +1,30 @@
+.PHONY: help install clean
+
+## ---------------------------
+## 🧩 i3 configuration paths
+## ---------------------------
+I3_CONF_DIR        := $(HOME)/.config/i3
+OLD_I3_DIR         := $(HOME)/.i3
+SOURCE_I3_CONFIG   := $(HOME)/Work/Configs/i3
+
+## ---------------------------
+## 🧩 i3 main config files
+## ---------------------------
+I3_TARGET_CONFIG   := $(I3_CONF_DIR)/config
+I3_SOURCE_CONFIG   := $(SOURCE_I3_CONFIG)/config
+
+## ---------------------------
+## 🧩 i3 monitor config files
+## ---------------------------
+I3_MONITOR_DIR           := $(I3_CONF_DIR)/monitor
+I3_TARGET_MONITOR_CONF   := $(I3_MONITOR_DIR)/monitor.conf
+I3_SOURCE_MONITOR_LAPTOP := $(SOURCE_I3_CONFIG)/laptop/monitor.conf
+I3_SOURCE_MONITOR_DESKTOP := $(SOURCE_I3_CONFIG)/desktop/monitor.conf
+
+help:
+	@echo "📘 Available targets:"
+	@echo "  setup   – Set up i3 configuration (create folder, remove old one, link new config)"
+
 setup:
 	@echo "🔍 Detecting i3 version..."
 	@if command -v i3 >/dev/null 2>&1; then \
