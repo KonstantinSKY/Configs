@@ -19,7 +19,7 @@ remove:
 
 chrome:
 	@echo "🌐 Installing Google Chrome..."
-	make -f $(LINUX_MAKEFILE) install google_chrome
+	make -f $(LINUX_MAKEFILE) install google-chrome
 
 firefox:
 	@echo "🦊 Installing Firefox..."
