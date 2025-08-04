@@ -71,7 +71,7 @@ setup:
 		echo "🖥️  Desktop detected."; \
 		MONITOR_CONF="$(I3_SOURCE_MONITOR_DESKTOP)"; \
 	fi && \
-	@echo "------------------------------------------------------------"
+	@echo "------------------------------------------------------------" \
 	echo "🔗 Linking monitor config:" && \
 	echo "→ Target : $(I3_TARGET_MONITOR_CONF)" && \
 	echo "→ Source : $$MONITOR_CONF" && \
