@@ -3,21 +3,21 @@
 ## ---------------------------
 ## 🧩 i3 configuration paths
 ## ---------------------------
-I3_CONF_DIR        := $(HOME)/.config/i3           # Target directory for i3
-OLD_I3_DIR         := $(HOME)/.i3                  # Legacy directory
-SOURCE_I3_CONFIG   := $(HOME)/Work/Configs/i3           # Source configs
+I3_CONF_DIR        := $(HOME)/.config/i3
+OLD_I3_DIR         := $(HOME)/.i3
+SOURCE_I3_CONFIG   := $(HOME)/Work/Configs/i3
 
 ## ---------------------------
 ## 🧩 i3 main config files
 ## ---------------------------
-I3_TARGET_CONFIG   := $(I3_CONF_DIR)/config        # ~/.config/i3/config
-I3_SOURCE_CONFIG   := $(SOURCE_I3_CONFIG)/config   # ~/Work/Configs/i3/config
+I3_TARGET_CONFIG   := $(I3_CONF_DIR)/config
+I3_SOURCE_CONFIG   := $(SOURCE_I3_CONFIG)/config
 
 ## ---------------------------
 ## 🧩 i3 monitor config files
 ## ---------------------------
-I3_MONITOR_DIR           := $(I3_CONF_DIR)/monitor                         # ~/.config/i3/monitor
-I3_TARGET_MONITOR_CONF   := $(I3_MONITOR_DIR)/monitor.conf                # Final symlink
+I3_MONITOR_DIR           := $(I3_CONF_DIR)/monitor
+I3_TARGET_MONITOR_CONF   := $(I3_MONITOR_DIR)/monitor.conf
 I3_SOURCE_MONITOR_LAPTOP := $(SOURCE_I3_CONFIG)/laptop/monitor.conf
 I3_SOURCE_MONITOR_DESKTOP := $(SOURCE_I3_CONFIG)/desktop/monitor.conf
 
