@@ -52,6 +52,16 @@ setup:
 	fi
 	@echo "------------------------------------------------------------"
 
+	@echo "📦 Copying legacy config directory..."
+	@if [ -d "$(OLD_I3_DIR)" ]; then \
+		cp -r "$(OLD_I3_DIR)" "$(OLD_I3_DIR).back"; \
+		echo "🗄️  Copied $(OLD_I3_DIR) → $(OLD_I3_DIR).back"; \
+	else \
+		echo "✅ No legacy config directory to back up."; \
+	fi
+	@echo "------------------------------------------------------------"
+
+
 	@echo "📁 Creating config directory..."
 	@mkdir -p "$(I3_CONF_DIR)"
 	@echo "------------------------------------------------------------"
@@ -80,10 +90,10 @@ setup:
 	@echo "------------------------------------------------------------"
 
 	@echo "🔍 Final validation of full i3 config..."
-	@if ! i3 -C -c "$(I3_TARGET_CONFIG)" >/dev/null 2>&1; then \
-		echo "❌ Final config is invalid! Rolling back symlinks."; \
-		rm -f "$(I3_TARGET_CONFIG)" "$(I3_TARGET_MONITOR_LINK)"; \
-		exit 1; \
+	@if ! i3 -C -c "$(I3_TARGET_CONFIG)" 2>&1; then \
+			echo "❌ Final config is invalid! Rolling back symlinks."; \
+			rm -f "$(I3_TARGET_CONFIG)" "$(I3_TARGET_MONITOR_LINK)"; \
+			exit 1; \
 	else \
 		echo "✅ Final config is valid and active."; \
 	fi
