@@ -29,9 +29,10 @@ floating_modifier $mod
 
 # start a terminal
 # Set terminal with fallback
-set $terminal exec sh -c "command -v alacritty && exec alacritty || exec xterm"
-bindsym $mod+Return exec terminal
+#set $terminal exec sh -c "command -v alacritty && exec alacritty || exec xterm"
+#bindsym $mod+Return exec terminal
 
+bindsym $mod+Return exec sh -c 'command -v alacritty >/dev/null && exec alacritty || exec terminal'
 # kill focused window
 bindsym $mod+Shift+q kill
 
