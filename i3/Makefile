@@ -16,8 +16,8 @@ I3_SOURCE_CONFIG   := $(SOURCE_I3_CONFIG)/config
 ## ---------------------------
 ## 🧩 i3 monitor config files
 ## ---------------------------
-I3_MONITOR_DIR           := $(I3_CONF_DIR)/monitor
-I3_TARGET_MONITOR_CONF   := $(I3_MONITOR_DIR)/monitor.conf
+# I3_MONITOR_DIR           := $(I3_CONF_DIR)/monitor
+I3_TARGET_MONITOR_CONF   := $(I3_CONF_DIR)/monitor
 I3_SOURCE_MONITOR_LAPTOP := $(SOURCE_I3_CONFIG)/laptop/monitor.conf
 I3_SOURCE_MONITOR_DESKTOP := $(SOURCE_I3_CONFIG)/desktop/monitor.conf
 
@@ -53,8 +53,8 @@ setup:
 	fi
 	@echo "------------------------------------------------------------"
 
-	@echo "📁 Creating config and monitor directories..."
-	@mkdir -p "$(I3_CONF_DIR)" "$(I3_MONITOR_DIR)"
+	@echo "📁 Creating config directory..."
+	@mkdir -p "$(I3_CONF_DIR)"
 	@echo "------------------------------------------------------------"
 
 	@echo "🔗 Linking main config:"
@@ -87,6 +87,9 @@ setup:
 		exit 1; \
 	else \
 		echo "✅ Final config is valid and active."; \
-		echo "🧹 Removing legacy directory: $(OLD_I3_DIR)"; \
-		rm -rf "$(OLD_I3_DIR)"; \
 	fi
+	@echo "------------------------------------------------------------"
+
+	@echo "🧹 Removing legacy directory if exists: $(OLD_I3_DIR)"
+	@rm -rf "$(OLD_I3_DIR)"
+	@echo "✅ Setup complete!"
