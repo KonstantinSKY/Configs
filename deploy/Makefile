@@ -28,7 +28,7 @@ mkdir:
 	ls -la "$(MAIN_DEPLOY_DIR)/$$PROJECT"
 
 sync:
-    @if [ "$(words $(MAKECMDGOALS))" -ne 2 ]; then \
+	@if [ "$(words $(MAKECMDGOALS))" -ne 2 ]; then \
 		echo "❌ Error: Exactly one project name is required."; \
 		echo "👉 Usage: make sync <project_name>"; \
 		exit 1; \
