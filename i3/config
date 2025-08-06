@@ -68,7 +68,7 @@ bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
 bindsym $mod+F2 exec --no-startup-id google-chrome-stable
 bindsym $mod+F3 exec --no-startup-id pcmanfm
 bindsym $mod+F4 exec terminal -e bash -c 'ranger || read'
-bindsym $mod+F5 exec --no-startup-id obsidian
+bindsym $mod+F5 exec --no-startup-id zeditor
 
 #bindsym $mod+Shift+F3 exec pcmanfm_pkexec
 #bindsym $mod+F5 exec terminal -e 'mocp'
