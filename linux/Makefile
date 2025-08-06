@@ -33,6 +33,7 @@ COMMON_SYMLINKS = \
 	Configs:$(WORK_DIR)/Configs \
 	Projects:$(WORK_DIR)/Projects \
 	Prompts:$(WORK_DIR)/Prompts \
+	Prompts:$(WORK_DIR)/Deploys \
 	Music:$(WORK_DIR)/Music \
 	Documents:$(WORK_DIR)/Documents \
 	Downloads:$(WORK_DIR)/Downloads \
