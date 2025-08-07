@@ -224,7 +224,7 @@
         "Rust": {
             "tab_size": 4,
             "hard_tabs": false,
-            "formatter": "rustfmt",
+            // "formatter": ["rustfmt"],
             "format_on_save": "on",
             "show_edit_predictions": true,
             "language_servers": ["rust-analyzer"]
@@ -248,7 +248,7 @@
         "Make": {
             "tab_size": 4,
             "hard_tabs": true,
-            "format_on_save": "on",
+            "format_on_save": "off",
             "formatter": null
         },
         "ini": {
