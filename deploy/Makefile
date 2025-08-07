@@ -1,12 +1,12 @@
 # Makefile for creating a deploy directory and its backup subdirectory
 # URL: https://github.com/yourusername/yourrepo (замени на свой)
 
-MAIN_DEPLOY_DIR := $(HOME)/Deploys
+MAIN_DEPLOY_DIR := $(HOME)/Work/Deploys
 BACKUP_DIR := backups
 MEGA_MAKEFILE := $(HOME)/Work/Configs/mega/Makefile
 REMOTE_DEPLOY_DIR := /Deploys
 
-.PHONY: help create mkdir
+.PHONY: help sync mkdir
 
 help:
 	@echo "📦 Usage:"
