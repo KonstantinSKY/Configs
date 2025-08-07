@@ -1,7 +1,7 @@
 .PHONY: help all remove chrome firefox tor
 
 MAKEFLAGS += --no-print-directory
-LINUX_MAKEFILE = ~/Work/Configs/manjaro/Makefile
+LINUX_MAKEFILE = $(HOME)/Work/Configs/manjaro/Makefile
 
 help:
 	@echo "📘 Available targets:"
@@ -19,16 +19,16 @@ remove:
 
 chrome:
 	@echo "🌐 Installing Google Chrome..."
-	make -f $(LINUX_MAKEFILE) install google-chrome
+	$(MAKE) -f $(LINUX_MAKEFILE) install google-chrome
 
 firefox:
 	@echo "🦊 Installing Firefox..."
-	make -f $(LINUX_MAKEFILE) install firefox
+	$(MAKE) -f $(LINUX_MAKEFILE) i firefox
 
 tor:
 	@echo "🕵️  Installing Tor Browser..."
-	make -f $(LINUX_MAKEFILE) install torbrowser-launcher
+	$(MAKE) -f $(LINUX_MAKEFILE) install torbrowser-launcher
 
 # Prevent make from treating package names as targets
-%:
-	@:
+# %:
+# 	@:

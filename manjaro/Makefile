@@ -1,6 +1,6 @@
-.PHONY: help setup mirrors pacman-update install-yay enable-aur update
+.PHONY: help setup mirrors pacman-update install-yay enable-aur update u yay-update install i install-base check
 
-MAKEFLAGS += --no-print-directory
+# MAKEFLAGS += --no-print-directory
 
 help:
 	@echo "Available commands:"
@@ -36,7 +36,7 @@ install-yay:
 
 yay-update:
 	@echo "⬆️  Updating AUR and system packages with yay..."
-	@yay -Syu --noconfirm
+	@yay -Syu --noconfirm || echo "⚠️  Yay exited with warning"
 	@echo "-------------------------------------------------------------------------------"
 
 enable-aur:
@@ -48,7 +48,7 @@ enable-aur:
 	fi
 	@echo "-------------------------------------------------------------------------------"
 
-update:
+update u:
 	@echo "⬆️  Full update of AUR and system packages via yay..."
 	yay -Syyu --noconfirm --answerclean None --answerdiff None
 	@echo "-------------------------------------------------------------------------------"
@@ -60,12 +60,12 @@ update:
 	@echo "✅ Update completed successfully!"
 	@echo "-------------------------------------------------------------------------------"
 
-install:
+install i:
 	@if [ "$(wordlist 2,999,$(MAKECMDGOALS))" = "" ]; then \
 		echo "❌ No packages specified. Usage: make install [list of packages]"; \
 		exit 1; \
 	fi
-	@$(MAKE) yay-update
+	$(MAKE) -f $(lastword $(MAKEFILE_LIST)) yay-update
 	@echo "📦 Installing packages:"
 	@echo "-------------------------------------------------------------------------------"
 	@for pkg in $(wordlist 2,999,$(MAKECMDGOALS)); do \
@@ -110,8 +110,6 @@ install-base:
 		pulseaudio \
 	@echo "✅ Base packages installed via yay."
 	@echo "-------------------------------------------------------------------------------"
-
-
 
 check:
 	@echo "🔍 Starting full system diagnostic..."
