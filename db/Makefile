@@ -5,6 +5,7 @@
 .PHONY: help h installall ia all postgres p PG client c dbeaver d pg_setup pgset pg_enable pgen pg_start pgst pg_status pgss
 
 MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
+DB_APP_ID := io.dbeaver.DBeaverCommunity
 
 help h:
 	@echo "Targets:"
@@ -46,10 +47,19 @@ client c:
 # DBeaver (inline aliases)
 dbeaver d:
 	@echo "🦫 Installing DBeaver…"
-	@$(MAKE) -f $(MANJARO_MAKEFILE) install dbeaver
-	@echo "🔎 Versions:"
-	@which dbeaver >/dev/null 2>&1 && dbeaver --version || echo "dbeaver: not installed"
+	flatpak install -y flathub $(DB_APP_ID)
+	flatpak override --user --env=GTK_THEME=Adwaita:dark io.dbeaver.DBeaverCommunity
+	@echo "🔎 Version (flat):"
+	flatpak list | grep -i dbeaver
 	@echo "---------------------------------------------------------------------------------------"
+	@echo "🔗 Creating CLI wrapper → $(HOME)/.local/bin/dbeaver"
+	install -d "$(HOME)/.local/bin"
+	@printf '#!/usr/bin/env bash\nexec flatpak run %s "$$@"\n' "$(DB_APP_ID)" > "$(HOME)/.local/bin/dbeaver"
+	chmod +x "$(HOME)/.local/bin/dbeaver"
+	cat $(HOME)/.local/bin/dbeaver
+	@rm -f "$(HOME)/.cache/dmenu_run" 2>/dev/null || true
+	@echo "---------------------------------------------------------------------------------------"
+
 
 # PostgreSQL service helpers (inline aliases)
 pg_setup pgset:

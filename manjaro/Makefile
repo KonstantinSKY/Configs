@@ -1,6 +1,6 @@
 .PHONY: help setup mirrors pacman-update install-yay enable-aur update u yay-update install i install-base check
 
-# MAKEFLAGS += --no-print-directory
+FLATPAK_MAKEFILE = $(HOME)/Work/Configs/flatpak/Makefile
 
 help:
 	@echo "Available commands:"
@@ -16,6 +16,7 @@ help:
 
 # Main target
 setup: mirrors pacman-update install-yay yay-update enable-aur
+	@$(MAKE) -s -f $(FLATPAK_MAKEFILE) install
 	@echo "✅ Manjaro i3 setup complete!"
 
 # mirrors update
@@ -57,6 +58,13 @@ update u:
 	@echo "-------------------------------------------------------------------------------"
 	@echo "🧼 Cleaning cache..."
 	yay -Sc --noconfirm
+	@echo "-------------------------------------------------------------------------------"
+	@echo "⬆️  Updating flatpak apps/runtimes..."
+	@flatpak update -y || { rc=$$?; [ $$rc -eq 127 ] && echo "⚠️ flatpak not installed — skipping" || exit $$rc; }
+	@echo "🧹 Cleaning flat unused flatpak runtimes..."
+	@flatpak uninstall -y --unused || { rc=$$?; [ $$rc -eq 127 ] && echo "⚠️ runtime not installed — skipping cleanup" || exit $$rc; }
+	@echo "-------------------------------------------------------------------------------"
+
 	@echo "✅ Update completed successfully!"
 	@echo "-------------------------------------------------------------------------------"
 
