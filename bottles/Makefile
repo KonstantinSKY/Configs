@@ -7,6 +7,7 @@ APP_ID      := com.usebottles.bottles
 BOTTLES_CLI := flatpak run --command=bottles-cli $(APP_ID)
 
 # Optional: external flat base makefile that ensures flat runtime & flathub
+MANJARO_MAKEFILE := $(HOME)/Work/Configs/manjaro/Makefile
 FLATPAK_MAKEFILE := $(HOME)/Work/Configs/flatpak/Makefile
 BOTTLES_DIR	:= $(HOME)/WORK/Bottles
 
@@ -21,13 +22,22 @@ help h:
 	@echo "  wrap-cli  / wc - Create ~/.local/bin/bottles-cli wrapper."
 
 install i:
+	@echo "🍾 Installing Bottles (AUR)…"
+	@# ensure yay via your Manjaro Makefile (try 'install' first, fallback to 'install-yay')
+	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install bottles
+	@yay -Q bottles 2>/dev/null || echo "  bottles: not installed"
+	@echo "🔎 App self-report:"
+	@bottles --version 2>/dev/null || bottles-cli --version 2>/dev/null || echo "  no CLI version output"
+	@echo "✅ Done."
+
+install-flat if:
 	@echo "🍾 Installing Bottles…"
 	@flatpak install -y flathub $(APP_ID)
 	mkdir -p $(BOTTLES_DIR)
 	@flatpak override --user --filesystem="$(BOTTLES_DIR)" $(APP_ID)
 	@$(MAKE) -s version
 	@echo "🔎 Version (flat):"
-	flatpak list | grep -i dbeaver
+	flatpak list
 	@echo "✅ Done. Tip: make run"
 
 run r:
@@ -38,9 +48,11 @@ version v:
 	@echo "🔎 Bottles info:"
 	@flatpak info $(APP_ID) 2>/dev/null || echo "not installed"
 
-remove rm:
+remove-flat rm:
 	@echo "🧹 Removing Bottles…"
 	@flatpak uninstall -y $(APP_ID) || true
+	@rm -f "$(HOME)/.local/bin/bottles" "$(HOME)/.local/bin/bottles-cli"
+	@rm -f "$(HOME)/.cache/dmenu_run" 2>/dev/null || true
 	@echo "✅ Removed."
 
 wrap w:
