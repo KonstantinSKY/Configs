@@ -24,8 +24,10 @@ MOUNT_DIR = $(WORK_DIR)
 ## ---------------------------
 RC_FILE = $(CONFIGS_DIR)/linux/rc
 RC_LINE = [ -f "$(RC_FILE)" ] && source "$(RC_FILE)"
-PROFILE_FILE = $(CONFIGS_DIR)/linux/profile
-PROFILE_LINE = [ -f "$(PROFILE_FILE)" ] && source "$(PROFILE_FILE)"
+SOURCE_PROFILE_FILE = $(CONFIGS_DIR)/linux/profile
+TARGET_PROFILE_FILE = $(HOME)/.profile
+
+
 ## ---------------------------
 ## 🧩 Work directory and symlinks
 ## ---------------------------
@@ -168,13 +170,14 @@ rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
 		fi; \
 	done
 
-profile: ## Adds source to custom profile if not present
-	@if grep -Fxq '$(PROFILE_LINE)' $(HOME)/.profile; then \
-		echo "✅ Already linked: .profile"; \
-	else \
-		echo '$(PROFILE_LINE)' >> $(HOME)/.profile; \
-		echo "➕ Linked: .profile"; \
+profile p: ## Replace target profile with symlink to source profile (backup if exists)
+	@echo "🧷 Linking $(TARGET_PROFILE_FILE) → $(SOURCE_PROFILE_FILE)"
+	@if [ ! -e "$(SOURCE_PROFILE_FILE)" ]; then \
+		echo "❌ Source missing: $(SOURCE_PROFILE_FILE)"; \
+		exit 1; \
 	fi
+	@$(MAKE) symlink $(TARGET_PROFILE_FILE) $(SOURCE_PROFILE_FILE)
+	@echo "✅ Done: $(TARGET_PROFILE_FILE) → $(SOURCE_PROFILE_FILE)"
 
 setup: ## Runs initial setup: symlinks, no_beep, rc, and profile
 	@$(MAKE) common_symlinks
