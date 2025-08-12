@@ -24,8 +24,8 @@ MOUNT_DIR = $(WORK_DIR)
 ## ---------------------------
 RC_FILE = $(CONFIGS_DIR)/linux/rc
 RC_LINE = [ -f "$(RC_FILE)" ] && source "$(RC_FILE)"
-SOURCE_PROFILE_FILE = $(CONFIGS_DIR)/linux/profile
-TARGET_PROFILE_FILE = $(HOME)/.profile
+SOURCE_XPROFILE_FILE = $(CONFIGS_DIR)/linux/xprofile
+TARGET_XPROFILE_FILE = $(HOME)/.xprofile
 
 
 ## ---------------------------
@@ -171,13 +171,15 @@ rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
 	done
 
 profile p: ## Replace target profile with symlink to source profile (backup if exists)
-	@echo "🧷 Linking $(TARGET_PROFILE_FILE) → $(SOURCE_PROFILE_FILE)"
-	@if [ ! -e "$(SOURCE_PROFILE_FILE)" ]; then \
-		echo "❌ Source missing: $(SOURCE_PROFILE_FILE)"; \
-		exit 1; \
+	@echo "🧷 Linking $(TARGET_XPROFILE_FILE) → $(SOURCE_XPROFILE_FILE)"
+	@if [ -z "$(SOURCE_XPROFILE_FILE)" ]; then \
+		echo "❌ SOURCE_XPROFILE_FILE is empty"; exit 1; \
 	fi
-	@$(MAKE) symlink $(TARGET_PROFILE_FILE) $(SOURCE_PROFILE_FILE)
-	@echo "✅ Done: $(TARGET_PROFILE_FILE) → $(SOURCE_PROFILE_FILE)"
+	@if [ ! -e "$(SOURCE_XPROFILE_FILE)" ]; then \
+		echo "❌ Source missing: $(SOURCE_XPROFILE_FILE)"; exit 1; \
+	fi
+	@$(MAKE) symlink $(TARGET_XPROFILE_FILE) $(SOURCE_XPROFILE_FILE)
+	@echo "✅ Done: $(TARGET_XPROFILE_FILE) → $(SOURCE_XPROFILE_FILE)"
 
 setup: ## Runs initial setup: symlinks, no_beep, rc, and profile
 	@$(MAKE) common_symlinks
