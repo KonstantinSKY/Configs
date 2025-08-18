@@ -99,18 +99,23 @@ commit c:
 	@echo "-------------------------------------------------------------------"
 
 full_commit fc:
-	@message="$(shell echo $(wordlist 2, 999, $(MAKECMDGOALS)))"; \
-	if [ -z "$$message" ]; then message="update"; fi; \
+	@message="$(wordlist 2, 999, $(MAKECMDGOALS))"; \
+	if [ -z "$$message" ]; then message="no_message"; fi; \
+	echo "-------------------------------------------------------------------"; \
+	git status -s || true; \
+	echo "-------------------------------------------------------------------"; \
+	echo "➕ Adding all changes..."; \
+	git add -A; \
+	echo "-------------------------------------------------------------------"; \
 	echo "🔄 Pulling latest changes with rebase..."; \
 	git pull --rebase origin main || echo "⚠️ Pull failed — maybe repo is new"; \
-	echo "➕ Adding all changes..."; \
-	git add .; \
 	echo "📝 Committing with message: '$$message'"; \
 	git commit -m "$$message" || echo "ℹ️ Nothing to commit"; \
 	echo "🚀 Pushing to origin/main..."; \
 	git push origin main || echo "⚠️ Push failed"; \
-	echo "✅ Full commit cycle complete"
-	@echo "-------------------------------------------------------------------"
+	git status -s || true; \
+	echo "✅ Full commit cycle complete"; \
+	echo "-------------------------------------------------------------------"
 
 %:
 	@:
