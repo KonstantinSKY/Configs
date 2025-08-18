@@ -125,7 +125,7 @@ choose_editor() {
 alias vi=choose_editor
 
 #git
-alias commit="exe commit"
+alias commit="make --no-print-directory -C ~/Configs/git full_commit"
 
 #project_rc="$PROJECTS_PATH/Project/rc"
 #[[ -f "$project_rc" ]] && . "$project_rc"
