@@ -107,10 +107,12 @@ full_commit fc:
 	echo "➕ Adding all changes..."; \
 	git add -A; \
 	echo "-------------------------------------------------------------------"; \
-	echo "🔄 Pulling latest changes with rebase..."; \
-	git pull --rebase origin main || echo "⚠️ Pull failed — maybe repo is new"; \
 	echo "📝 Committing with message: '$$message'"; \
 	git commit -m "$$message" || echo "ℹ️ Nothing to commit"; \
+	echo "-------------------------------------------------------------------"; \
+	echo "🔄 Pulling latest changes with rebase..."; \
+	git pull --rebase origin main || echo "⚠️ Pull failed — maybe repo is new"; \
+	echo "-------------------------------------------------------------------"; \
 	echo "🚀 Pushing to origin/main..."; \
 	git push origin main || echo "⚠️ Push failed"; \
 	git status -s || true; \
