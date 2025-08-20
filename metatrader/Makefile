@@ -28,7 +28,8 @@ GIT_MAKEFILE         := $(HOME)/Configs/git/Makefile
 METATRADER_MAKEFILE  := $(HOME)/Configs/metatrader/Makefile
 
 # Templates
-TEMPLATE_DIR         := $(HOME)/Configs/metatrader/templates
+MT_CONFIGS_DIR       := $(HOME)/Configs/metatrader
+TEMPLATE_DIR         := $(MT_CONFIGS_DIR)/templates
 EXPERT_TEMPLATE      := $(TEMPLATE_DIR)/expert.mq4
 INDICATOR_TEMPLATE   := $(TEMPLATE_DIR)/indicator.mq4
 SCRIPT_TEMPLATE      := $(TEMPLATE_DIR)/script.mq4
@@ -112,9 +113,14 @@ repo r:
 	fi
 
 	@echo "📦 Project and repo name: $$project"
-	@echo "🌿 Initializing git repo"
+	@echo "🌿 Initializing git repo..."
 	@$(MAKE) -f "$(GIT_MAKEFILE)" init
+	@echo "----------------------------------------------------------------------------------"
 
+	@echo "Copying gitignore..."
+	cp "$(MT_CONFIGS_DIR)/gitignore" "$$PROJECT_DIR/.gitignore"
+
+	@echo "----------------------------------------------------------------------------------"
 	@$(MAKE) -f "$(GIT_MAKEFILE)" create_repo "$$project"
 	@$(MAKE) -f "$(GIT_MAKEFILE)" init
 	@$(MAKE) -f "$(GIT_MAKEFILE)" commit "Initial commit"

@@ -1,0 +1,23 @@
+# --- MetaTrader compiled files ---
+*.ex4
+*.ex5
+
+# --- MetaTrader cache / logs ---
+*.log
+*.hst
+*.dat
+*.tmp
+
+# --- OS / editor junk ---
+.DS_Store
+Thumbs.db
+*.swp
+*.swo
+
+# --- Build artifacts (if you run scripts/tools) ---
+build/
+out/
+
+# --- Project-specific: do not commit prompts ---
+prompt/
+prompts/
