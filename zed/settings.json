@@ -9,7 +9,7 @@
     },
     "always_allow_tool_actions": true,
     "play_sound_when_agent_done": true,
-    "default_profile": "write"
+    "default_profile": "ask"
   },
   "vim_mode": true,
   // ==========================================
