@@ -5,7 +5,7 @@
   "agent": {
     "default_model": {
       "provider": "zed.dev",
-      "model": "claude-opus-4"
+      "model": "claude-sonnet-4"
     },
     "always_allow_tool_actions": true,
     "play_sound_when_agent_done": true,
