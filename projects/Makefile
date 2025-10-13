@@ -1,9 +1,28 @@
+# SHELL := /bin/bash               # Use Bash for richer features than /bin/sh
+.ONESHELL:                       # Run each recipe in a single shell session
+# .SILENT:                         # Do not echo commands, only their output
+.DEFAULT_GOAL := help            # Show help when running plain `make`
 .PHONY: setup rust js python repo rp
 
 RUST_MAKEFILE := ~/Configs/rust/Makefile
 JS_MAKEFILE   := ~/Configs/js/Makefile
 PY_MAKEFILE   := ~/Configs/python/Makefile
 GIT_MAKEFILE := ~/Configs/git/Makefile
+
+help h:
+	@echo "🛠  Makefile commands:"
+	@echo "  make setup            — 🔗 Link ~/Projects/Makefile → ~/Configs/projects/Makefile"
+	@echo "  make rust <name>      — 🦀 Create new Rust project"
+	@echo "  make js <name>        — 🟨 Create new JavaScript project"
+	@echo "  make python <name>    — 🐍 Create new Python project"
+	@echo "  make repo [name]      — 🛰  Init Git repo + create GitHub repo (SSH remote)"
+	@echo "  make h, help          — Show this help message"
+	@echo
+	@echo "Examples:"
+	@echo "  make rust myproj"
+	@echo "  make js myproj"
+	@echo "  make python myproj"
+	@echo "  make repo myrepo"
 
 setup:
 	ln -s ~/Configs/projects/Makefile ~/Projects/Makefile
