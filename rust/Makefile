@@ -1,9 +1,15 @@
+# --- Defaults
+SHELL := /bin/bash
+.ONESHELL:
+.DEFAULT_GOAL := help
+
+
 .PHONY: help h install i create c repo rp delete_repo dr copy_gitignore gi read rd
 
-RUST_MAKEFILE := ~/Configs/rust/Makefile
-GIT_MAKEFILE := ~/Configs/git/Makefile
-GITIGNORE_TEMPLATE := ~/Configs/rust/gitignore
-MANJARO_MAKEFILE := ~/Configs/manjaro/Makefile
+RUST_MAKEFILE := $(HOME)/Configs/rust/Makefile
+GIT_MAKEFILE := $(HOME)/Configs/git/Makefile
+GITIGNORE_TEMPLATE := $(HOME)/Configs/rust/gitignore
+MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Helpers
@@ -27,33 +33,25 @@ help h:
 # Create new Rust project and link shared Makefile
 create c:
 	@set -e; \
-	# ---- updates (optional) ----
-	if command -v checkupdates >/dev/null 2>&1 || yay -Qu >/dev/null 2>&1; then \
-		echo "🔍 Checking for system and AUR updates..."; \
-		if checkupdates >/dev/null 2>&1 || yay -Qu >/dev/null 2>&1; then \
-			echo "⬆️  Updates available. Running full update..."; \
-			$(MAKE) -f $(MANJARO_MAKEFILE) update; \
-		else \
-			echo "✅ System is up to date. Skipping update."; \
-		fi; \
-	fi; \
-	# ---- project name ----
-	project="$(word 2, $(MAKECMDGOALS))"; \
-	if [ -z "$$project" ] || echo "$$project" | grep -q '^[[:space:]]*$$'; then \
+	# Read from env/var injected by the parent make
+	project="$${PROJECT:-}"; \
+	# Prompt if still empty
+	if [[ -z "$${project//[[:space:]]/}" ]]; then \
 		read -p "📛 Enter project name: " project; \
 	fi; \
-	if [ -z "$$project" ] || echo "$$project" | grep -q '^[[:space:]]*$$'; then \
+	# Validate again
+	if [[ -z "$${project//[[:space:]]/}" ]]; then \
 		echo "❌ Error: Project name is required."; exit 1; \
 	fi; \
-	# ---- safety ----
+	# Safety: path must not already exist
 	if [ -e "$$project" ]; then \
 		echo "❌ Path already exists: $$project"; exit 1; \
 	fi; \
-	# ---- create & link ----
+	# Create and link
 	echo "📦 Creating Rust project: $$project"; \
 	cargo new "$$project" --vcs none; \
 	echo "🔗 Linking shared Makefile into project"; \
-	ln -sfn $(RUST_MAKEFILE) "$$project/Makefile"; \
+	ln -sfn "$(HOME)/Configs/rust/Makefile" "$$project/Makefile"; \
 	echo "✅ Done → $$project"
 
 # Initialize Git and create remote repo, then force SSH & copy .gitignore
