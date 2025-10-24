@@ -60,14 +60,15 @@ create_repo cr:
 		read -p "📛 Enter GitHub repository name: " project_input; \
 		project=$$project_input; \
 	fi; \
-	if [ -z "$$project" ]; then echo "❌ Error: repository name is required."; exit 1; fi; \
+	project_name=$$(basename "$$project"); \
+	if [ -z "$$project_name" ]; then echo "❌ Error: repository name is required."; exit 1; fi; \
 	echo "🔐 Checking GitHub CLI authentication..."; \
 	if ! gh auth status >/dev/null 2>&1; then \
 		echo "🔑 Not logged in. Launching GitHub login..."; \
 		gh auth login; \
 	fi; \
-	echo "🌐 Creating private repository '$$project' on GitHub..."; \
-	gh repo create $$project --private --source=. --remote=origin; \
+	echo "🌐 Creating private repository '$$project_name' on GitHub..."; \
+	gh repo create $$project_name --private --source=. --remote=origin; \
 	echo "✅ Remote 'origin' created."
 	@echo "-------------------------------------------------------------------"
 
@@ -81,9 +82,13 @@ delete_repo dr:
 
 force_ssh fs:
 	@project=$(word 2, $(MAKECMDGOALS)); \
-	if [ -z "$$project" ]; then project=$$(basename $$PWD); fi; \
-	git remote set-url origin git@github.com:$(GITHUB_USER)/$$project.git; \
-	echo "🔁 Remote origin → SSH: git@github.com:$(GITHUB_USER)/$$project.git"; \
+	if [ -z "$$project" ]; then project=$$(basename "$$PWD"); fi; \
+	project_name=$$(basename "$$project"); \
+	if [ -z "$$GITHUB_USER" ]; then \
+		GITHUB_USER=$$(gh api user --jq '.login'); \
+	fi; \
+	echo "🔁 Remote origin → SSH: git@github.com:$$GITHUB_USER/$$project_name.git"; \
+	git remote set-url origin git@github.com:$$GITHUB_USER/$$project_name.git; \
 	git branch --set-upstream-to=origin/main main 2>/dev/null || echo "ℹ️ Could not set upstream"; \
 	git push -u origin main || echo "⚠️ Push failed"
 	@echo "-------------------------------------------------------------------"
