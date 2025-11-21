@@ -221,7 +221,7 @@
   },
   "language_servers": ["codebook"],
   "file_types": {
-    "C++": ["mq4", "mq5", "mqh"]
+    "C++": ["mq4", "mq5", "mqh", "c"]
   },
   "languages": {
     "Rust": {
@@ -247,6 +247,10 @@
       "format_on_save": "on",
       "show_edit_predictions": true,
       "language_servers": ["typescript"]
+    },
+    "C++": {
+      "format_on_save": "on",
+      "tab_size": 3
     },
     "Make": {
       "tab_size": 4,
