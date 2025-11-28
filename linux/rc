@@ -22,7 +22,7 @@ esac
 export CONFIGS_PATH="$WORK/Configs"
 export PROJECTS_PATH="$WORK/Projects"
 export BACKUPS_PATH="$WORK/BackUps"
-
+export PATH="$HOME/.cargo/bin:$PATH"
 
 alias Configs='cd $CONFIGS_PATH; ls -ls'
 alias Projects='cd $PROJECTS_PATH; ls -ls'
