@@ -265,8 +265,19 @@
       "format_on_save": "on",
       "show_edit_predictions": false,
       "language_servers": ["codebook"]
-    }
+    },
     // "file_types": {}
+
+    "context_servers": {
+      "voice-mode": {
+        "command": "uvx",
+        "args": ["voice-mode"],
+        "env": {
+          // "OPENAI_API_KEY": "your-openai-key-here",
+          "LEMONFOX_API_KEY": "твой-ключ"
+        }
+      }
+    }
 
     //==========================================
     // COLLABORATION PANEL
