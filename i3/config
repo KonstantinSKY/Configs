@@ -472,4 +472,4 @@ exec --no-startup-id flameshot
 # exec --no-startup-id xinput set-prop 21 "libinput Accel Speed" 1.0
 
 # Voice PTT
-exec_always --no-startup-id bash -c "sleep 3; /home/sky/Work/Configs/voice-ptt/voice-ptt"
+exec_always --no-startup-id bash -c "pkill -x voice-ptt; sleep 3; /home/sky/Work/Configs/voice-ptt/voice-ptt"
