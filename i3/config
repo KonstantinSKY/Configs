@@ -38,10 +38,10 @@ bindsym $mod+Shift+q kill
 
 #----- Start Menus -------------
 # start program launcher
-bindsym $mod+d exec --no-startup-id dmenu_recency
+bindsym $mod+d exec_always --no-startup-id dmenu_recency
 
 # launch categorized menu
-bindsym $mod+z exec --no-startup-id morc_menu
+bindsym $mod+z exec_always --no-startup-id morc_menu
 
 # launch bmenu categorized menu
 # bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
@@ -50,10 +50,10 @@ bindsym $mod+z exec --no-startup-id morc_menu
 ## sound-section - DO NOT EDIT if you wish to automatically upgrade Alsa -> Pulseaudio later! ##
 ################################################################################################
 
-exec --no-startup-id volumeicon
+exec_always --no-startup-id volumeicon
 bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
-#exec --no-startup-id pulseaudio
-#exec --no-startup-id pa-applet
+#exec_always --no-startup-id pulseaudio
+#exec_always --no-startup-id pa-applet
 #bindsym $mod+Ctrl+m exec pavucontrol
 
 ################################################################################################
@@ -65,28 +65,28 @@ bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
 # Start Applications
 # bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 
-bindsym $mod+F2 exec --no-startup-id google-chrome-stable
-bindsym $mod+F3 exec --no-startup-id pcmanfm
+bindsym $mod+F2 exec_always --no-startup-id google-chrome-stable
+bindsym $mod+F3 exec_always --no-startup-id pcmanfm
 bindsym $mod+F4 exec terminal -e bash -c 'ranger || read'
-bindsym $mod+F5 exec --no-startup-id zeditor
+bindsym $mod+F5 exec_always --no-startup-id zeditor
 
 #bindsym $mod+Shift+F3 exec pcmanfm_pkexec
 #bindsym $mod+F5 exec terminal -e 'mocp'
-bindsym $mod+t exec --no-startup-id pkill picom
-bindsym $mod+Ctrl+t exec --no-startup-id picom -b
+bindsym $mod+t exec_always --no-startup-id pkill picom
+bindsym $mod+Ctrl+t exec_always --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
-#bindsym Print exec --no-startup-id i3-scrot
+#bindsym Print exec_always --no-startup-id i3-scrot
 
 #--- SCREENSHOTS -----
-bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
-bindsym $mod+Shift+Print --release exec --no-startup-id i3-scrot -s
-#bindsym $mod+Print --release exec --no-startup-id flameshot gui
-bindsym Print --release exec --no-startup-id flameshot gui
+bindsym $mod+Print --release exec_always --no-startup-id i3-scrot -w
+bindsym $mod+Shift+Print --release exec_always --no-startup-id i3-scrot -s
+#bindsym $mod+Print --release exec_always --no-startup-id flameshot gui
+bindsym Print --release exec_always --no-startup-id flameshot gui
 # Start Calulator from keyboard key
-bindcode 148 --release exec --no-startup-id galculator
+bindcode 148 --release exec_always --no-startup-id galculator
 
 bindsym $mod+Shift+question exec xdg-open /usr/share/doc/manjaro/i3_help.pdf
-bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
+bindsym $mod+Ctrl+x --release exec_always --no-startup-id xkill
 
 # focus_follows_mouse no
 
@@ -304,26 +304,26 @@ mode "resize" {
 bindsym $mod+Delete exec --no-startup-id blurlock
 
 # Autostart applications
-exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec --no-startup-id nitrogen --restore; sleep 1; picom -b
-#exec --no-startup-id manjaro-hello
-exec --no-startup-id nm-applet
-exec --no-startup-id xfce4-power-manager
-exec --no-startup-id pamac-tray
-exec --no-startup-id clipit
-# exec --no-startup-id blueman-applet
+exec_always --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec_always --no-startup-id nitrogen --restore; sleep 1; picom -b
+#exec_always --no-startup-id manjaro-hello
+exec_always --no-startup-id nm-applet
+exec_always --no-startup-id xfce4-power-manager
+exec_always --no-startup-id pamac-tray
+exec_always --no-startup-id clipit
+# exec_always --no-startup-id blueman-applet
 # exec_always --no-startup-id sbxkb
-exec --no-startup-id start_conky_maia
-# exec --no-startup-id start_conky_green
-exec --no-startup-id xautolock -time 10 -locker blurlock
+exec_always --no-startup-id start_conky_maia
+# exec_always --no-startup-id start_conky_green
+exec_always --no-startup-id xautolock -time 10 -locker blurlock
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 exec_always --no-startup-id stalonetray
-exec --no-startup-id export QT_STYLE_OVERRIDE=kvantum
+exec_always --no-startup-id export QT_STYLE_OVERRIDE=kvantum
 # Stop blank screen
-exec --no-startup-id xset b off
-#exec --no-startup-id xset s off
-#exec --no-startup-id xset -dpms
+exec_always --no-startup-id xset b off
+#exec_always --no-startup-id xset s off
+#exec_always --no-startup-id xset -dpms
 
 # Color palette used for the terminal ( ~/.Xresources file )
 # Colors are gathered based on the documentation:
@@ -358,11 +358,11 @@ set_from_resource $term_color15    color15
 
 # Automatically include the correct config depending on the monitor setup
 #include_shell ~/Work/Configs/i3/include/display_include.sh
-#exec --no-startup-id ~/scripts/display_setup.sh
+#exec_always --no-startup-id ~/scripts/display_setup.sh
 
-#exec --no-startup-id xrandr --output DisplayPort-0 --primary --dpi 120 --left-of DisplayPort-1
+#exec_always --no-startup-id xrandr --output DisplayPort-0 --primary --dpi 120 --left-of DisplayPort-1
 
-# exec --no-startup-id xrandr --output DisplayPort-0 --dpi 96 --right-of HDMI-A-0
+# exec_always --no-startup-id xrandr --output DisplayPort-0 --dpi 96 --right-of HDMI-A-0
 # Start i3bar to display a workspace bar (plus the system information i3status if available)
 #bar {
 #	i3bar_command i3bar
@@ -464,11 +464,12 @@ mode "$mode_gaps_outer" {
         bindsym Escape mode "default"
 }
 # autostart
-exec --no-startup-id xset 1800
-exec --no-startup-id flameshot
-exec_always --no-startup-id megasync
+exec_always --no-startup-id xset 1800
+exec_always --no-startup-id flameshot
+# exec_always --no-startup-id megasync
 
 # Fast Razer mouse (libinput max)
-# exec --no-startup-id xinput set-prop 19 "libinput Accel Speed" 1.0
-# exec --no-startup-id xinput set-prop 21 "libinput Accel Speed" 1.0
-# `
+# exec_always --no-startup-id xinput set-prop 19 "libinput Accel Speed" 1.0
+# exec_always --no-startup-id xinput set-prop 21 "libinput Accel Speed" 1.0
+# Voice PTT
+exec_always --no-startup-id bash -c "sleep 3; /home/sky/Work/Configs/voice-ptt/voice-ptt"
