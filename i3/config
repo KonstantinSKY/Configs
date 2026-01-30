@@ -38,10 +38,10 @@ bindsym $mod+Shift+q kill
 
 #----- Start Menus -------------
 # start program launcher
-bindsym $mod+d exec_always --no-startup-id dmenu_recency
+bindsym $mod+d exec --no-startup-id dmenu_recency
 
 # launch categorized menu
-bindsym $mod+z exec_always --no-startup-id morc_menu
+bindsym $mod+z exec --no-startup-id morc_menu
 
 # launch bmenu categorized menu
 # bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
@@ -52,41 +52,40 @@ bindsym $mod+z exec_always --no-startup-id morc_menu
 
 exec_always --no-startup-id volumeicon
 bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
-#exec_always --no-startup-id pulseaudio
-#exec_always --no-startup-id pa-applet
+#exec --no-startup-id pulseaudio
+#exec --no-startup-id pa-applet
 #bindsym $mod+Ctrl+m exec pavucontrol
 
 ################################################################################################
-
-# Screen brightness controls
-# bindsym XF86MonBrightnessUp exec "xbacklight -inc 10; notify-send 'brightness up'"
-# bindsym XF86MonBrightnessDown exec "xbacklight -dec 10; notify-send 'brightness down'"
+## This configuration block is used by the i3-settings-manager for simple modification.       ##
+## It is recommended to not edit this block by hand.                                          ##
+################################################################################################
 
 # Start Applications
 # bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 
-bindsym $mod+F2 exec_always --no-startup-id google-chrome-stable
-bindsym $mod+F3 exec_always --no-startup-id pcmanfm
+bindsym $mod+F2 exec --no-startup-id google-chrome-stable
+bindsym $mod+F3 exec --no-startup-id pcmanfm
 bindsym $mod+F4 exec terminal -e bash -c 'ranger || read'
-bindsym $mod+F5 exec_always --no-startup-id zeditor
+bindsym $mod+F5 exec --no-startup-id zeditor
 
 #bindsym $mod+Shift+F3 exec pcmanfm_pkexec
 #bindsym $mod+F5 exec terminal -e 'mocp'
-bindsym $mod+t exec_always --no-startup-id pkill picom
-bindsym $mod+Ctrl+t exec_always --no-startup-id picom -b
+bindsym $mod+t exec --no-startup-id pkill picom
+bindsym $mod+Ctrl+t exec --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec "killall dunst; exec notify-send 'restart dunst'"
-#bindsym Print exec_always --no-startup-id i3-scrot
+#bindsym Print exec --no-startup-id i3-scrot
 
 #--- SCREENSHOTS -----
-bindsym $mod+Print --release exec_always --no-startup-id i3-scrot -w
-bindsym $mod+Shift+Print --release exec_always --no-startup-id i3-scrot -s
-#bindsym $mod+Print --release exec_always --no-startup-id flameshot gui
-bindsym Print --release exec_always --no-startup-id flameshot gui
+bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
+bindsym $mod+Shift+Print --release exec --no-startup-id i3-scrot -s
+#bindsym $mod+Print --release exec --no-startup-id flameshot gui
+bindsym Print --release exec --no-startup-id flameshot gui
 # Start Calulator from keyboard key
-bindcode 148 --release exec_always --no-startup-id galculator
+bindcode 148 --release exec --no-startup-id galculator
 
 bindsym $mod+Shift+question exec xdg-open /usr/share/doc/manjaro/i3_help.pdf
-bindsym $mod+Ctrl+x --release exec_always --no-startup-id xkill
+bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
 
 # focus_follows_mouse no
 
@@ -464,12 +463,13 @@ mode "$mode_gaps_outer" {
         bindsym Escape mode "default"
 }
 # autostart
-exec_always --no-startup-id xset 1800
-exec_always --no-startup-id flameshot
+exec --no-startup-id xset 1800
+exec --no-startup-id flameshot
 # exec_always --no-startup-id megasync
 
 # Fast Razer mouse (libinput max)
-# exec_always --no-startup-id xinput set-prop 19 "libinput Accel Speed" 1.0
-# exec_always --no-startup-id xinput set-prop 21 "libinput Accel Speed" 1.0
+# exec --no-startup-id xinput set-prop 19 "libinput Accel Speed" 1.0
+# exec --no-startup-id xinput set-prop 21 "libinput Accel Speed" 1.0
+
 # Voice PTT
 exec_always --no-startup-id bash -c "sleep 3; /home/sky/Work/Configs/voice-ptt/voice-ptt"
