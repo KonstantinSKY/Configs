@@ -111,11 +111,10 @@ install-base:
 		man-pages \
 		file \
 		which \
-		manjaro-settings-manager \
 		lsof \
 		nmap \
 		alsa-utils \
-		pulseaudio \
+		pulseaudio
 	@echo "✅ Base packages installed via yay."
 	@echo "-------------------------------------------------------------------------------"
 
@@ -177,8 +176,8 @@ check:
 	@systemctl list-timers --all --no-pager | head -15
 	@echo ""
 
-	@echo "🔑 Sudo Group Members:"
-	@grep '^sudo:' /etc/group || echo "ℹ️  No 'sudo' group found"
+	@echo "🔑 Wheel (Admin) Group Members:"
+	@grep '^wheel:' /etc/group || echo "ℹ️  No 'wheel' group found"
 	@echo ""
 
 	@echo "🔥 Temperature Sensors (if available):"
