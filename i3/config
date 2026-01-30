@@ -467,3 +467,8 @@ mode "$mode_gaps_outer" {
 exec --no-startup-id xset 1800
 exec --no-startup-id flameshot
 exec_always --no-startup-id megasync
+
+# Fast Razer mouse (libinput max)
+# exec --no-startup-id xinput set-prop 19 "libinput Accel Speed" 1.0
+# exec --no-startup-id xinput set-prop 21 "libinput Accel Speed" 1.0
+# `
