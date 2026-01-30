@@ -2,6 +2,15 @@
   // ==========================================
   // COMMON MODES
   // ==========================================
+  "context_servers": {
+    "some-mcp-server": {
+      "source": "custom",
+      "enabled": true,
+      "command": "",
+      "args": [],
+      "env": {}
+    }
+  },
   "agent": {
     "default_model": {
       "provider": "zed.dev",
@@ -273,8 +282,8 @@
         "command": "uvx",
         "args": ["voice-mode"],
         "env": {
-          // "OPENAI_API_KEY": "your-openai-key-here",
-          "LEMONFOX_API_KEY": "твой-ключ"
+          "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY_HERE"
+          // "LEMONFOX_API_KEY": "твой-ключ"
         }
       }
     }
