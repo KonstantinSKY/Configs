@@ -2,15 +2,7 @@
   // ==========================================
   // COMMON MODES
   // ==========================================
-  "context_servers": {
-    "some-mcp-server": {
-      "source": "custom",
-      "enabled": true,
-      "command": "",
-      "args": [],
-      "env": {}
-    }
-  },
+  "context_servers": {},
   "agent": {
     "default_model": {
       "provider": "zed.dev",
@@ -21,6 +13,19 @@
     "default_profile": "ask"
   },
   "vim_mode": true,
+  "restore_on_startup": "last_workspace",
+  "confirm_quit": true,
+  "buffer_line_height": "comfortable",
+  "project_panel": {
+    "file_scan_exclusions": [
+      "**/.git",
+      "**/target",
+      "**/node_modules",
+      "**/__pycache__",
+      "**/.venv",
+      "**/*.lock"
+    ]
+  },
   // ==========================================
   // PRIVACY SETTINGS
   // ==========================================
@@ -274,117 +279,6 @@
       "format_on_save": "on",
       "show_edit_predictions": false,
       "language_servers": ["codebook"]
-    },
-    // "file_types": {}
-
-    "context_servers": {
-      "voice-mode": {
-        "command": "uvx",
-        "args": ["voice-mode"],
-        "env": {
-          "OPENAI_API_KEY": "YOUR_OPENAI_API_KEY_HERE"
-          // "LEMONFOX_API_KEY": "твой-ключ"
-        }
-      }
     }
-
-    //==========================================
-    // COLLABORATION PANEL
-    // ==========================================
-    // Collaboration Panel
   }
-
-  // "agent": {
-  //   "model_parameters": [],
-  //   "default_profile": "ask",
-  //   "version": "2"
-  // },
-  // "context_servers": {
-  //   "rag-server": {
-  //     "source": "custom",
-  //     "command": {
-  //       "path": "/home/sky/Work/Projects/rag_mcp_server/target/release/rag_mcp_server",
-  //       "args": [],
-  //       "env": {
-  //         "RAG_MCP_LOG_LEVEL": "info"
-  //       }
-  //     },
-  //     "settings": {}
-  //   },
-  //   "mcp-server-context7": {
-  //     "settings": {
-  //       "default_minimum_tokens": "10000"
-  //     }
-  //   },
-  // },
-
-  // "soft_wrap": "editor_width",
-  // "show_wrap_guides": true,
-  // "wrap_guides": [80, 120],
-  // "preferred_line_length": 100,
-  // },
-  //   "working_directory": "current_project_directory",
-  // },
-  // "spell_check": {
-  //   "enabled": true,
-  //   "languages": ["en-US", "ru-RU"]
-  // },
-  // "languages": {
-  //   "Rust": {
-  //     "tab_size": 4,
-  //     "hard_tabs": false,
-  //     "formatter": "language_server",
-  //     "format_on_save": "on",
-  //     "show_edit_predictions": true
-  //   },
-  //   "JavaScript": {
-  //     "tab_size": 2,
-  //     "formatter": "prettier"
-  //   },
-  //   "TypeScript": {
-  //     "tab_size": 2,
-  //     "formatter": "prettier"
-  //   },
-  //   "JSON": {
-  //     "tab_size": 2,
-  //     "formatter": "prettier"
-  //   },
-  //   "TOML": {
-  //     "tab_size": 4,
-  //     "hard_tabs": false
-  //   },
-  //   "Markdown": {
-  //     "soft_wrap": "editor_width",
-  //     "spell_check": {
-  //       "enabled": true,
-  //       "languages": ["en-US", "ru-RU"]
-  //     },
-  //     "preferred_line_length": 80
-  //   }
-  // },
-  // "show_completions_on_input": true,
-  // "show_completion_documentation": true,
-  // "completion_documentation_secondary_query_debounce": 300,
-  // "inlay_hints": {
-  //   "enabled": true,
-  //   "show_type_hints": true,
-  //   "show_parameter_hints": true
-  // },
-  // // "file_scan_exclusions": [
-  // //   "**/.git",
-  // //   "**/target",
-  // //   "**/node_modules",
-  // //   "**/.next",
-  // //   "**/dist",
-  // //   "**/build",
-  // //   "**/*.log"
-  // // ],
-  // "restore_on_startup": "last_workspace",
-
-  // "project_panel": {
-  //   "show_hidden_files": true,
-  //   "show_ignored_files": true,
-  //   "auto_reveal_entries": true,
-  //   "file_scan_exclusions": []
-  // }
 }
