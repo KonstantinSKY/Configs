@@ -1,7 +1,7 @@
 # Git & GitHub Project Manager
 SHELL := /bin/bash
 
-.PHONY: help h setup s init i create_repo cr delete_repo dr force_ssh fs commit c full_commit fc install in
+.PHONY: help h setup s init i create_repo cr delete_repo dr force_ssh fs commit c full_commit fc install in git
 
 GITHUB_USER  := KonstantinSKY
 GITHUB_EMAIL := sky012877@gmail.com
@@ -19,6 +19,7 @@ help h:
 	@echo "  force_ssh | fs      Force remote 'origin' to SSH and push main branch"
 	@echo "  commit | c          Commit and push all changes with a message"
 	@echo "  full_commit | fc    Pull (rebase), commit and push changes"
+	@echo "  git                 Auto-detect changes, generate message via Gemini, commit & push"
 	@echo "-------------------------------------------------------------------"
 
 install in:
@@ -97,7 +98,7 @@ commit c:
 	@message="$(shell echo $(wordlist 2, 999, $(MAKECMDGOALS)))"; \
 	if [ -z "$$message" ]; then message="no message"; fi; \
 	echo "🔧 Committing with message: '$$message'"; \
-	git add .; \
+	git add .;
 	git commit -m "$$message" || echo "ℹ️ Nothing to commit"; \
 	git push || echo "⚠️ Push failed"; \
 	echo "✅ Commit + push complete"
@@ -123,6 +124,27 @@ full_commit fc:
 	git status -s || true; \
 	echo "✅ Full commit cycle complete"; \
 	echo "-------------------------------------------------------------------"
+
+git:
+	@echo "🔍 Checking status..."
+	@status=$$(git status --porcelain); \
+	if [ -z "$$status" ]; then \
+		echo "✨ No changes to commit."; \
+	else \
+		echo "📄 Current status:"; \
+		git status -s; \
+		echo "🚀 Staging changes..."; \
+		git add .; \
+		echo "🤖 Generating commit message via Gemini..."; \
+		MESSAGE=$$(git diff --staged | gemini -p "Generate a concise, professional git commit message in English for these changes. Respond ONLY with the message text, no quotes or markdown." 2>/dev/null); \
+		if [ -z "$$MESSAGE" ]; then \
+			MESSAGE="Update: automatic sync (Gemini message generation failed)"; \
+		fi; \
+		echo "📝 Message: $$MESSAGE"; \
+		git commit -m "$$MESSAGE"; \
+		git push; \
+		echo "✅ Done!"; \
+	fi
 
 %:
 	@:
