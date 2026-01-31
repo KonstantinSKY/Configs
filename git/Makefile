@@ -106,12 +106,17 @@ force_ssh fs:
 
 # --- Logic for commit with message or Gemini ---
 commit c:
-	@echo -e "${BLUE}🔍 Checking status...${NC}"
+	@echo -e "${BLUE}🔍 Git Status Report:${NC}"
+	@if [ -z "$$(git status --porcelain)" ]; then \
+		echo -e "  ${GREEN}Everything is clean${NC}"; \
+	else \
+		git status -s | sed 's/^/  /'; \
+	fi
 	@status=$$(git status --porcelain); \
 	if [ -z "$$status" ]; then \
-		echo -e "${GREEN}✨ No changes to commit.${NC}"; \
+		echo -e "${YELLOW}ℹ️ Nothing to commit, working tree clean.${NC}"; \
 	else \
-		git status -s; \
+		echo -e "${BLUE}🚀 Staging changes...${NC}"; \
 		git add .; \
 		message="$(shell echo $(wordlist 2, 999, $(MAKECMDGOALS)))"; \
 		if [ -z "$$message" ]; then \
@@ -121,7 +126,7 @@ commit c:
 		fi; \
 		echo -e "${YELLOW}📝 Message:${NC} $$message"; \
 		git commit -m "$$message"; \
-		git push && echo -e "${GREEN}✅ Done!${NC}"; \
+		git push && echo -e "${GREEN}✅ Successfully pushed!${NC}"; \
 	fi
 	@echo -e "${VIOLET}$(LINE)${NC}"
 
