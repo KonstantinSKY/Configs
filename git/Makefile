@@ -133,10 +133,9 @@ full_commit fc:
 	@git add -A
 	@echo -e "${BLUE}🔄 Pulling latest changes (rebase)...${NC}"
 	@git pull --rebase origin main || echo -e "${YELLOW}⚠️ Pull failed${NC}"
-	@$(MAKE) commit
+	@$(MAKE) -f git/Makefile commit
 	@echo -e "${GREEN}✅ Full commit cycle complete${NC}"
 	@echo -e "${VIOLET}$(LINE)${NC}"
-
 # Алиас для автоматического процесса
 git: c
 
