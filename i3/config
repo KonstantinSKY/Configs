@@ -304,7 +304,7 @@ bindsym $mod+Delete exec --no-startup-id blurlock
 
 # Autostart applications
 exec_always --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
-exec_always --no-startup-id nitrogen --restore; sleep 1; picom -b
+exec_always --no-startup-id picom -b
 #exec_always --no-startup-id manjaro-hello
 exec_always --no-startup-id nm-applet
 exec_always --no-startup-id xfce4-power-manager
@@ -472,4 +472,4 @@ exec --no-startup-id flameshot
 # exec --no-startup-id xinput set-prop 21 "libinput Accel Speed" 1.0
 
 # Voice PTT
-exec_always --no-startup-id bash -c "pkill -x voice-ptt; sleep 3; /home/sky/Work/Configs/voice-ptt/voice-ptt"
+exec_always --no-startup-id /home/sky/Work/Configs/voice-ptt/restart_voice_ptt.sh
