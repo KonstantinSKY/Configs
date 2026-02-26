@@ -1,6 +1,6 @@
 ptt_key = "RControl"
-typing_delay_ms = 50
-initial_delay_ms = 300
+typing_delay_ms = 0
+initial_delay_ms = 20
 model = "whisper-1"
 # language = "ru" # Uncomment to force Russian language
 

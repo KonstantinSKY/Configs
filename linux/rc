@@ -32,19 +32,10 @@ alias Projects='cd $PROJECTS_PATH; ls -ls'
 # 	export PATH="$HOME/.cargo/bin"
 # fi
 
-#nvm for node js setting
-# Lazy load NVM
-load_nvm() {
-  if [ -d "/usr/share/nvm" ]; then
-    source "/usr/share/nvm/init-nvm.sh"
-  fi
-}
-#alias nvm="load_nvm && nvm"
-nvm() {
-  load_nvm
-  unfunction nvm
-  nvm "$@"
-}
+# fnm for node js settings
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
 
 #pyenv for Python setting
 # Lazy load Pyenv
