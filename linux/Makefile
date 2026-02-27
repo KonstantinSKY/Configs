@@ -187,6 +187,32 @@ setup: ## Runs initial setup: symlinks, no_beep, rc, and profile
 	@$(MAKE) rc
 	@$(MAKE) profile
 
+bind_mounts: ## Converts symlinks to bind mounts in fstab.
+	@echo "🔗 Converting common symlinks to bind mounts..."
+	@for pair in $(COMMON_SYMLINKS); do \
+		SOURCE=$${pair#*:}; \
+		TARGET="$(HOME)/$${pair%%:*}"; \
+		echo "🛠️ Processing $$TARGET..."; \
+		if [ -L "$$TARGET" ]; then \
+			echo "🔁 Removing symlink $$TARGET"; \
+			rm -f "$$TARGET"; \
+		fi; \
+		if [ ! -d "$$TARGET" ]; then \
+			echo "📁 Creating directory $$TARGET"; \
+			mkdir -p "$$TARGET"; \
+		fi; \
+		if grep -q "$$TARGET" /etc/fstab; then \
+			echo "✅ Entry for $$TARGET already exists in fstab."; \
+		else \
+			echo "📥 Adding bind mount for $$TARGET to fstab..."; \
+			echo "$$SOURCE $$TARGET none bind 0 0" | sudo tee -a /etc/fstab; \
+		fi; \
+	done
+	@echo "🔄 Reloading systemd and mounting..."
+	@sudo systemctl daemon-reload
+	@sudo mount -a
+	@echo "✅ Bind mounts configured and mounted."
+
 symlink:  ## Create a symbolic link: make symlink <target> <source>
 	@TARGET=$(word 2, $(MAKECMDGOALS)); \
 	SOURCE=$(word 3, $(MAKECMDGOALS)); \
