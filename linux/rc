@@ -95,6 +95,9 @@ z() {
     zeditor .
   fi
 }
+# Source optional password store helper
+[ -f "$HOME/.password-store/.pass_rc" ] && . "$HOME/.password-store/.pass_rc"
+
 # git && github
 alias mkrepo="~/Configs/git/make_private_repo.sh"
 

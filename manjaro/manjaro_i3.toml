@@ -2,7 +2,7 @@
 
 unneeded = "bmenu palemoon"
 
-sound = "alsa-utils pulseaudio pavucontrol"
+sound = "alsa-utils pipewire-pulse pavucontrol"
 
 requirements = "manjaro-settings-manager materia-gtk-theme matcha-gtk-theme"
 
