@@ -32,9 +32,17 @@ alias Projects='cd $PROJECTS_PATH; ls -ls'
 # 	export PATH="$HOME/.cargo/bin"
 # fi
 
-# fnm for node js settings
+# fnm for node js settings (shared for bash/zsh)
+FNM_PATH="$HOME/.local/share/fnm"
+if [ -d "$FNM_PATH" ]; then
+  export PATH="$FNM_PATH:$PATH"
+fi
 if command -v fnm >/dev/null 2>&1; then
-  eval "$(fnm env --use-on-cd --shell zsh)"
+  if [ -n "${ZSH_VERSION-}" ]; then
+    eval "$(fnm env --use-on-cd --shell zsh)"
+  else
+    eval "$(fnm env --use-on-cd --shell bash)"
+  fi
 fi
 
 #pyenv for Python setting
