@@ -1,4 +1,5 @@
-.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep common_symlinks symlink help rc profile setup
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep common_symlinks symlinks symlink help rc profile p setup bind_mounts
+.DEFAULT_GOAL := help
 
 ## ---------------------------
 ## 🧩 Directory configuration
@@ -34,15 +35,14 @@ TARGET_XPROFILE_FILE = $(HOME)/.xprofile
 COMMON_SYMLINKS = \
 	Configs:$(WORK_DIR)/Configs \
 	Projects:$(WORK_DIR)/Projects \
-	Prompts:$(WORK_DIR)/Prompts \
-	Prompts:$(WORK_DIR)/Deploys \
+	Deploys:$(WORK_DIR)/Deploys \
 	Music:$(WORK_DIR)/Music \
 	Documents:$(WORK_DIR)/Documents \
 	Downloads:$(WORK_DIR)/Downloads \
 	Pictures:$(WORK_DIR)/Pictures
 
 # Default target
-all: mount
+all: help
 
 help: ## Shows this help message.
 	@echo "Available commands:"
@@ -52,7 +52,8 @@ help: ## Shows this help message.
 	@echo "  compress_root  - Adds compression options to the root filesystem in fstab."
 	@echo "  verify_fstab   - Verifies the integrity of /etc/fstab."
 	@echo "  no_beep        - Disables the PC speaker beep."
-	@echo "  common_symlinks - Creates common symbolic links from Work directory to home."
+	@echo "  symlinks       - Configures common home paths via bind mounts in /etc/fstab."
+	@echo "  common_symlinks - Alias for symlinks (uses bind mounts)."
 	@echo "  rc             - Adds 'source' line to .bashrc and .zshrc for loading shared rc."
 	@echo "  profile        - Adds 'source' line to .profile for loading shared profile."
 	@echo "  setup          - Runs initial setup: symlinks, no_beep, rc, and profile."
@@ -147,15 +148,9 @@ no_beep: ## Disables the PC speaker beep.
 		echo "✅ pcspkr not loaded."; \
 	fi
 
-common_symlinks: ## Creates common symbolic links from $(WORK_DIR) to $(HOME)
-	@echo "🔗 Creating common symbolic links..."
-	@for pair in $(COMMON_SYMLINKS); do \
-		SOURCE=$${pair#*:}; \
-		TARGET="$(HOME)/$${pair%%:*}"; \
-		echo "🔄 Linking $$TARGET → $$SOURCE"; \
-		$(MAKE) symlink "$$TARGET" "$$SOURCE"; \
-		echo "============================================================================"; \
-	done
+symlinks: bind_mounts ## Configures common home paths via bind mounts in /etc/fstab.
+
+common_symlinks: symlinks ## Backward-compatible alias; uses bind mounts.
 
 rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
 	@for rcfile in $(HOME)/.bashrc $(HOME)/.zshrc; do \
@@ -182,7 +177,7 @@ profile p: ## Replace target profile with symlink to source profile (backup if e
 	@echo "✅ Done: $(TARGET_XPROFILE_FILE) → $(SOURCE_XPROFILE_FILE)"
 
 setup: ## Runs initial setup: symlinks, no_beep, rc, and profile
-	@$(MAKE) common_symlinks
+	@$(MAKE) symlinks
 	@$(MAKE) no_beep
 	@$(MAKE) rc
 	@$(MAKE) profile
