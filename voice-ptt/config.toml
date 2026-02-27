@@ -8,3 +8,13 @@ model = "whisper-1"
 sound_enabled = true
 sound_start_path = "/usr/share/sounds/freedesktop/stereo/audio-volume-change.oga"
 sound_end_path = "/usr/share/sounds/freedesktop/stereo/screen-capture.oga"
+
+[paste_overrides]
+"codex" = "ctrl+shift+v"
+"Alacritty" = "ctrl+shift+v"
+"kitty" = "ctrl+shift+v"
+"Konsole" = "ctrl+shift+v"
+"XTerm" = "ctrl+shift+v"
+"gnome-terminal" = "ctrl+shift+v"
+"xfce4-terminal" = "ctrl+shift+v"
+"Terminator" = "ctrl+shift+v"
