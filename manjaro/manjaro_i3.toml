@@ -2,11 +2,11 @@
 
 unneeded = "bmenu palemoon"
 
-sound = "alsa-utils pulseaudio pavucontrol"
+sound = "alsa-utils pipewire-pulse pavucontrol"
 
 requirements = "manjaro-settings-manager materia-gtk-theme matcha-gtk-theme"
 
-requirements_2 = "base-devel font-manager galculator xorg-xev keepass"
+requirements_2 = "base-devel font-manager galculator xorg-xev keepass ripgrep bat"
 
 internet = "google-chrome firefox lsof nmap transmission-gtk"
 
