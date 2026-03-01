@@ -69,7 +69,13 @@ pyenv() {
 export PATH=$PATH:$HOME
 
 # Open alias file
-alias ali='cat $CONFIGS_PATH/rc'
+alias ali='bat --paging=never $CONFIGS_PATH/rc'
+
+# file output
+if command -v bat > /dev/null 2>&1; then
+    alias cat='bat --paging=never'
+    alias lcat='/usr/bin/cat'
+fi
 
 #shell
 # shellcheck disable=SC2317
