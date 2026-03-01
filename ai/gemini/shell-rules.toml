@@ -1,0 +1,23 @@
+[[rule]]
+toolName = "run_shell_command"
+commandRegex = "cat .*"
+decision = "deny"
+priority = 110
+
+[[rule]]
+toolName = "run_shell_command"
+commandRegex = "grep .*"
+decision = "deny"
+priority = 110
+
+[[rule]]
+toolName = "run_shell_command"
+commandRegex = "find .*"
+decision = "deny"
+priority = 110
+
+[[rule]]
+toolName = "run_shell_command"
+commandRegex = "(ls|pwd|whoami|bat|rg|fd|which).*"
+decision = "allow"
+priority = 100
