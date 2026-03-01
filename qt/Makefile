@@ -8,22 +8,33 @@ PROFILE          ?= $(HOME)/.profile
 XPROFILE         ?= $(HOME)/.xprofile
 
 # Default Kvantum theme (can be changed later in Kvantum Manager)
-KVANTUM_THEME    ?= KvAdaptaDark
+KVANTUM_THEME    ?= Matcha-Dark
 
-.PHONY: help install i env e xprofile xp theme t verify v all
+.PHONY: help install i env e xprofile xp theme t link l verify v all
 
 help:
 	@echo "Targets:"
-	@echo "  install | i   - Install qt5ct, qt6ct, Kvantum (+qt5 plugin if available)"
-	@echo "  env     | e   - Export QT vars to ~/.profile (Qt5+Qt6, Kvantum)"
-	@echo "  xprofile| xp  - Ensure ~/.xprofile sources ~/.profile"
-	@echo "  theme   | t   - Precreate Kvantum config with $(KVANTUM_THEME) (optional)"
-	@echo "  verify  | v   - Show effective Qt env + Kvantum config info"
-	@echo "  all           - install -> env -> xprofile -> theme -> verify"
+	@echo "  install  | i   - Install qt5ct, qt6ct, Kvantum (+qt5 plugin if available)"
+	@echo "  env      | e   - Export QT vars to ~/.profile (Qt5+Qt6, Kvantum)"
+	@echo "  xprofile | xp  - Ensure ~/.xprofile sources ~/.profile"
+	@echo "  link     | l   - Symlink Kvantum/Qt configs from this repo to ~/.config"
+	@echo "  theme    | t   - Precreate Kvantum config with $(KVANTUM_THEME) (optional)"
+	@echo "  verify   | v   - Show effective Qt env + Kvantum config info"
+	@echo "  all            - install -> env -> xprofile -> link -> verify"
+
+all: install env xprofile link verify
 
 install i:
 	@echo "📦 Installing qt5ct, qt6ct, Kvantum..."
 	@make -f $(MANJARO_MAKEFILE) install qt5ct qt6ct kvantum
+
+link l:
+	@echo "🔗 Linking Qt and Kvantum configs..."
+	@mkdir -p $(HOME)/.config/Kvantum $(HOME)/.config/qt5ct $(HOME)/.config/qt6ct
+	@ln -sf $(CURDIR)/Kvantum/kvantum.kvconfig $(HOME)/.config/Kvantum/kvantum.kvconfig
+	@ln -sf $(CURDIR)/qt5ct/qt5ct.conf $(HOME)/.config/qt5ct/qt5ct.conf
+	@ln -sf $(CURDIR)/qt6ct/qt6ct.conf $(HOME)/.config/qt6ct/qt6ct.conf
+	@echo "✅ Symlinks created for Kvantum, qt5ct, and qt6ct."
 
 theme t:
 	@echo "🎨 Preparing Kvantum theme config (optional)..."

@@ -113,6 +113,8 @@ install-base:
 		which \
 		lsof \
 		nmap \
+		ripgrep \
+		bat \
 		alsa-utils \
 		pulseaudio
 	@echo "✅ Base packages installed via yay."
