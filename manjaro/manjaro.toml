@@ -17,7 +17,7 @@ delete_files = ".bash_profile .local/share/keyrings"
 [packages]
 unneeded = "gnome-keyring bmenu palemoon"
 requirements = "manjaro-settings-manager materia-gtk-theme matcha-gtk-theme"
-requirements_2 = "alsa-utils pipewire-pulse pavucontrol base-devel font-manager galculator xorg-xev"
+requirements_2 = "alsa-utils pipewire-pulse pavucontrol base-devel font-manager galculator xorg-xev qt5ct qt6ct kvantum lxappearance fzf ripgrep fd zoxide bat eza starship btop duf jq yq tldr"
 internet = "google-chrome firefox lsof nmap transmission-gtk"
 communication = "slack-desktop zoom telegram-desktop"
 
