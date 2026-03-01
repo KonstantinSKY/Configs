@@ -27,4 +27,4 @@ font_cache_files = ".cache/fontconfig/*"
 
 trash_dir = ".local/share/Trash"
 
-packages = "trash-cli unzip lsof nmap"
+packages = "trash-cli unzip lsof nmap bat"
