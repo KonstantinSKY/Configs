@@ -1,7 +1,4 @@
-.PHONY: help h sync s
-
--include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
-
+.PHONY: sync s
 sync s:
 	@if [ $(words $(MAKECMDGOALS)) -ne 3 ]; then \
 		echo "❌ Usage: make sync <LOCAL_PATH> <REMOTE_PATH>"; \
@@ -46,6 +43,5 @@ sync s:
 	echo "📋 Verifying sync is active..."; \
 	mega-sync | grep -F "$$LOCAL_PATH" | grep -F "$$REMOTE_PATH" >/dev/null && \
 		echo "✅ Sync established." || { echo "⚠️  Sync not listed. Please verify manually."; exit 1; }
-
 %:
 	@:

@@ -1,14 +1,9 @@
 # Databases installer Makefile (Manjaro / Arch)
 # Installs PostgreSQL stack and DBeaver via your Manjaro Makefile.
 # Aliases are inline on each rule. Versions are printed via binaries only.
-
-.PHONY: help h installall ia all postgres p PG client c dbeaver d pg_setup pgset pg_enable pgen pg_start pgst pg_status pgss
-
--include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
-
+.PHONY: installall ia all postgres p PG client c dbeaver d pg_setup pgset pg_enable pgen pg_start pgst pg_status pgss
 MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
 DB_APP_ID := io.dbeaver.DBeaverCommunity
-
 # Aggregate installer
 all: installall
 installall ia:
@@ -17,7 +12,6 @@ installall ia:
 	@$(MAKE) dbeaver
 	@echo "---------------------------------------------------------------------------------------"
 	@echo "✅ Done."
-
 # PostgreSQL install (inline aliases)
 postgres p PG:
 	@echo "🐘 Installing PostgreSQL (server + psql + libs)..."
@@ -26,7 +20,6 @@ postgres p PG:
 	@which psql >/dev/null 2>&1 && psql --version || echo "psql: not installed"
 	@which pg_config >/dev/null 2>&1 && pg_config --version || echo "pg_config: not installed"
 	@echo "---------------------------------------------------------------------------------------"
-
 # Client libs only (inline aliases)
 client c:
 	@echo "📚 Installing PostgreSQL client libs (libpq)…"
@@ -34,7 +27,6 @@ client c:
 	@echo "🔎 Versions:"
 	@which pg_config >/dev/null 2>&1 && pg_config --version || echo "pg_config: not installed"
 	@echo "---------------------------------------------------------------------------------------"
-
 # DBeaver (inline aliases)
 dbeaver d:
 	@echo "🦫 Installing DBeaver…"
@@ -50,9 +42,7 @@ dbeaver d:
 	cat $(HOME)/.local/bin/dbeaver
 	@rm -f "$(HOME)/.cache/dmenu_run" 2>/dev/null || true
 	@echo "---------------------------------------------------------------------------------------"
-
-
-# PostgreSQL service helpers (inline aliases)
+# PostgreSQL serviceers (inline aliases)
 pg_setup pgset:
 	@echo "🗄  Checking Postgres data dir..."
 	@if [ ! -d /var/lib/postgres/data/base ]; then \
@@ -65,17 +55,14 @@ pg_setup pgset:
 	@$(MAKE) pg_start
 	@$(MAKE) pg_status
 	@echo "---------------------------------------------------------------------------------------"
-
 pg_enable pgen:
 	@echo "🔧 Enabling postgresql service..."
 	@sudo systemctl enable postgresql
 	@echo "---------------------------------------------------------------------------------------"
-
 pg_start pgst:
 	@echo "🚀 Starting postgresql service..."
 	@sudo systemctl start postgresql || true
 	@echo "---------------------------------------------------------------------------------------"
-
 pg_status pgss:
 	@echo "📊 postgresql status:"
 	@systemctl --no-pager status postgresql || true

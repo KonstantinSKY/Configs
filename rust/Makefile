@@ -1,18 +1,12 @@
 # --- Defaults
 SHELL := /bin/bash
 .ONESHELL:
-.DEFAULT_GOAL := help
-
-
-.PHONY: help h install i create c repo rp delete_repo dr copy_gitignore gi read rd
-
--include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
-
+.DEFAULT_GOAL :=
+.PHONY: install i create c repo rp delete_repo dr copy_gitignore gi read rd
 RUST_MAKEFILE := $(HOME)/Configs/rust/Makefile
 GIT_MAKEFILE := $(HOME)/Configs/git/Makefile
 GITIGNORE_TEMPLATE := $(HOME)/Configs/rust/gitignore
 MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
-
 # ────────────────────────────────────────────────────────────────────────────────
 # Helpers
 # PROJECT аргумент: второе слово после цели, иначе текущая папка
@@ -20,7 +14,6 @@ PROJECT := $(word 2, $(MAKECMDGOALS))
 ifeq ($(strip $(PROJECT)),)
 PROJECT := $(notdir $(CURDIR))
 endif
-
 # ────────────────────────────────────────────────────────────────────────────────
 # Create new Rust project and link shared Makefile
 create c:
@@ -45,7 +38,6 @@ create c:
 	echo "🔗 Linking shared Makefile into project"; \
 	ln -sfn "$(HOME)/Configs/rust/Makefile" "$$project/Makefile"; \
 	echo "✅ Done → $$project"
-
 # Initialize Git and create remote repo, then force SSH & copy .gitignore
 repo rp:
 	@set -e; \
@@ -59,10 +51,8 @@ repo rp:
 	echo "🔐 Forcing SSH remote"; \
 	$(MAKE) -f $(GIT_MAKEFILE) force_ssh $$project; \
 	$(MAKE) copy_gitignore
-
 delete_repo dr:
 	@$(MAKE) -f $(GIT_MAKEFILE) delete_repo $(notdir $(CURDIR))
-
 copy_gitignore gi:
 	@set -e; \
 	if [ -f $(GITIGNORE_TEMPLATE) ]; then \
@@ -72,13 +62,11 @@ copy_gitignore gi:
 		echo "⚠️  Warning: gitignore template not found at $(GITIGNORE_TEMPLATE)"; \
 	fi; \
 	$(MAKE) -f $(GIT_MAKEFILE) commit "add gitignore"
-
 install i:
 	@echo "🦀 Installing Rust toolchain and build tools via yay..."
 	@yay -S --needed --noconfirm rust cargo rust-analyzer rust-src \
 		llvm lldb binutils gcc pkgconf cmake make
 	@echo "✅ Rust and related tools installed."
-
 # Quick info about project: cargo manifest + git status
 read rd:
 	@echo "📖 Cargo manifest:"

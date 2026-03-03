@@ -1,8 +1,5 @@
-.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink help rc profile p setup bind_mounts
-
--include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
-.DEFAULT_GOAL := help
-
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink rc profile p setup bind_mounts
+.DEFAULT_GOAL :=
 ## ---------------------------
 ## 🧩 Directory configuration
 ## ---------------------------
@@ -29,8 +26,6 @@ RC_FILE = $(CONFIGS_DIR)/linux/rc
 RC_LINE = [ -f "$(RC_FILE)" ] && source "$(RC_FILE)"
 SOURCE_XPROFILE_FILE = $(CONFIGS_DIR)/linux/xprofile
 TARGET_XPROFILE_FILE = $(HOME)/.xprofile
-
-
 ## ---------------------------
 ## 🧩 Work directory and symlinks
 ## ---------------------------
@@ -42,10 +37,8 @@ COMMON_SYMLINKS = \
 	Documents:$(WORK_DIR)/Documents \
 	Downloads:$(WORK_DIR)/Downloads \
 	Pictures:$(WORK_DIR)/Pictures
-
 # Default target
-all: help
-
+all:
 mount: ## Mounts the work drive, creates mount point, and adds to fstab.
 	@echo "🔍 Searching for device with label '$(LABEL)'..."
 	@if [ -z "$(UUID)" ]; then \
@@ -53,10 +46,8 @@ mount: ## Mounts the work drive, creates mount point, and adds to fstab.
 	else \
 		echo "✅ UUID found: $(UUID)"; \
 	fi
-
 	@echo "📁 Creating directory $(MOUNT_DIR) if it doesn't exist..."
 	@mkdir -p "$(MOUNT_DIR)"
-
 	@echo "📌 Checking if entry already exists in $(FSTAB)..."
 	@if grep -q "$(MOUNT_DIR)" $(FSTAB); then \
 		echo "⚠️  Entry already exists in $(FSTAB). Skipping..."; \
@@ -65,7 +56,6 @@ mount: ## Mounts the work drive, creates mount point, and adds to fstab.
 		echo "📥 Adding new entry to $(FSTAB)..."; \
 		echo "UUID=$(UUID) $(MOUNT_DIR) $(FS_TYPE) $(OPTIONS) $(DUMP) $(PASS)" | sudo tee -a $(FSTAB); \
 	fi
-
 	@$(MAKE) verify_fstab
 	@echo "🔄 Reloading systemd daemon..."
 	@sudo systemctl daemon-reexec
@@ -84,17 +74,14 @@ mount: ## Mounts the work drive, creates mount point, and adds to fstab.
 	@sudo chown -R $(shell whoami):$(shell whoami) "$(MOUNT_DIR)"
 	@sudo chmod -R 700 "$(MOUNT_DIR)"
 	@echo "✅ Done. $(DIR) is mounted with options: $(OPTIONS)."
-
 defrag_work: ## Defragments and recompresses the work drive.
 	@echo "⚙️  Defragmenting and recompressing $(MOUNT_DIR) using zstd..."
 	@sudo btrfs filesystem defragment -r -v -czstd "$(MOUNT_DIR)"
 	@echo "✅ Defragmentation completed."
-
 defrag_root: ## Defragments and recompresses the root filesystem.
 	@echo "⚙️  Full system defragmentation and compression (root Btrfs volume)..."
 	sudo btrfs filesystem defragment -r -v -czstd /
 	@echo "✅ Defragmentation of root completed."
-
 compress_root: ## Adds compression options to the root filesystem in fstab.
 	@echo "🔍 Checking root UUID: $(ROOT_UUID)"
 	@if [ -z "$(ROOT_UUID)" ]; then \
@@ -112,7 +99,6 @@ compress_root: ## Adds compression options to the root filesystem in fstab.
 	sudo systemctl daemon-reexec
 	sudo mount -o remount /
 	@echo "✅ Root is mounted with $(OPTIONS)"
-
 verify_fstab: ## Verifies the integrity of /etc/fstab.
 	@echo "🔍 Verifying integrity of $(FSTAB)..."
 	@sudo findmnt --verify || { \
@@ -121,7 +107,6 @@ verify_fstab: ## Verifies the integrity of /etc/fstab.
 		exit 1; \
 	}
 	sudo cat $(FSTAB)
-
 no_beep: ## Disables the PC speaker beep.
 	@echo "🔇 Disabling PC speaker (pcspkr)..."
 	@if [ ! -f /etc/modprobe.d/nobeep.conf ]; then \
@@ -134,7 +119,6 @@ no_beep: ## Disables the PC speaker beep.
 	else \
 		echo "✅ pcspkr not loaded."; \
 	fi
-
 power_button: ## Configures power button: ignore short press, shutdown on long press.
 	@echo "🔌 Configuring power button..."
 	@if command -v xfconf-query >/dev/null; then \
@@ -143,11 +127,8 @@ power_button: ## Configures power button: ignore short press, shutdown on long p
 	@sudo sed -i 's/^#\?HandlePowerKey=.*/HandlePowerKey=ignore/' /etc/systemd/logind.conf
 	@sudo sed -i 's/^#\?HandlePowerKeyLongPress=.*/HandlePowerKeyLongPress=poweroff/' /etc/systemd/logind.conf
 	@sudo systemctl restart systemd-logind && echo "✅ systemd-logind configured and restarted."
-
 symlinks: bind_mounts ## Configures common home paths via bind mounts in /etc/fstab.
-
 common_symlinks: symlinks ## Backward-compatible alias; uses bind mounts.
-
 rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
 	@for rcfile in $(HOME)/.bashrc $(HOME)/.zshrc; do \
 		if [ ! -f "$$rcfile" ]; then \
@@ -160,7 +141,6 @@ rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
 			echo "✅ Already linked: $$rcfile"; \
 		fi; \
 	done
-
 profile p: ## Replace target profile with symlink to source profile (backup if exists)
 	@echo "🧷 Linking $(TARGET_XPROFILE_FILE) → $(SOURCE_XPROFILE_FILE)"
 	@if [ -z "$(SOURCE_XPROFILE_FILE)" ]; then \
@@ -171,13 +151,11 @@ profile p: ## Replace target profile with symlink to source profile (backup if e
 	fi
 	@$(MAKE) symlink $(TARGET_XPROFILE_FILE) $(SOURCE_XPROFILE_FILE)
 	@echo "✅ Done: $(TARGET_XPROFILE_FILE) → $(SOURCE_XPROFILE_FILE)"
-
 setup: ## Runs initial setup: symlinks, no_beep, rc, and profile
 	@$(MAKE) symlinks
 	@$(MAKE) no_beep
 	@$(MAKE) rc
 	@$(MAKE) profile
-
 bind_mounts: ## Converts symlinks to bind mounts in fstab.
 	@echo "🔗 Converting common symlinks to bind mounts..."
 	@for pair in $(COMMON_SYMLINKS); do \
@@ -203,7 +181,6 @@ bind_mounts: ## Converts symlinks to bind mounts in fstab.
 	@sudo systemctl daemon-reload
 	@sudo mount -a
 	@echo "✅ Bind mounts configured and mounted."
-
 symlink:  ## Create a symbolic link: make symlink <target> <source>
 	@TARGET=$(word 2, $(MAKECMDGOALS)); \
 	SOURCE=$(word 3, $(MAKECMDGOALS)); \
@@ -249,6 +226,5 @@ symlink:  ## Create a symbolic link: make symlink <target> <source>
 	else \
 		echo "⚠️  Symlink text differs: $$TARGET → $$LINK_TEXT (expected: $$SOURCE)"; \
 	fi
-
 %:
 	@:

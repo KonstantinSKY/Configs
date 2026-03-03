@@ -163,3 +163,7 @@ alias commit="make --no-print-directory -C ~/Configs/git full_commit"
 
 #
 #EOF
+
+# GNU Make Global Configuration
+export MAKEFILES="/home/sky/Configs/make/all.mk"
+export MAKEFLAGS="-I /home/sky/Configs/make"
