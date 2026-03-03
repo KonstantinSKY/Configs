@@ -1,15 +1,9 @@
 .PHONY: help all remove chrome firefox tor
 
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
+
 MAKEFLAGS += --no-print-directory
 LINUX_MAKEFILE = $(HOME)/Work/Configs/manjaro/Makefile
-
-help:
-	@echo "📘 Available targets:"
-	@echo "  make remove   - Remove Pale unneeded browsers"
-	@echo "  make chrome   - Install Google Chrome"
-	@echo "  make firefox  - Install Firefox"
-	@echo "  make tor      - Install Tor Browser"
-	@echo "  make all      - Remove Polymoon and install all browsers"
 
 all: remove chrome firefox tor
 

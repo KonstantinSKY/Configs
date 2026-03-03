@@ -1,5 +1,7 @@
 .PHONY: help setup clean
 
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
+
 ## ---------------------------
 ## 🧩 i3 configuration paths
 ## ---------------------------
@@ -19,10 +21,6 @@ I3_SOURCE_CONFIG   := $(SOURCE_I3_CONFIG)/config
 I3_TARGET_MONITOR_LINK     := $(I3_CONF_DIR)/monitor
 I3_SOURCE_MONITOR_LAPTOP   := $(SOURCE_I3_CONFIG)/laptop
 I3_SOURCE_MONITOR_DESKTOP  := $(SOURCE_I3_CONFIG)/desktop
-
-help:
-	@echo "📘 Available targets:"
-	@echo "  setup   – Set up i3 configuration (create folder, remove old one, link new config)"
 
 setup:
 	@echo "🔍 Detecting i3 version..."

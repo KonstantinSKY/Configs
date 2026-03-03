@@ -1,18 +1,8 @@
 .PHONY: help setup mirrors pacman-update install-yay enable-aur update u yay-update install i install-base check
 
-FLATPAK_MAKEFILE = $(HOME)/Work/Configs/flatpak/Makefile
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
-help:
-	@echo "Available commands:"
-	@echo "  setup          - Full setup: updates mirrors, system, installs yay, enables AUR."
-	@echo "  mirrors        - Updates pacman mirrors for faster downloads."
-	@echo "  pacman-update  - Updates all system packages using pacman."
-	@echo "  install-yay    - Installs yay AUR helper from official repository using pacman only."
-	@echo "  yay-update     - Updates all system and AUR packages using yay."
-	@echo "  enable-aur     - Enables AUR support in the pamac GUI."
-	@echo "  update         - Full update: updates packages, cleans cache, removes orphans."
-	@echo "  install-base   - Installs a base set of essential packages."
-	@echo "  check          - Runs a comprehensive system health and diagnostics check."
+FLATPAK_MAKEFILE = $(HOME)/Work/Configs/flatpak/Makefile
 
 # Main target
 setup: mirrors pacman-update install-yay yay-update enable-aur

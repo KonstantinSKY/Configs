@@ -6,9 +6,10 @@ XML_DIR     := $(CONFIG_ROOT)/xmls
 REMOTE      := gdrive:KVM_Backups
 
 .PHONY: backup install check-running
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
 # По умолчанию запускаем бекап всего
-backup: check-running
+backup: check-running ## Run full KVM backup (ISOs, XMLs, NVRAM, disks)
 	@echo "=== STARTING FULL KVM BACKUP ==="
 	
 	@echo "--> [1/4] Syncing ISOs..."
@@ -33,7 +34,7 @@ backup: check-running
 	
 	@echo "=== BACKUP COMPLETED ==="
 
-check-running:
+check-running: ## Ensure all VMs are stopped before backup
 	@if [ -n "$$(virsh list --name --state-running)" ]; then \
 		echo "❌ ERROR: The following VMs are currently RUNNING:"; \
 		virsh list --state-running; \
@@ -43,7 +44,7 @@ check-running:
 		echo "✅ All VMs are offline. Proceeding..."; \
 	fi
 
-install:
+install: ## Define VMs from local XML files
 	@echo "--> Defining VMs from local XMLs..."
 	@for xml in $(XML_DIR)/*.xml; do \
 		[ -f "$$xml" ] || continue; \

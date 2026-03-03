@@ -2,14 +2,8 @@ MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
 
 .PHONY: help h install i setup set version v status s
 
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
-help h:
-	@echo "🛠  Available targets:"
-	@echo "  make install / i     Install Docker and its ecosystem"
-	@echo "  make setup  / set    Enable and start Docker, add user to group"
-	@echo "  make version / v     Show installed Docker versions"
-	@echo "  make status  / s     Show Docker daemon status and running containers"
-	@echo "------------------------------------------------------------"
 
 install i:
 	@echo "🐳 Installing Docker ecosystem using universal Manjaro Makefile..."

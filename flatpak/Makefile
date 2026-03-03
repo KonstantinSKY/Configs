@@ -1,12 +1,6 @@
 .PHONY: help h install i enable e status s upgrade u cleanup c
 
-help h:
-	@echo "Available commands:"
-	@echo "  install / i      - Installs runtime (pacman) then runs enable and status."
-	@echo "  enable / e       - Adds Flathub remote if missing."
-	@echo "  status / s       - Shows runtime version and configured remotes."
-	@echo "  update / u      - Updates all apps and runtimes."
-	@echo "  cleanup / c      - Removes unused runtimes."
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
 install i:
 	@echo "🛠 Installing runtime..."

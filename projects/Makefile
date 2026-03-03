@@ -11,20 +11,7 @@ GIT_MAKEFILE  := $(HOME)/Configs/git/Makefile
 
 .PHONY: help h setup rust r js j python p repo rp
 
-help h:
-	@echo "🛠  Makefile commands:"
-	@echo "  make setup            — 🔗 Link ~/Projects/Makefile → ~/Configs/projects/Makefile"
-	@echo "  make rust <name>      — 🦀 Create new Rust project"
-	@echo "  make js <name>        — 🟨 Create new JavaScript project"
-	@echo "  make python <name>    — 🐍 Create new Python project"
-	@echo "  make repo [name]      — 🛰  Init Git repo + create GitHub repo (SSH remote)"
-	@echo "  make h, help          — Show this help message"
-	@echo
-	@echo "Examples:"
-	@echo "  make rust myproj"
-	@echo "  make js myproj"
-	@echo "  make python myproj"
-	@echo "  make repo myrepo"
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
 setup:
 	ln -s "$(HOME)/Configs/projects/Makefile" "$(HOME)/Projects/Makefile"

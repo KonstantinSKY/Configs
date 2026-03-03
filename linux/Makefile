@@ -1,4 +1,6 @@
-.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep common_symlinks symlinks symlink help rc profile p setup bind_mounts
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink help rc profile p setup bind_mounts
+
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 .DEFAULT_GOAL := help
 
 ## ---------------------------
@@ -43,21 +45,6 @@ COMMON_SYMLINKS = \
 
 # Default target
 all: help
-
-help: ## Shows this help message.
-	@echo "Available commands:"
-	@echo "  mount          - Mounts the work drive, creates mount point, and adds to fstab."
-	@echo "  defrag_work    - Defragments and recompresses the work drive."
-	@echo "  defrag_root    - Defragments and recompresses the root filesystem."
-	@echo "  compress_root  - Adds compression options to the root filesystem in fstab."
-	@echo "  verify_fstab   - Verifies the integrity of /etc/fstab."
-	@echo "  no_beep        - Disables the PC speaker beep."
-	@echo "  symlinks       - Configures common home paths via bind mounts in /etc/fstab."
-	@echo "  common_symlinks - Alias for symlinks (uses bind mounts)."
-	@echo "  rc             - Adds 'source' line to .bashrc and .zshrc for loading shared rc."
-	@echo "  profile        - Adds 'source' line to .profile for loading shared profile."
-	@echo "  setup          - Runs initial setup: symlinks, no_beep, rc, and profile."
-	@echo "  symlink        - Creates a symbolic link: make symlink <target> <source>."
 
 mount: ## Mounts the work drive, creates mount point, and adds to fstab.
 	@echo "🔍 Searching for device with label '$(LABEL)'..."
@@ -147,6 +134,15 @@ no_beep: ## Disables the PC speaker beep.
 	else \
 		echo "✅ pcspkr not loaded."; \
 	fi
+
+power_button: ## Configures power button: ignore short press, shutdown on long press.
+	@echo "🔌 Configuring power button..."
+	@if command -v xfconf-query >/dev/null; then \
+		xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/power-button-action -n -t int -s 0 && echo "✅ XFCE Power Manager configured."; \
+	fi
+	@sudo sed -i 's/^#\?HandlePowerKey=.*/HandlePowerKey=ignore/' /etc/systemd/logind.conf
+	@sudo sed -i 's/^#\?HandlePowerKeyLongPress=.*/HandlePowerKeyLongPress=poweroff/' /etc/systemd/logind.conf
+	@sudo systemctl restart systemd-logind && echo "✅ systemd-logind configured and restarted."
 
 symlinks: bind_mounts ## Configures common home paths via bind mounts in /etc/fstab.
 
