@@ -1,4 +1,7 @@
-.PHONY: help get git ai
+.PHONY: get git ai
+
+MAKE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))make
+-include $(MAKE_DIR)/help.mk
 
 REPO_HTTP=https://github.com/KonstantinSKY/Configs.git
 REPO_SSH=git@github.com:KonstantinSKY/Configs.git
@@ -9,13 +12,7 @@ GEMINI_POLICY_DIR=$(HOME)/.gemini/policies
 GEMINI_POLICY_SRC=$(HOME)/Configs/ai/gemini/shell-rules.toml
 GEMINI_POLICY_DEST=$(GEMINI_POLICY_DIR)/shell-rules.toml
 
-help:
-	@echo "📘 Available targets:"
-	@echo "   make get     → Clone 'Configs' repo via HTTPS into current directory"
-	@echo "   make ai      → Install Gemini, Claude, Codex and setup configurations"
-	@echo "   make git     → Add all changes, generate commit message via Gemini, and push"
-
-get:
+get: ## Clone Configs repo via HTTPS and switch remote to SSH
 	@echo "🔍 Checking if ./$(DIR_NAME) exists..."
 	@if [ -d "$(DIR_NAME)" ]; then \
 		TIMESTAMP=$$(date +%Y%m%d_%H%M%S); \
@@ -34,7 +31,7 @@ get:
 
 	@echo "✅ Done! Cloned to ./$(DIR_NAME) with SSH remote."
 
-ai:
+ai: ## Install AI CLI tools and setup Gemini shell policy
 	@echo "📦 Installing AI Agents from AUR via yay..."
 	yay -S --needed --noconfirm $(AI_PACKAGES)
 	@echo "⚙️  Setting up Gemini shell policies..."
@@ -51,5 +48,5 @@ ai:
 	fi
 	@echo "✅ AI Setup complete."
 
-git:
+git: ## Commit and push using git/Makefile workflow
 	@$(MAKE) -f git/Makefile git

@@ -2,16 +2,13 @@
 
 .PHONY: help install
 
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
+
 MANJARO_MAKEFILE := ~/Configs/manjaro/Makefile
 CONFIG_DIR := $(HOME)/.config/alacritty
 CONFIG_FILE_NAME := alacritty.toml
 SOURCE_CONFIG := $(HOME)/Configs/alacritty/$(CONFIG_FILE_NAME)
 TARGET_CONFIG := $(CONFIG_DIR)/$(CONFIG_FILE_NAME)
-
-help:
-	@echo "📦 Available targets:"
-	@echo "  make install     – Update system, install Alacritty, and link config"
-	@echo "  make help        – Show this help message"
 
 install:
 	@echo "🔄 Updating system before installation..."

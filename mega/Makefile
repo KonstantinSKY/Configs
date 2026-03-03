@@ -1,11 +1,6 @@
 .PHONY: help h sync s
 
-help h:
-	@echo "📘 Available targets:"
-	@echo "---------------------------------------------------------------------"
-	@echo "  make sync / s <LOCAL> <REMOTE>  - 🔁 Sync local folder with MEGA remote"
-	@echo "  make help / h                   - 📖 Show this help"
-	@echo "---------------------------------------------------------------------"
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
 sync s:
 	@if [ $(words $(MAKECMDGOALS)) -ne 3 ]; then \

@@ -17,19 +17,7 @@ HEADERS_PKG := linux$(KSHORT)-headers
 
 .PHONY: help h update up headers kh install i extpack ex check_headers ch dkms_build db modules mod group u hostonly hn verify v reboot_hint rh all a
 
-help h:
-	@echo "Targets:"
-	@echo "  headers       / kh     - Install $$(printf '%s' $(HEADERS_PKG))"
-	@echo "  install       / i      - Install virtualbox + virtualbox-host-dkms"
-	@echo "  extpack       / ex     - Install virtualbox-ext-oracle"
-	@echo "  check_headers / ch     - Verify kernel headers for $$(uname -r)"
-	@echo "  dkms_build    / db     - Force DKMS autoinstall for current kernel"
-	@echo "  modules       / mod    - Load vbox* and enable autoload"
-	@echo "  group         / u      - Add current user to vboxusers"
-	@echo "  hostonly      / hn     - Ensure $(HOSTONLY_NAME) + DHCP"
-	@echo "  verify        / v      - Show VBox version/modules/hostonly"
-	@echo "  reboot_hint   / rh     - Print relogin/reboot hint"
-	@echo "  all           / a      - headers → install → extpack → check_headers → dkms_build → modules → group → (hostonly) → verify → rh"
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
 # ---- Package ops via your Manjaro Makefile ----
 

@@ -4,19 +4,10 @@
 
 .PHONY: help h installall ia all postgres p PG client c dbeaver d pg_setup pgset pg_enable pgen pg_start pgst pg_status pgss
 
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
+
 MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
 DB_APP_ID := io.dbeaver.DBeaverCommunity
-
-help h:
-	@echo "Targets:"
-	@echo "  installall | ia        - Install PostgreSQL (+libs) and DBeaver"
-	@echo "  postgres   | p | PG    - Install PostgreSQL server + psql + libpq"
-	@echo "  client     | c         - Install PostgreSQL client libs (libpq)"
-	@echo "  dbeaver    | d         - Install DBeaver (CE)"
-	@echo "  pg_setup   | pgset     - Init cluster (if needed), enable+start"
-	@echo "  pg_enable  | pgen      - systemctl enable postgresql"
-	@echo "  pg_start   | pgst      - systemctl start postgresql"
-	@echo "  pg_status  | pgss      - Show postgresql service status"
 
 # Aggregate installer
 all: installall

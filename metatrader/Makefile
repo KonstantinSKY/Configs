@@ -8,6 +8,8 @@ SHELL := /bin/bash
 .DEFAULT_GOAL := help
 .PHONY: help h new repo rp expert e indicator i script s %-args-sink
 
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
+
 # Sink rule to allow passing an extra word as an "argument" after targets,
 # so `make new MyProject` won't fail on unknown target "MyProject".
 %-args-sink:
@@ -47,27 +49,6 @@ INDICATOR_MAIN_ENTRY := indicator.mq4
 EXPERT_INCLUDE_LINE := #include "$(WIN_PROJECTS_ROOT)\\$${PROJECT_NAME}\\$(MAIN_ENTRY)"
 
 # ------------------------------------------------------------
-help h:
-	@echo "Targets:"
-	@echo "  make new [name]          - create project dir, MAIN_ENTRY (from template if present), copy project Makefile, and GitHub repo"
-	@echo "  make repo   <name> | rp  - initialize git and create GitHub repository"
-	@echo "  make expert <name> | e   - create Expert .mq4 stub in MQL4/Experts"
-	@echo "  make indicator <name>| i - create Indicator .mq4 stub in MQL4/Indicators"
-	@echo "  make script <name> | s   - create Script .mq4 stub in MQL4/Scripts"
-	@echo ""
-	@echo "Variables:"
-	@echo "  WIN_PROJECTS_ROOT = $(WIN_PROJECTS_ROOT)"
-	@echo "  MAIN_ENTRY        = $(MAIN_ENTRY)"
-	@echo "  TEMPLATE_DIR      = $(TEMPLATE_DIR)"
-	@echo "  MAIN_TEMPLATE     = $(MAIN_TEMPLATE) (optional)"
-	@echo ""
-	@echo "Examples:"
-	@echo "  make new                # will prompt for name"
-	@echo "  make new BreakOut_v2    # name via CLI arg"
-	@echo "  make expert BreakOut_v2"
-	@echo "  make indicator BreakOut_v2"
-	@echo "  make script BreakOut_v2"
-
 # ------------------------------------------------------------
 # 1) Project bootstrap (creates dir, MAIN_ENTRY from template or empty, copies per-project Makefile, sets up repo)
 new:

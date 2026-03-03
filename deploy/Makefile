@@ -8,11 +8,7 @@ REMOTE_DEPLOY_DIR := /Deploys
 
 .PHONY: help sync mkdir
 
-help:
-	@echo "📦 Usage:"
-	@echo "    make create <project_name>"
-	@echo "💡 This will create:"
-	@echo "    $(MAIN_DEPLOY_DIR)/<project_name>/backup"
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
 mkdir:
 	@if [ "$(words $(MAKECMDGOALS))" -ne 2 ]; then \

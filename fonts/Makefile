@@ -1,5 +1,7 @@
 .PHONY: all install update check refresh help
 
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
+
 FONTS = \
 	noto-fonts \
 	noto-fonts-emoji \
@@ -17,15 +19,6 @@ FONTS = \
 
 
 all: install update refresh check
-
-help:
-	@echo "📖 Available targets:"
-	@echo "  make install   – Install all fonts via yay"
-	@echo "  make update    – Update system packages"
-	@echo "  make refresh   – Rebuild font cache (fc-cache)"
-	@echo "  make check     – Check if fonts are installed"
-	@echo "  make all       – Run install, update, refresh, and check"
-	@echo "  make help      – Show this help message"
 
 install:
 	@echo "🔤 Installing fonts with yay..."

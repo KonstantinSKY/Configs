@@ -17,23 +17,9 @@ LINE          := "--------------------------------------------------------------
 
 .PHONY: help h setup s init i create_repo cr delete_repo dr force_ssh fs commit c full_commit fc install in git
 
-# --- Main Targets ---
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
-help h:
-	@echo -e "${BLUE}🛠️  Git & GitHub Project Manager${NC}"
-	@echo ""
-	@echo "Targets:"
-	@echo "  help | h            Show this help message"
-	@echo "  install | in        Install git and GitHub CLI (gh) via yay"
-	@echo "  setup | s           Configure global git settings"
-	@echo "  init | i            Initialize local git repo"
-	@echo "  create_repo | cr    Create private GitHub repo"
-	@echo "  delete_repo | dr    Delete GitHub repo"
-	@echo "  force_ssh | fs      Force remote 'origin' to SSH"
-	@echo "  commit | c [msg]    Commit and push (uses Gemini if msg is empty)"
-	@echo "  full_commit | fc    Pull (rebase), commit and push"
-	@echo "  git                 Auto-detect changes, Gemini message, commit & push"
-	@echo -e "${VIOLET}$(LINE)${NC}"
+# --- Main Targets ---
 
 install in:
 	@echo -e "${BLUE}🔄 Updating system packages...${NC}"

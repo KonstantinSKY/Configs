@@ -1,5 +1,7 @@
 .PHONY: help all install_theme install_icons apply_theme set_gtk2 set_gtk3 set_gtk4 check_theme
 
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
+
 GTK_THEME = Matcha-dark-sea
 ICON_THEME = Papirus-Dark
 FONT = Noto Sans 10
@@ -9,18 +11,6 @@ GTK3_DIR = $(HOME)/.config/gtk-3.0
 GTK3_CONFIG = $(GTK3_DIR)/settings.ini
 GTK4_DIR = $(HOME)/.config/gtk-4.0
 GTK4_CONFIG = $(GTK4_DIR)/settings.ini
-
-help:
-	@echo "📖 Available targets:"
-	@echo "  make all           - Install and apply GTK and icon themes, then check configuration"
-	@echo "  make install_theme - Install GTK theme ($(GTK_THEME)) using yay"
-	@echo "  make install_icons - Install icon theme ($(ICON_THEME)) using yay"
-	@echo "  make apply_theme   - Apply theme settings to GTK2/3/4 configs"
-	@echo "  make set_gtk2      - Apply GTK2 settings"
-	@echo "  make set_gtk3      - Apply GTK3 settings"
-	@echo "  make set_gtk4      - Apply GTK4 settings"
-	@echo "  make check_theme   - Check if themes are installed and configs are correct"
-	@echo "  make help          - Show this help message"
 
 all: install_theme install_icons apply_theme check_theme
 

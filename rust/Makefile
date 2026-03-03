@@ -6,6 +6,8 @@ SHELL := /bin/bash
 
 .PHONY: help h install i create c repo rp delete_repo dr copy_gitignore gi read rd
 
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
+
 RUST_MAKEFILE := $(HOME)/Configs/rust/Makefile
 GIT_MAKEFILE := $(HOME)/Configs/git/Makefile
 GITIGNORE_TEMPLATE := $(HOME)/Configs/rust/gitignore
@@ -18,16 +20,6 @@ PROJECT := $(word 2, $(MAKECMDGOALS))
 ifeq ($(strip $(PROJECT)),)
 PROJECT := $(notdir $(CURDIR))
 endif
-
-help h:
-	@echo "🛠  Rust Project Bootstrap"
-	@echo "Targets (alias):"
-	@echo "  install / i        Install Rust toolchain & build deps (via yay)"
-	@echo "  create  / c <name> Create new cargo project (no VCS), link common Makefile"
-	@echo "  repo    / rp [nm]  Init git, create GitHub repo, force SSH, copy .gitignore"
-	@echo "  delete_repo / dr   Delete GitHub repo for current dir"
-	@echo "  copy_gitignore / gi  Copy template .gitignore and commit"
-	@echo "  read    / rd       Show quick project info (Cargo.toml + git status)"
 
 # ────────────────────────────────────────────────────────────────────────────────
 # Create new Rust project and link shared Makefile

@@ -12,15 +12,7 @@ KVANTUM_THEME    ?= Matcha-Dark
 
 .PHONY: help install i env e xprofile xp theme t link l verify v all
 
-help:
-	@echo "Targets:"
-	@echo "  install  | i   - Install qt5ct, qt6ct, Kvantum (+qt5 plugin if available)"
-	@echo "  env      | e   - Export QT vars to ~/.profile (Qt5+Qt6, Kvantum)"
-	@echo "  xprofile | xp  - Ensure ~/.xprofile sources ~/.profile"
-	@echo "  link     | l   - Symlink Kvantum/Qt configs from this repo to ~/.config"
-	@echo "  theme    | t   - Precreate Kvantum config with $(KVANTUM_THEME) (optional)"
-	@echo "  verify   | v   - Show effective Qt env + Kvantum config info"
-	@echo "  all            - install -> env -> xprofile -> link -> verify"
+-include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
 
 all: install env xprofile link verify
 
