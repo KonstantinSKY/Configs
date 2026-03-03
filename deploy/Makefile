@@ -1,15 +1,10 @@
 # Makefile for creating a deploy directory and its backup subdirectory
 # URL: https://github.com/yourusername/yourrepo (замени на свой)
-
 MAIN_DEPLOY_DIR := $(HOME)/Work/Deploys
 BACKUP_DIR := backups
 MEGA_MAKEFILE := $(HOME)/Work/Configs/mega/Makefile
 REMOTE_DEPLOY_DIR := /Deploys
-
-.PHONY: help sync mkdir
-
--include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
-
+.PHONY: sync mkdir
 mkdir:
 	@if [ "$(words $(MAKECMDGOALS))" -ne 2 ]; then \
 		echo "❌ Error: Exactly one project name is required."; \
@@ -22,7 +17,6 @@ mkdir:
 	mkdir -p "$$TARGET_DIR" && \
 	echo "✅ Done: $$TARGET_DIR created" && \
 	ls -la "$(MAIN_DEPLOY_DIR)/$$PROJECT"
-
 sync:
 	@if [ "$(words $(MAKECMDGOALS))" -ne 2 ]; then \
 		echo "❌ Error: Exactly one project name is required."; \
@@ -36,6 +30,5 @@ sync:
 	echo "    LOCAL : $$LOCAL_PATH"; \
 	echo "    REMOTE: $$REMOTE_PATH"; \
 	$(MAKE) -f $(MEGA_MAKEFILE) sync "$$LOCAL_PATH" "$$REMOTE_PATH"
-
 %:
 	@:

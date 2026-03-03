@@ -1,20 +1,14 @@
 # KVM Infrastructure Management
-
 KVM_ROOT    := $(HOME)/Work/KVMs
 CONFIG_ROOT := $(HOME)/Work/Configs/kvm
 XML_DIR     := $(CONFIG_ROOT)/xmls
 REMOTE      := gdrive:KVM_Backups
-
 .PHONY: backup install check-running
--include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
-
 # По умолчанию запускаем бекап всего
 backup: check-running ## Run full KVM backup (ISOs, XMLs, NVRAM, disks)
 	@echo "=== STARTING FULL KVM BACKUP ==="
-	
 	@echo "--> [1/4] Syncing ISOs..."
 	@rclone copy "$(KVM_ROOT)/isos" "$(REMOTE)/isos" -P
-
 	@echo "--> [2/4] Saving XML Configs..."
 	@mkdir -p $(XML_DIR)
 	@for domain in $$(virsh list --all --name); do \
@@ -25,15 +19,11 @@ backup: check-running ## Run full KVM backup (ISOs, XMLs, NVRAM, disks)
 	done
 	@echo "   Uploading XMLs to Cloud..."
 	@rclone copy "$(XML_DIR)" "$(REMOTE)/xmls" -P
-
 	@echo "--> [3/4] Backing up NVRAM (BIOS)..."
 	@rclone copy "$(KVM_ROOT)/nvram" "$(REMOTE)/nvram" -P
-
 	@echo "--> [4/4] Backing up Disks..."
 	@rclone copy "$(KVM_ROOT)/disks" "$(REMOTE)/disks" -P
-	
 	@echo "=== BACKUP COMPLETED ==="
-
 check-running: ## Ensure all VMs are stopped before backup
 	@if [ -n "$$(virsh list --name --state-running)" ]; then \
 		echo "❌ ERROR: The following VMs are currently RUNNING:"; \
@@ -43,7 +33,6 @@ check-running: ## Ensure all VMs are stopped before backup
 	else \
 		echo "✅ All VMs are offline. Proceeding..."; \
 	fi
-
 install: ## Define VMs from local XML files
 	@echo "--> Defining VMs from local XMLs..."
 	@for xml in $(XML_DIR)/*.xml; do \

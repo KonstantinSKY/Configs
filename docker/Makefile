@@ -1,16 +1,10 @@
 MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
-
-.PHONY: help h install i setup set version v status s
-
--include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
-
-
+.PHONY: install i setup set version v status s
 install i:
 	@echo "🐳 Installing Docker ecosystem using universal Manjaro Makefile..."
 	@make -f $(MANJARO_MAKEFILE) install docker docker-compose docker-buildx
 	@$(MAKE) version
 	@$(MAKE) setup
-
 setup set:
 	@echo "🔧 Enabling and starting Docker daemon..."
 	@sudo systemctl enable docker
@@ -22,7 +16,6 @@ setup set:
 	@$(MAKE) status
 	@echo "⚠️  Please reboot or run 'newgrp docker' to apply group changes."
 	@echo "✅ Docker setup complete."
-
 version v:
 	@echo "🔍 Checking installed Docker versions"
 	@echo "🐳 Docker version:"
@@ -32,7 +25,6 @@ version v:
 	@echo "🐳 Docker buildx version:"
 	@docker buildx version || echo "❌ docker buildx not found"
 	@echo "------------------------------------------------------------"
-
 status s: version group
 	@echo "🔍 Checking Docker status"
 	@echo "🔍 Checking Docker daemon status..."
@@ -46,7 +38,6 @@ status s: version group
 	@echo "------------------------------------------------------------"
 	@docker ps --format '  - {{.Names}} ({{.Image}}) — Up: {{.Status}}' || echo "❌ docker ps failed"
 	@echo "------------------------------------------------------------"
-
 group g:
 	@echo "🔒 Checking user group access:"
 	@if id -nG "$(USER)" | grep -qw docker; then \

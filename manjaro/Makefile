@@ -1,35 +1,26 @@
-.PHONY: help setup mirrors pacman-update install-yay enable-aur update u yay-update install i install-base check
-
--include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
-
+.PHONY: setup mirrors pacman-update install-yay enable-aur update u yay-update install i install-base check
 FLATPAK_MAKEFILE = $(HOME)/Work/Configs/flatpak/Makefile
-
 # Main target
 setup: mirrors pacman-update install-yay yay-update enable-aur
 	@$(MAKE) -s -f $(FLATPAK_MAKEFILE) install
 	@echo "✅ Manjaro i3 setup complete!"
-
 # mirrors update
 mirrors:
 	@echo "🔄 Updating mirrors..."
 	sudo pacman-mirrors --fasttrack && sudo pacman -Syy
 	@echo "-------------------------------------------------------------------------------"
-
 pacman-update:
 	@echo "⬆️  Running full system upgrade..."
 	sudo pacman -Syu --noconfirm
 	@echo "-------------------------------------------------------------------------------"
-
 install-yay:
 	@echo "📦 Installing yay from official repository..."
 	sudo pacman -S --needed --noconfirm yay
 	@echo "-------------------------------------------------------------------------------"
-
 yay-update:
 	@echo "⬆️  Updating AUR and system packages with yay..."
 	@yay -Syu --noconfirm || echo "⚠️  Yay exited with warning"
 	@echo "-------------------------------------------------------------------------------"
-
 enable-aur:
 	@echo "⚙️  Enabling AUR support in pamac (if applicable)..."
 	@if command -v pamac >/dev/null 2>&1; then \
@@ -38,7 +29,6 @@ enable-aur:
 		echo "ℹ️  pamac not found, skipping AUR GUI enabling..."; \
 	fi
 	@echo "-------------------------------------------------------------------------------"
-
 update u:
 	@echo "⬆️  Full update of AUR and system packages via yay..."
 	yay -Syyu --noconfirm --answerclean None --answerdiff None
@@ -54,10 +44,8 @@ update u:
 	@echo "🧹 Cleaning flat unused flatpak runtimes..."
 	@flatpak uninstall -y --unused || { rc=$$?; [ $$rc -eq 127 ] && echo "⚠️ runtime not installed — skipping cleanup" || exit $$rc; }
 	@echo "-------------------------------------------------------------------------------"
-
 	@echo "✅ Update completed successfully!"
 	@echo "-------------------------------------------------------------------------------"
-
 install i:
 	@if [ "$(wordlist 2,999,$(MAKECMDGOALS))" = "" ]; then \
 		echo "❌ No packages specified. Usage: make install [list of packages]"; \
@@ -87,7 +75,6 @@ install i:
 	done
 	@echo "-------------------------------------------------------------------------------"
 	@echo "✅ Installation process complete."
-
 install-base:
 	@echo "📦 Installing essential packages via yay..."
 	yay -S --needed --noconfirm \
@@ -109,73 +96,56 @@ install-base:
 		pulseaudio
 	@echo "✅ Base packages installed via yay."
 	@echo "-------------------------------------------------------------------------------"
-
 check:
 	@echo "🔍 Starting full system diagnostic..."
 	@echo ""
-
 	@echo "👤 User and Host Info:"
 	@echo "User: $$(whoami)"
 	@echo "Host: $$(hostname)"
 	@echo "Home Dir: $$HOME"
 	@echo ""
-
 	@echo "🕒 Uptime and Load:"
 	@uptime
 	@echo ""
-
 	@echo "🧠 Memory and Swap Usage:"
-	@free -h
+	@free -
 	@echo ""
-
 	@echo "💾 Disk Usage for / and /var:"
 	@df -hT -x squashfs -x tmpfs -x devtmpfs
 	@echo ""
-
 	@echo "🔌 Network Interfaces:"
 	@ip -brief address
 	@echo ""
-
 	@echo "🌐 Open Network Ports:"
 	@ss -tuln
 	@echo ""
-
 	@echo "📊 Top Processes Snapshot:"
 	@top -bn1 | head -15
 	@echo ""
-
 	@echo "⚙️  Systemd Services with Errors:"
 	@systemctl --failed --no-pager
 	@echo ""
-
 	@echo "👻 Zombie or Suspicious Processes:"
 	@ps -eo pid,ppid,stat,cmd | awk '$3 ~ /^Z/ { print }' || echo "✔️  No zombie processes found"
 	@echo ""
-
 	@echo "🔐 Running Processes as root:"
 	@ps -U root -u root u
 	@echo ""
-
 	@echo "📄 Recent System Errors (priority 3, current boot):"
 	@journalctl -p 3 -xb -n 20 || echo "✔️  No recent critical errors"
 	@echo ""
-
 	@echo "🚨 Kernel Critical Logs (OOM, segfaults, panics):"
 	@journalctl -k -p 0..3 | grep -Ei 'Out of memory|Kernel panic|segfault' || echo "✔️  No kernel-level issues detected"
 	@echo ""
-
 	@echo "⏱️  Active Timers (Cron/Systemd):"
 	@systemctl list-timers --all --no-pager | head -15
 	@echo ""
-
 	@echo "🔑 Wheel (Admin) Group Members:"
 	@grep '^wheel:' /etc/group || echo "ℹ️  No 'wheel' group found"
 	@echo ""
-
 	@echo "🔥 Temperature Sensors (if available):"
 	@command -v sensors >/dev/null && sensors || echo "ℹ️  'sensors' command not available"
 	@echo ""
-
 	@echo "🐳 Docker Status:"
 	@if command -v docker >/dev/null; then \
 		echo "Docker is installed."; \
@@ -187,12 +157,9 @@ check:
 		echo "ℹ️  Docker is not installed."; \
 	fi
 	@echo ""
-
 	@echo "\n🧪 Testing Dunst Notification (without emoji):"
 	@notify-send "Notification test" "Dunst is working!"
-
 	@echo "✅ System check completed."
-
 # Prevent make from treating package names as targets
 %:
 	@:

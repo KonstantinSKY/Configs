@@ -1,30 +1,21 @@
-.PHONY: help all install_theme install_icons apply_theme set_gtk2 set_gtk3 set_gtk4 check_theme
-
--include $(abspath $(dir $(lastword $(MAKEFILE_LIST)))/../make/help.mk)
-
+.PHONY: all install_theme install_icons apply_theme set_gtk2 set_gtk3 set_gtk4 check_theme
 GTK_THEME = Matcha-dark-sea
 ICON_THEME = Papirus-Dark
 FONT = Noto Sans 10
-
 GTK2_CONFIG = $(HOME)/.gtkrc-2.0
 GTK3_DIR = $(HOME)/.config/gtk-3.0
 GTK3_CONFIG = $(GTK3_DIR)/settings.ini
 GTK4_DIR = $(HOME)/.config/gtk-4.0
 GTK4_CONFIG = $(GTK4_DIR)/settings.ini
-
 all: install_theme install_icons apply_theme check_theme
-
 install_theme:
 	@echo "🎨 Installing GTK theme: $(GTK_THEME) using yay..."
 	yay -S --noconfirm matcha-gtk-theme || echo "⚠️  Failed to install GTK theme."
-
 install_icons:
 	@echo "🖼️  Installing icon theme: $(ICON_THEME) using yay..."
 	yay -S --noconfirm papirus-icon-theme || echo "⚠️  Failed to install icon theme."
-
 apply_theme: set_gtk2 set_gtk3 set_gtk4
 	@echo "✅ GTK themes (2/3/4) and icons applied. Restart apps to see changes."
-
 set_gtk2:
 	@echo "🛠️  Applying GTK2 theme..."
 	@if [ -f "$(GTK2_CONFIG)" ]; then cp "$(GTK2_CONFIG)" "$(GTK2_CONFIG).bak"; else echo "" > "$(GTK2_CONFIG)"; fi
@@ -34,7 +25,6 @@ set_gtk2:
 	@echo "gtk-theme-name=\"$(GTK_THEME)\"" >> $(GTK2_CONFIG)
 	@echo "gtk-icon-theme-name=\"$(ICON_THEME)\"" >> $(GTK2_CONFIG)
 	@echo "gtk-font-name=\"$(FONT)\"" >> $(GTK2_CONFIG)
-
 set_gtk3:
 	@echo "🛠️  Applying GTK3 theme..."
 	mkdir -p $(GTK3_DIR)
@@ -47,7 +37,6 @@ set_gtk3:
 	@echo "gtk-icon-theme-name=$(ICON_THEME)" >> $(GTK3_CONFIG)
 	@echo "gtk-font-name=$(FONT)" >> $(GTK3_CONFIG)
 	@echo "gtk-application-prefer-dark-theme=true" >> $(GTK3_CONFIG)
-
 set_gtk4:
 	@echo "🛠️  Applying GTK4 theme..."
 	mkdir -p $(GTK4_DIR)
@@ -60,7 +49,6 @@ set_gtk4:
 	@echo "gtk-icon-theme-name=$(ICON_THEME)" >> $(GTK4_CONFIG)
 	@echo "gtk-font-name=$(FONT)" >> $(GTK4_CONFIG)
 	@echo "gtk-application-prefer-dark-theme=true" >> $(GTK4_CONFIG)
-
 check_theme:
 	@echo "🔍 Check instalation and configs GTK..."
 	@if yay -Q matcha-gtk-theme >/dev/null 2>&1; then \
@@ -76,7 +64,5 @@ check_theme:
 	@echo "📝 GTK2 config:"; grep -E 'gtk-(theme|icon|font)' $(GTK2_CONFIG) || echo "⚠️  Not configured."
 	@echo "📝 GTK3 config:"; grep -E 'gtk-(theme|icon|font)' $(GTK3_CONFIG) || echo "⚠️  Not configured."
 	@echo "📝 GTK4 config:"; grep -E 'gtk-(theme|icon|font)' $(GTK4_CONFIG) || echo "⚠️  Not configured."
-
-
 # sudo mkdir -p /root/.config/gtk-3.0
 # sudo cp ~/.config/gtk-3.0/settings.ini /root/.config/gtk-3.0/

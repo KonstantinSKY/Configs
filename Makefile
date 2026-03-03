@@ -1,7 +1,5 @@
-.PHONY: get git ai
+.PHONY: get ai
 
-MAKE_DIR := $(dir $(abspath $(lastword $(MAKEFILE_LIST))))make
--include $(MAKE_DIR)/help.mk
 
 REPO_HTTP=https://github.com/KonstantinSKY/Configs.git
 REPO_SSH=git@github.com:KonstantinSKY/Configs.git
@@ -47,6 +45,3 @@ ai: ## Install AI CLI tools and setup Gemini shell policy
 		ln -sf $(GEMINI_POLICY_SRC) $(GEMINI_POLICY_DEST); \
 	fi
 	@echo "✅ AI Setup complete."
-
-git: ## Commit and push using git/Makefile workflow
-	@$(MAKE) -f git/Makefile git
