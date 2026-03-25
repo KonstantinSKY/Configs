@@ -308,18 +308,22 @@ exec_always --no-startup-id picom -b
 #exec_always --no-startup-id manjaro-hello
 exec_always --no-startup-id nm-applet
 exec_always --no-startup-id xfce4-power-manager
+exec --no-startup-id systemd-inhibit --what=idle:sleep:handle-lid-switch --who=cli-agent --why="Disable sleep" sleep infinity
 exec_always --no-startup-id pamac-tray
 exec_always --no-startup-id clipit
 # exec_always --no-startup-id blueman-applet
 # exec_always --no-startup-id sbxkb
 exec_always --no-startup-id start_conky_maia
 # exec_always --no-startup-id start_conky_green
-exec_always --no-startup-id xautolock -time 10 -locker blurlock
+# exec_always --no-startup-id xautolock -time 10 -locker blurlock
 exec_always --no-startup-id ff-theme-util
 exec_always --no-startup-id fix_xcursor
 exec_always --no-startup-id stalonetray
 exec_always --no-startup-id export QT_STYLE_OVERRIDE=kvantum
 # Stop blank screen
+exec --no-startup-id xset s off
+exec --no-startup-id xset -dpms
+exec --no-startup-id xset s noblank
 exec_always --no-startup-id xset b off
 #exec_always --no-startup-id xset s off
 #exec_always --no-startup-id xset -dpms
