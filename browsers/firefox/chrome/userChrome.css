@@ -1,0 +1,65 @@
+@namespace url("http://www.mozilla.org/keymaster/gatekeeper/there.is.only.xul");
+
+:root {
+  --soft-fg: #c1c8c8;
+  --soft-fg-strong: #d2d8d8;
+  --soft-bg: #1f282c;
+  --soft-bg-alt: #243036;
+  --soft-border: #334248;
+  --toolbar-field-focus-background-color: #182125 !important;
+  --toolbar-field-background-color: #202a2e !important;
+  --toolbar-field-color: var(--soft-fg) !important;
+  --toolbar-field-focus-color: var(--soft-fg-strong) !important;
+  --lwt-text-color: var(--soft-fg) !important;
+  --toolbar-color: var(--soft-fg) !important;
+  --tab-selected-textcolor: var(--soft-fg-strong) !important;
+}
+
+#navigator-toolbox,
+#TabsToolbar,
+#nav-bar,
+#PersonalToolbar {
+  background: var(--soft-bg) !important;
+  color: var(--soft-fg) !important;
+}
+
+#nav-bar,
+#PersonalToolbar {
+  border-color: var(--soft-border) !important;
+}
+
+#PersonalToolbar {
+  background: var(--soft-bg-alt) !important;
+}
+
+.tabbrowser-tab,
+.toolbarbutton-1,
+#TabsToolbar .titlebar-buttonbox-container,
+#identity-box,
+#tracking-protection-icon-container {
+  color: var(--soft-fg) !important;
+}
+
+.tabbrowser-tab[selected="true"] .tab-content {
+  color: var(--soft-fg-strong) !important;
+}
+
+#urlbar-background,
+.searchbar-textbox {
+  background: #202a2e !important;
+  border-color: var(--soft-border) !important;
+}
+
+#urlbar[focused="true"] > #urlbar-background,
+.searchbar-textbox:focus-within {
+  background: #182125 !important;
+  border-color: #48606a !important;
+}
+
+.tab-background[selected="true"] {
+  background: #2a363c !important;
+}
+
+.tab-background:not([selected="true"]) {
+  background: #1e262a !important;
+}
