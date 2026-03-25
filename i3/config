@@ -64,7 +64,7 @@ bindsym $mod+Ctrl+m exec terminal -e 'alsamixer'
 # Start Applications
 # bindsym $mod+Ctrl+b exec terminal -e 'bmenu'
 
-bindsym $mod+F2 exec --no-startup-id google-chrome-stable
+bindsym $mod+F2 exec --no-startup-id firefox
 bindsym $mod+F3 exec --no-startup-id pcmanfm
 bindsym $mod+F4 exec terminal -e bash -c 'ranger || read'
 bindsym $mod+F5 exec --no-startup-id zeditor
