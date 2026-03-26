@@ -6,8 +6,8 @@
       <libosinfo:os id="http://microsoft.com/win/10"/>
     </libosinfo:libosinfo>
   </metadata>
-  <memory unit='KiB'>33554432</memory>
-  <currentMemory unit='KiB'>33554432</currentMemory>
+  <memory unit='KiB'>8388608</memory>
+  <currentMemory unit='KiB'>8388608</currentMemory>
   <vcpu placement='static'>4</vcpu>
   <resource>
     <partition>/machine</partition>
@@ -35,7 +35,6 @@
       <frequencies state='on'/>
       <tlbflush state='on'/>
       <ipi state='on'/>
-      <evmcs state='on'/>
       <avic state='on'/>
     </hyperv>
     <vmport state='off'/>
@@ -256,4 +255,3 @@
     <imagelabel>+950:+950</imagelabel>
   </seclabel>
 </domain>
-
