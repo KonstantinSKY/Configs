@@ -1,44 +1,38 @@
-.PHONY: install package keys config validate enable restart status
+.PHONY: install password-on password-off
 
 MAKEFLAGS += --no-print-directory
 
 PACKAGE_NAME := openssh
-SOURCE_CONFIG := $(HOME)/Work/Configs/ssh/sshd_config
 TARGET_CONFIG := /etc/ssh/sshd_config
 
-install: package keys config validate enable restart status ## Install and configure sshd
-
-package: ## Install OpenSSH package
+install: ## Install OpenSSH server package and start sshd
 	@echo "📦 Installing $(PACKAGE_NAME)..."
 	sudo pacman -S --needed --noconfirm $(PACKAGE_NAME)
+	@echo "⚙️  Enabling and starting sshd..."
+	sudo systemctl enable --now sshd
+	@echo "🔍 Checking sshd status..."
+	sudo systemctl is-active sshd
 
-keys: ## Ensure host keys exist
-	@echo "🔑 Ensuring SSH host keys exist..."
-	sudo ssh-keygen -A
-
-config: ## Backup existing config and install repo config
-	@echo "🧪 Validating source config before install..."
-	sudo sshd -t -f "$(SOURCE_CONFIG)"
-	@echo "📄 Installing sshd config to $(TARGET_CONFIG)..."
-	@if sudo test -f "$(TARGET_CONFIG)" && ! sudo cmp -s "$(SOURCE_CONFIG)" "$(TARGET_CONFIG)"; then \
-		BACKUP_PATH="$(TARGET_CONFIG).bak.$$(date +%Y%m%d_%H%M%S)"; \
-		echo "📦 Backing up existing config to $$BACKUP_PATH"; \
-		sudo cp "$(TARGET_CONFIG)" "$$BACKUP_PATH"; \
-	fi
-	sudo install -Dm600 "$(SOURCE_CONFIG)" "$(TARGET_CONFIG)"
-
-validate: ## Validate active sshd configuration
-	@echo "🔍 Validating active sshd configuration..."
+password-on: ## Enable password authentication in sshd
+	@echo "🔓 Enabling password authentication in $(TARGET_CONFIG)..."
+	@sudo test -f "$(TARGET_CONFIG)"
+	@sudo sed -i \
+		-e 's/^[#[:space:]]*PasswordAuthentication[[:space:]].*/PasswordAuthentication yes/' \
+		-e 's/^[#[:space:]]*KbdInteractiveAuthentication[[:space:]].*/KbdInteractiveAuthentication yes/' \
+		"$(TARGET_CONFIG)"
+	@echo "🔍 Validating sshd configuration..."
 	sudo sshd -t
-
-enable: ## Enable sshd service on boot
-	@echo "⚙️  Enabling sshd service..."
-	sudo systemctl enable sshd
-
-restart: ## Restart sshd service
 	@echo "🔄 Restarting sshd service..."
 	sudo systemctl restart sshd
 
-status: ## Show sshd service status
-	@echo "📡 sshd service status:"
-	systemctl --no-pager --full status sshd
+password-off: ## Disable password authentication in sshd
+	@echo "🔐 Disabling password authentication in $(TARGET_CONFIG)..."
+	@sudo test -f "$(TARGET_CONFIG)"
+	@sudo sed -i \
+		-e 's/^[#[:space:]]*PasswordAuthentication[[:space:]].*/PasswordAuthentication no/' \
+		-e 's/^[#[:space:]]*KbdInteractiveAuthentication[[:space:]].*/KbdInteractiveAuthentication no/' \
+		"$(TARGET_CONFIG)"
+	@echo "🔍 Validating sshd configuration..."
+	sudo sshd -t
+	@echo "🔄 Restarting sshd service..."
+	sudo systemctl restart sshd
