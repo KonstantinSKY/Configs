@@ -1,4 +1,4 @@
-.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink rc xprofile xp setup bind_mounts zsh
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink xprofile xp setup bind_mounts zsh
 .DEFAULT_GOAL :=
 ## ---------------------------
 ## 🧩 Directory configuration
@@ -6,6 +6,7 @@
 MAKEFLAGS += --no-print-directory
 WORK_DIR = $(HOME)/$(DIR)
 CONFIGS_DIR = $(WORK_DIR)/Configs
+THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
 ## ---------------------------
 ## 🧩 Mount configuration
 ## ---------------------------
@@ -20,10 +21,8 @@ UUID = $(shell sudo blkid -s UUID -o value $$(sudo findfs LABEL=$(LABEL)))
 ROOT_UUID = $(shell findmnt -no UUID /)
 MOUNT_DIR = $(WORK_DIR)
 ## ---------------------------
-## 🧩 RC / Profile configuration
+## 🧩 Xprofile configuration
 ## ---------------------------
-RC_FILE = $(CONFIGS_DIR)/linux/rc
-RC_LINE = [ -f "$(RC_FILE)" ] && source "$(RC_FILE)"
 XPROFILE_PACKAGE = xprofile
 TARGET_XPROFILE_FILE = $(HOME)/.xprofile
 ## ---------------------------
@@ -129,18 +128,6 @@ power_button: ## Configures power button: ignore short press, shutdown on long p
 	@sudo systemctl restart systemd-logind && echo "✅ systemd-logind configured and restarted."
 symlinks: bind_mounts ## Configures common home paths via bind mounts in /etc/fstab.
 common_symlinks: symlinks ## Backward-compatible alias; uses bind mounts.
-rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
-	@for rcfile in $(HOME)/.bashrc $(HOME)/.zshrc; do \
-		if [ ! -f "$$rcfile" ]; then \
-			echo "📄 File $$rcfile not found. Creating..."; \
-			touch "$$rcfile"; \
-		fi; \
-		if ! grep -Fxq '$(RC_LINE)' "$$rcfile"; then \
-			echo '$(RC_LINE)' >> "$$rcfile" && echo "➕ Linked: $$rcfile"; \
-		else \
-			echo "✅ Already linked: $$rcfile"; \
-		fi; \
-	done
 xprofile xp: ## Link .xprofile from the stow package
 	@echo "📦 Preparing existing $(TARGET_XPROFILE_FILE) for stow..."
 	@$(call prepare_stow_target,$(TARGET_XPROFILE_FILE),$(CONFIGS_DIR)/$(XPROFILE_PACKAGE)/.xprofile)
@@ -148,11 +135,11 @@ xprofile xp: ## Link .xprofile from the stow package
 	@$(call ensure_stow_installed)
 	@$(call stow_package,$(CONFIGS_DIR),$(HOME),$(XPROFILE_PACKAGE))
 	@echo "✅ xprofile linked to $(TARGET_XPROFILE_FILE)"
-setup: ## Runs initial setup: symlinks, no_beep, rc, and xprofile
-	@$(MAKE) symlinks
-	@$(MAKE) no_beep
-	@$(MAKE) rc
-	@$(MAKE) xprofile
+setup: ## Runs initial setup: symlinks, no_beep, zsh, and xprofile
+	@$(MAKE) -f $(THIS_MAKEFILE) symlinks
+	@$(MAKE) -f $(THIS_MAKEFILE) no_beep
+	@$(MAKE) -f $(THIS_MAKEFILE) zsh
+	@$(MAKE) -f $(THIS_MAKEFILE) xprofile
 zsh: ## Install zsh if needed and switch current user to it
 	@echo "🔍 Checking zsh installation..."
 	@if command -v zsh >/dev/null 2>&1; then \
