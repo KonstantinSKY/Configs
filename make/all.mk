@@ -7,5 +7,6 @@ include backup.mk
 include stow.mk
 include help.mk
 include git.mk
+include update.mk
 
 # Add more global modules here in the future

@@ -1,5 +1,12 @@
 .PHONY: setup mirrors pacman-update install-yay enable-aur update u yay-update install i install-base check
-FLATPAK_MAKEFILE = $(HOME)/Work/Configs/flatpak/Makefile
+
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+
+include $(CONFIGS_DIR)/make/update.mk
+
+FLATPAK_MAKEFILE = $(CONFIGS_DIR)/flatpak/Makefile
 BASE_PACKAGES = \
 	base-devel \
 	manjaro-settings-manager \
@@ -20,6 +27,7 @@ BASE_PACKAGES = \
 # Main target
 setup: mirrors pacman-update install-yay yay-update
 	@$(MAKE) -s -f $(FLATPAK_MAKEFILE) install
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
 	@echo "✅ Manjaro i3 setup complete!"
 # mirrors update
 mirrors:
@@ -68,7 +76,7 @@ install i:
 		echo "❌ No packages specified. Usage: make install [list of packages]"; \
 		exit 1; \
 	fi
-	$(MAKE) -f $(lastword $(MAKEFILE_LIST)) yay-update
+	@$(call ensure_system_updated)
 	@echo "📦 Installing packages:"
 	@echo "-------------------------------------------------------------------------------"
 	@for pkg in $(wordlist 2,999,$(MAKECMDGOALS)); do \
@@ -93,6 +101,7 @@ install i:
 	@echo "-------------------------------------------------------------------------------"
 	@echo "✅ Installation process complete."
 install-base:
+	@$(call ensure_system_updated)
 	@echo "📦 Installing essential packages via yay..."
 	yay -S --needed --noconfirm $(BASE_PACKAGES)
 	@echo "✅ Base packages installed via yay."

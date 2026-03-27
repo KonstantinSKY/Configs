@@ -1,8 +1,17 @@
-.PHONY: install i enable e status s upgrade u cleanup c
+.PHONY: install i enable e status s update u cleanup c
+
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+
+include $(CONFIGS_DIR)/make/update.mk
+
 install i:
 	@echo "🛠 Installing runtime..."
-	@sudo pacman -S --needed --noconfirm flatpak || { echo '❌ pacman failed'; exit 1; }
-	@$(MAKE) -s enable status
+	@$(call ensure_system_updated)
+	@yay -S --needed --noconfirm flatpak || { echo '❌ yay failed'; exit 1; }
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" enable
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" status
 	@echo "✅ Done."
 	@echo "-----------------------------------------------------------------------------------"
 enable e:
