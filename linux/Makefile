@@ -1,4 +1,4 @@
-.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink rc profile p setup bind_mounts
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink rc profile p setup bind_mounts zsh
 .DEFAULT_GOAL :=
 ## ---------------------------
 ## 🧩 Directory configuration
@@ -156,6 +156,25 @@ setup: ## Runs initial setup: symlinks, no_beep, rc, and profile
 	@$(MAKE) no_beep
 	@$(MAKE) rc
 	@$(MAKE) profile
+zsh: ## Install zsh if needed and switch current user to it
+	@echo "🔍 Checking zsh installation..."
+	@if command -v zsh >/dev/null 2>&1; then \
+		ZSH_PATH="$$(command -v zsh)"; \
+		echo "✅ zsh is installed: $$ZSH_PATH"; \
+	else \
+		echo "📦 Installing zsh..."; \
+		sudo pacman -S --needed --noconfirm zsh; \
+		ZSH_PATH="$$(command -v zsh)"; \
+	fi; \
+	CURRENT_SHELL="$$(getent passwd "$$USER" | cut -d: -f7)"; \
+	echo "👤 Current login shell: $$CURRENT_SHELL"; \
+	if [ "$$CURRENT_SHELL" = "$$ZSH_PATH" ]; then \
+		echo "✅ Login shell is already set to $$ZSH_PATH"; \
+	else \
+		echo "🔄 Switching login shell to $$ZSH_PATH"; \
+		chsh -s "$$ZSH_PATH"; \
+		echo "✅ Login shell updated. Open a new session to use zsh by default."; \
+	fi
 bind_mounts: ## Converts symlinks to bind mounts in fstab.
 	@echo "🔗 Converting common symlinks to bind mounts..."
 	@for pair in $(COMMON_SYMLINKS); do \
