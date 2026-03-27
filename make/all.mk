@@ -1,5 +1,5 @@
 # Global GNU Make extensions
-# These files are found because of MAKEFLAGS="-I /home/sky/Configs/make"
+# These files are found because of MAKEFLAGS="-I /home/sky/Work/Configs/make"
 
 include colors.mk
 include fs.mk
