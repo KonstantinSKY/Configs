@@ -175,6 +175,13 @@ zsh: ## Install zsh if needed and switch current user to it
 		chsh -s "$$ZSH_PATH"; \
 		echo "✅ Login shell updated. Open a new session to use zsh by default."; \
 	fi
+	@echo "🔗 Linking zsh config with stow..."
+	@if ! command -v stow >/dev/null 2>&1; then \
+		echo "📦 Installing stow..."; \
+		sudo pacman -S --needed --noconfirm stow; \
+	fi
+	stow -d "$(CONFIGS_DIR)" -t "$(HOME)" zsh
+	@echo "✅ zsh config linked to $(HOME)/.zshrc"
 bind_mounts: ## Converts symlinks to bind mounts in fstab.
 	@echo "🔗 Converting common symlinks to bind mounts..."
 	@for pair in $(COMMON_SYMLINKS); do \
