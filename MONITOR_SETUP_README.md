@@ -35,14 +35,14 @@ The monitor configuration is already included in your i3 config. To apply change
 
 1. Copy the monitor config to your home directory:
    ```bash
-   mkdir -p ~/.config/i3/monitor
-   cp ~/Work/Configs/.config/i3/monitor/monitor.conf ~/.config/i3/monitor/
+   mkdir -p ~/.i3/host
+   cp ~/Work/Configs/i3/desktop/monitor.conf ~/.i3/host/monitor.conf
    ```
 
 2. Reload i3: Press `Mod+Shift+R`
 
 ### Method 2: Edit the Monitor Config
-Edit `~/.config/i3/monitor/monitor.conf` and uncomment your preferred resolution:
+Edit `~/.i3/host/monitor.conf` and uncomment your preferred resolution:
 
 ```bash
 # For 1080p (default)
@@ -76,17 +76,17 @@ This script provides:
 ### If Resolution Resets After Reboot
 1. Make sure the monitor config is in the correct location:
    ```bash
-   ls ~/.config/i3/monitor/monitor.conf
+   ls ~/.i3/host/monitor.conf
    ```
 
 2. Check that your i3 config includes it:
    ```bash
-   grep "include.*monitor.conf" ~/.config/i3/config
+   grep "include.*monitor.conf" ~/.i3/config
    ```
 
 3. If the include line is missing, add it to your i3 config:
    ```
-   include ~/.config/i3/monitor/monitor.conf
+   include ~/.i3/host/monitor.conf
    ```
 
 ### DisplayPort-1 Limited to 640x480
@@ -151,7 +151,7 @@ xrandr --output DisplayPort-0 --primary --mode 1920x1080 --pos 640x0
 
 ## Files Created
 
-- `~/.config/i3/monitor/monitor.conf` - i3 monitor configuration
+- `~/.i3/host/monitor.conf` - i3 monitor configuration
 - `~/Work/Configs/scripts/fix-resolution.sh` - Quick fix script
 - `~/Work/Configs/scripts/display_setup.sh` - Interactive setup script
 
