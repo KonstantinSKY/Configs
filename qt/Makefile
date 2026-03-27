@@ -1,32 +1,76 @@
 # Qt theming bootstrap for Manjaro / i3
 # - Installs qt5ct, qt6ct, Kvantum for Qt5/Qt6
-# - Exports env vars in ~/.profile (idempotent)
-# - Ensures ~/.xprofile sources ~/.profile for GUI sessions
-MANJARO_MAKEFILE ?= $(HOME)/Configs/manjaro/Makefile
-PROFILE          ?= $(HOME)/.profile
-XPROFILE         ?= $(HOME)/.xprofile
-# Default Kvantum theme (can be changed later in Kvantum Manager)
-KVANTUM_THEME    ?= Matcha-Dark
-.PHONY: install i env e xprofile xp theme t link l verify v all
-all: install env xprofile link verify
+# - Links repo-managed config files into ~/.config
+# - Expects Qt environment variables to be managed by ~/.xprofile
+
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+
+MANJARO_MAKEFILE ?= $(CONFIGS_DIR)/manjaro/Makefile
+XPROFILE ?= $(HOME)/.xprofile
+
+KVANTUM_THEME ?= Matcha-Dark
+
+KVANTUM_SOURCE := $(THIS_DIR)/Kvantum/kvantum.kvconfig
+QT5CT_SOURCE := $(THIS_DIR)/qt5ct/qt5ct.conf
+QT6CT_SOURCE := $(THIS_DIR)/qt6ct/qt6ct.conf
+
+KVANTUM_TARGET := $(HOME)/.config/Kvantum/kvantum.kvconfig
+QT5CT_TARGET := $(HOME)/.config/qt5ct/qt5ct.conf
+QT6CT_TARGET := $(HOME)/.config/qt6ct/qt6ct.conf
+
+.PHONY: all install i env e xprofile xp theme t link l verify v
+
+all: install link verify
+
 install i:
 	@echo "📦 Installing qt5ct, qt6ct, Kvantum..."
-	@make -f $(MANJARO_MAKEFILE) install qt5ct qt6ct kvantum
+	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install qt5ct qt6ct kvantum
+
+env e xprofile xp:
+	@echo "🔎 Qt environment is managed via $(XPROFILE)"
+	@if [ -r "$(XPROFILE)" ]; then \
+		grep -E '^export QT_(QPA_PLATFORMTHEME|STYLE_OVERRIDE)=' "$(XPROFILE)" || \
+			echo "⚠️  No QT_* exports found in $(XPROFILE)"; \
+	else \
+		echo "⚠️  $(XPROFILE) does not exist or is not readable."; \
+	fi
+
 link l:
 	@echo "🔗 Linking Qt and Kvantum configs..."
-	@mkdir -p $(HOME)/.config/Kvantum $(HOME)/.config/qt5ct $(HOME)/.config/qt6ct
-	@ln -sf $(CURDIR)/Kvantum/kvantum.kvconfig $(HOME)/.config/Kvantum/kvantum.kvconfig
-	@ln -sf $(CURDIR)/qt5ct/qt5ct.conf $(HOME)/.config/qt5ct/qt5ct.conf
-	@ln -sf $(CURDIR)/qt6ct/qt6ct.conf $(HOME)/.config/qt6ct/qt6ct.conf
+	@mkdir -p "$(HOME)/.config/Kvantum" "$(HOME)/.config/qt5ct" "$(HOME)/.config/qt6ct"
+	@ln -sf "$(KVANTUM_SOURCE)" "$(KVANTUM_TARGET)"
+	@ln -sf "$(QT5CT_SOURCE)" "$(QT5CT_TARGET)"
+	@ln -sf "$(QT6CT_SOURCE)" "$(QT6CT_TARGET)"
 	@echo "✅ Symlinks created for Kvantum, qt5ct, and qt6ct."
+
 theme t:
-	@echo "🎨 Preparing Kvantum theme config (optional)..."
-	@mkdir -p $(HOME)/.config/Kvantum
-	@printf "[General]\ntheme=$(KVANTUM_THEME)\n" > $(HOME)/.config/Kvantum/kvantum.kvconfig
-	@echo "ℹ️  Open 'kvantummanager' to pick another theme or import *.kvconfig packs."
+	@echo "🎨 Updating repo-managed Kvantum theme config..."
+	@printf "[General]\ntheme=$(KVANTUM_THEME)\n" > "$(KVANTUM_SOURCE)"
+	@echo "✅ Theme written to $(KVANTUM_SOURCE)"
+	@echo "ℹ️  If $(KVANTUM_TARGET) is linked, the change is already active after re-login or app restart."
+
 verify v:
-	@echo "🔎 Environment variables (current shell may not reflect login files):"
-	@/usr/bin/env | grep -E '^QT_(QPA_PLATFORMTHEME|STYLE_OVERRIDE)=' || true
+	@echo "🔎 Checking source config files..."
+	@for path in "$(KVANTUM_SOURCE)" "$(QT5CT_SOURCE)" "$(QT6CT_SOURCE)"; do \
+		if [ ! -r "$$path" ]; then \
+			echo "❌ Missing config source: $$path"; \
+			exit 1; \
+		fi; \
+		echo "✅ Found: $$path"; \
+	done
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" xprofile
+	@echo "🔎 Current home targets:"
+	@for target in "$(KVANTUM_TARGET)" "$(QT5CT_TARGET)" "$(QT6CT_TARGET)"; do \
+		if [ -L "$$target" ]; then \
+			echo "✅ $$target -> $$(readlink -f "$$target")"; \
+		elif [ -e "$$target" ]; then \
+			echo "⚠️  $$target exists but is not a symlink"; \
+		else \
+			echo "ℹ️  $$target is not linked yet"; \
+		fi; \
+	done
 	@echo "🔎 Kvantum config:"
-	@sed -n '1,80p' $(HOME)/.config/Kvantum/kvantum.kvconfig 2>/dev/null || echo "(no kvantum.kvconfig yet)"
-	@echo "ℹ️  Apply by re-login (or i3 restart). For GUI launchers, ensure they source ~/.xprofile."
+	@sed -n '1,40p' "$(KVANTUM_SOURCE)"
+	@echo "ℹ️  Apply by re-login or restarting affected Qt apps."
