@@ -2,20 +2,27 @@
 # Installs PostgreSQL stack and DBeaver via your Manjaro Makefile.
 # Aliases are inline on each rule. Versions are printed via binaries only.
 .PHONY: installall ia all postgres p PG client c dbeaver d pg_setup pgset pg_enable pgen pg_start pgst pg_status pgss
-MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
+
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+
+MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
+FLATPAK_MAKEFILE := $(CONFIGS_DIR)/flatpak/Makefile
 DB_APP_ID := io.dbeaver.DBeaverCommunity
+
 # Aggregate installer
 all: installall
 installall ia:
 	@echo "📦 Installing all database tools..."
-	@$(MAKE) postgres
-	@$(MAKE) dbeaver
+	@$(MAKE) -f "$(THIS_MAKEFILE)" postgres
+	@$(MAKE) -f "$(THIS_MAKEFILE)" dbeaver
 	@echo "---------------------------------------------------------------------------------------"
 	@echo "✅ Done."
 # PostgreSQL install (inline aliases)
 postgres p PG:
 	@echo "🐘 Installing PostgreSQL (server + psql + libs)..."
-	@$(MAKE) -f $(MANJARO_MAKEFILE) install postgresql postgresql-libs
+	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install postgresql postgresql-libs
 	@echo "🔎 Versions:"
 	@which psql >/dev/null 2>&1 && psql --version || echo "psql: not installed"
 	@which pg_config >/dev/null 2>&1 && pg_config --version || echo "pg_config: not installed"
@@ -23,15 +30,16 @@ postgres p PG:
 # Client libs only (inline aliases)
 client c:
 	@echo "📚 Installing PostgreSQL client libs (libpq)…"
-	@$(MAKE) -f $(MANJARO_MAKEFILE) install postgresql-libs
+	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install postgresql-libs
 	@echo "🔎 Versions:"
 	@which pg_config >/dev/null 2>&1 && pg_config --version || echo "pg_config: not installed"
 	@echo "---------------------------------------------------------------------------------------"
 # DBeaver (inline aliases)
 dbeaver d:
 	@echo "🦫 Installing DBeaver…"
+	@$(MAKE) -f "$(FLATPAK_MAKEFILE)" install
 	flatpak install -y flathub $(DB_APP_ID)
-	flatpak override --user --env=GTK_THEME=Adwaita:dark io.dbeaver.DBeaverCommunity
+	flatpak override --user --env=GTK_THEME=Adwaita:dark $(DB_APP_ID)
 	@echo "🔎 Version (flat):"
 	flatpak list | grep -i dbeaver
 	@echo "---------------------------------------------------------------------------------------"
@@ -49,11 +57,11 @@ pg_setup pgset:
 		echo "📁 Initializing cluster at /var/lib/postgres/data ..."; \
 		sudo -iu postgres initdb -D /var/lib/postgres/data >/dev/null; \
 	else \
-		echo "✅ Cluster already initialized."; \
-	fi
-	@$(MAKE) pg_enable
-	@$(MAKE) pg_start
-	@$(MAKE) pg_status
+			echo "✅ Cluster already initialized."; \
+		fi
+	@$(MAKE) -f "$(THIS_MAKEFILE)" pg_enable
+	@$(MAKE) -f "$(THIS_MAKEFILE)" pg_start
+	@$(MAKE) -f "$(THIS_MAKEFILE)" pg_status
 	@echo "---------------------------------------------------------------------------------------"
 pg_enable pgen:
 	@echo "🔧 Enabling postgresql service..."
