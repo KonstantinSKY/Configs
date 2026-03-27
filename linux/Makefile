@@ -1,4 +1,4 @@
-.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink rc profile p setup bind_mounts zsh
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink rc xprofile xp setup bind_mounts zsh
 .DEFAULT_GOAL :=
 ## ---------------------------
 ## 🧩 Directory configuration
@@ -24,7 +24,7 @@ MOUNT_DIR = $(WORK_DIR)
 ## ---------------------------
 RC_FILE = $(CONFIGS_DIR)/linux/rc
 RC_LINE = [ -f "$(RC_FILE)" ] && source "$(RC_FILE)"
-SOURCE_XPROFILE_FILE = $(CONFIGS_DIR)/linux/xprofile
+XPROFILE_PACKAGE = xprofile
 TARGET_XPROFILE_FILE = $(HOME)/.xprofile
 ## ---------------------------
 ## 🧩 Work directory and symlinks
@@ -141,21 +141,19 @@ rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
 			echo "✅ Already linked: $$rcfile"; \
 		fi; \
 	done
-profile p: ## Replace target profile with symlink to source profile (backup if exists)
-	@echo "🧷 Linking $(TARGET_XPROFILE_FILE) → $(SOURCE_XPROFILE_FILE)"
-	@if [ -z "$(SOURCE_XPROFILE_FILE)" ]; then \
-		echo "❌ SOURCE_XPROFILE_FILE is empty"; exit 1; \
+xprofile xp: ## Link .xprofile from the stow package
+	@echo "🔗 Linking .xprofile with stow..."
+	@if ! command -v stow >/dev/null 2>&1; then \
+		echo "📦 Installing stow..."; \
+		sudo pacman -S --needed --noconfirm stow; \
 	fi
-	@if [ ! -e "$(SOURCE_XPROFILE_FILE)" ]; then \
-		echo "❌ Source missing: $(SOURCE_XPROFILE_FILE)"; exit 1; \
-	fi
-	@$(MAKE) symlink $(TARGET_XPROFILE_FILE) $(SOURCE_XPROFILE_FILE)
-	@echo "✅ Done: $(TARGET_XPROFILE_FILE) → $(SOURCE_XPROFILE_FILE)"
-setup: ## Runs initial setup: symlinks, no_beep, rc, and profile
+	stow -d "$(CONFIGS_DIR)" -t "$(HOME)" $(XPROFILE_PACKAGE)
+	@echo "✅ xprofile linked to $(TARGET_XPROFILE_FILE)"
+setup: ## Runs initial setup: symlinks, no_beep, rc, and xprofile
 	@$(MAKE) symlinks
 	@$(MAKE) no_beep
 	@$(MAKE) rc
-	@$(MAKE) profile
+	@$(MAKE) xprofile
 zsh: ## Install zsh if needed and switch current user to it
 	@echo "🔍 Checking zsh installation..."
 	@if command -v zsh >/dev/null 2>&1; then \

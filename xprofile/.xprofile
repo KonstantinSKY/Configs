@@ -6,12 +6,7 @@ export QT_STYLE_OVERRIDE="kvantum"
 export GTK_THEME="Matcha-dark-sea"
 export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
 
-# Editor configuration
-if command -v nvim >/dev/null 2>&1; then
-    export EDITOR=/usr/bin/nvim
-else
-    export EDITOR=/usr/bin/nano
-fi
-
 # Browser configuration
-export BROWSER=/usr/bin/firefox
+if command -v firefox >/dev/null 2>&1; then
+    export BROWSER="$(command -v firefox)"
+fi
