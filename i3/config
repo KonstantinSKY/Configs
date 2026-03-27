@@ -369,7 +369,7 @@ set_from_resource $term_color15    color15
 # Start i3bar to display a workspace bar (plus the system information i3status if available)
 #bar {
 #	i3bar_command i3bar
-#	status_command i3status -c ~/.config/i3/i3status.conf
+#	status_command i3status -c ~/.i3/i3status.conf
 #	position bottom
 
 ## please set your primary output first. Example: 'xrandr --output HDMI-A-0 --primary'
@@ -394,7 +394,7 @@ set_from_resource $term_color15    color15
   # }
 #}
 
-include ~/.config/i3/monitor/monitor.conf
+include ~/.i3/host/monitor.conf
 #include_shell ~/Work/Configs/i3/includes/display_include.sh
 
 # hide/unhide i3status bar

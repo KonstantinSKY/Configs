@@ -2,6 +2,7 @@
 # These files are found because of MAKEFLAGS="-I /home/sky/Configs/make"
 
 include colors.mk
+include fs.mk
 include backup.mk
 include stow.mk
 include help.mk
