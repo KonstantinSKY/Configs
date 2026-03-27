@@ -143,7 +143,7 @@ rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
 	done
 xprofile xp: ## Link .xprofile from the stow package
 	@echo "📦 Preparing existing $(TARGET_XPROFILE_FILE) for stow..."
-	@$(call backup_if_needed,$(TARGET_XPROFILE_FILE))
+	@$(call prepare_stow_target,$(TARGET_XPROFILE_FILE),$(CONFIGS_DIR)/$(XPROFILE_PACKAGE)/.xprofile)
 	@echo "🔗 Linking .xprofile with stow..."
 	@$(call ensure_stow_installed)
 	@$(call stow_package,$(CONFIGS_DIR),$(HOME),$(XPROFILE_PACKAGE))
@@ -173,7 +173,7 @@ zsh: ## Install zsh if needed and switch current user to it
 		echo "✅ Login shell updated. Open a new session to use zsh by default."; \
 	fi
 	@echo "📦 Preparing existing $(HOME)/.zshrc for stow..."
-	@$(call backup_if_needed,$(HOME)/.zshrc)
+	@$(call prepare_stow_target,$(HOME)/.zshrc,$(CONFIGS_DIR)/zsh/.zshrc)
 	@echo "🔗 Linking zsh config with stow..."
 	@$(call ensure_stow_installed)
 	@$(call stow_package,$(CONFIGS_DIR),$(HOME),zsh)
