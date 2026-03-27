@@ -1,10 +1,16 @@
-MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
-.PHONY: install i setup set version v status s
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+
+MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
+
+.PHONY: install i setup set version v status s group g
+
 install i:
 	@echo "🐳 Installing Docker ecosystem using universal Manjaro Makefile..."
-	@make -f $(MANJARO_MAKEFILE) install docker docker-compose docker-buildx
-	@$(MAKE) version
-	@$(MAKE) setup
+	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install docker docker-compose docker-buildx
+	@$(MAKE) -f "$(THIS_MAKEFILE)" version
+	@$(MAKE) -f "$(THIS_MAKEFILE)" setup
 setup set:
 	@echo "🔧 Enabling and starting Docker daemon..."
 	@sudo systemctl enable docker
@@ -13,7 +19,7 @@ setup set:
 	@echo "👤 Adding user '$(USER)' to 'docker' group..."
 	@sudo usermod -aG docker $(USER)
 	@echo "------------------------------------------------------------"
-	@$(MAKE) status
+	@$(MAKE) -f "$(THIS_MAKEFILE)" status
 	@echo "⚠️  Please reboot or run 'newgrp docker' to apply group changes."
 	@echo "✅ Docker setup complete."
 version v:
