@@ -19,10 +19,47 @@ I3_MONITOR_CONFIG_NAME := monitor.conf
 I3_STATUS_CONFIG_NAME := i3status.conf
 I3_TARGET_INCLUDE_LINE := include ~/.i3/host/$(I3_MONITOR_CONFIG_NAME)
 
+define require_path
+	if [ ! -e "$(1)" ]; then \
+		echo "❌ $(strip $(2)): $(1)"; \
+		exit 1; \
+	fi
+endef
+
+define replace_with_symlink
+	TARGET_PATH="$(1)"; \
+	SOURCE_PATH="$(2)"; \
+	LINK_LABEL="$(3)"; \
+	DESIRED_LINK="$$(readlink -f "$$SOURCE_PATH")"; \
+	CURRENT_LINK=""; \
+	if [ -L "$$TARGET_PATH" ]; then \
+		CURRENT_LINK="$$(readlink -f "$$TARGET_PATH" 2>/dev/null || true)"; \
+	fi; \
+	if [ "$$CURRENT_LINK" = "$$DESIRED_LINK" ]; then \
+		echo "✅ $$LINK_LABEL already linked: $$TARGET_PATH"; \
+	else \
+		if [ -L "$$TARGET_PATH" ]; then \
+			echo "🔁 Replacing existing symlink: $$TARGET_PATH"; \
+			rm -f "$$TARGET_PATH"; \
+		elif [ -e "$$TARGET_PATH" ]; then \
+			BACKUP_PATH="$$TARGET_PATH.bak.$$(date +%Y%m%d_%H%M%S)"; \
+			echo "📦 Backing up existing $$LINK_LABEL to $$BACKUP_PATH"; \
+			mv "$$TARGET_PATH" "$$BACKUP_PATH"; \
+		fi; \
+		echo "🔗 Linking $$LINK_LABEL:"; \
+		echo "→ Target : $$TARGET_PATH"; \
+		echo "→ Source : $$SOURCE_PATH"; \
+		ln -s "$$SOURCE_PATH" "$$TARGET_PATH"; \
+	fi
+endef
+
 define resolve_i3_profile
 	case "$(I3_PROFILE)" in \
 		auto) \
-			if command -v upower >/dev/null 2>&1 && upower -e 2>/dev/null | grep -q BAT; then \
+			if find /sys/class/power_supply -maxdepth 1 -name 'BAT*' -print -quit 2>/dev/null | grep -q .; then \
+				profile="laptop"; \
+				monitor_dir="$(I3_SOURCE_MONITOR_LAPTOP)"; \
+			elif command -v upower >/dev/null 2>&1 && upower -e 2>/dev/null | grep -q BAT; then \
 				profile="laptop"; \
 				monitor_dir="$(I3_SOURCE_MONITOR_LAPTOP)"; \
 			else \
@@ -61,9 +98,9 @@ check:
 	echo "📄 Main    : $(I3_SOURCE_CONFIG)"; \
 	echo "📁 Profile : $$profile"; \
 	echo "📁 Monitor : $$monitor_dir"; \
-	$(call require_exists,$(I3_SOURCE_CONFIG),Main config file not found); \
-	$(call require_exists,$$monitor_dir/$(I3_MONITOR_CONFIG_NAME),Monitor config file not found); \
-	$(call require_exists,$$monitor_dir/$(I3_STATUS_CONFIG_NAME),i3status config file not found); \
+	$(call require_path,$(I3_SOURCE_CONFIG),Main config file not found); \
+	$(call require_path,$$monitor_dir/$(I3_MONITOR_CONFIG_NAME),Monitor config file not found); \
+	$(call require_path,$$monitor_dir/$(I3_STATUS_CONFIG_NAME),i3status config file not found); \
 	if ! grep -Fqx '$(I3_TARGET_INCLUDE_LINE)' "$(I3_SOURCE_CONFIG)"; then \
 		echo "❌ Expected monitor include not found in $(I3_SOURCE_CONFIG)"; \
 		exit 1; \
@@ -83,77 +120,20 @@ setup:
 	@$(MAKE) -f "$(THIS_MAKEFILE)" check I3_PROFILE="$(I3_PROFILE)"
 	@set -euo pipefail; \
 	$(resolve_i3_profile); \
-	config_backup=""; \
-	monitor_backup=""; \
-	config_linked=0; \
-	monitor_linked=0; \
-	desired_config="$$(readlink -f "$(I3_SOURCE_CONFIG)")"; \
-	desired_monitor="$$(readlink -f "$$monitor_dir")"; \
-	current_config=""; \
-	current_monitor=""; \
-	if [ -L "$(I3_TARGET_CONFIG)" ]; then \
-		current_config="$$(readlink -f "$(I3_TARGET_CONFIG)" 2>/dev/null || true)"; \
-	fi; \
-	if [ -L "$(I3_TARGET_MONITOR)" ]; then \
-		current_monitor="$$(readlink -f "$(I3_TARGET_MONITOR)" 2>/dev/null || true)"; \
-	fi; \
-	restore_previous() { \
-		if [ "$$config_linked" -eq 1 ]; then \
-			rm -f "$(I3_TARGET_CONFIG)"; \
-			if [ -n "$$config_backup" ] && { [ -e "$$config_backup" ] || [ -L "$$config_backup" ]; }; then \
-				mv "$$config_backup" "$(I3_TARGET_CONFIG)"; \
-			fi; \
-		fi; \
-		if [ "$$monitor_linked" -eq 1 ]; then \
-			rm -f "$(I3_TARGET_MONITOR)"; \
-			if [ -n "$$monitor_backup" ] && { [ -e "$$monitor_backup" ] || [ -L "$$monitor_backup" ]; }; then \
-				mv "$$monitor_backup" "$(I3_TARGET_MONITOR)"; \
-			fi; \
-		fi; \
-	}; \
 	echo "------------------------------------------------------------"; \
 	echo "📁 Creating config directory..."; \
 	mkdir -p "$(I3_CONF_DIR)"; \
 	echo "------------------------------------------------------------"; \
-	if [ "$$current_config" = "$$desired_config" ]; then \
-		echo "✅ Main config already linked: $(I3_TARGET_CONFIG)"; \
-	else \
-		echo "🔗 Linking main config:"; \
-		echo "→ Target : $(I3_TARGET_CONFIG)"; \
-		echo "→ Source : $(I3_SOURCE_CONFIG)"; \
-		BACKUP_PATH=""; \
-		$(call prepare_stow_target,$(I3_TARGET_CONFIG),$(I3_SOURCE_CONFIG)); \
-		config_backup="$$BACKUP_PATH"; \
-		ln -s "$(I3_SOURCE_CONFIG)" "$(I3_TARGET_CONFIG)"; \
-		config_linked=1; \
-	fi; \
+	$(call replace_with_symlink,$(I3_TARGET_CONFIG),$(I3_SOURCE_CONFIG),i3 config); \
 	echo "------------------------------------------------------------"; \
-	if [ "$$current_monitor" = "$$desired_monitor" ]; then \
-		echo "✅ Monitor profile already linked: $$profile"; \
-	else \
-		echo "🔗 Linking monitor profile:"; \
-		echo "→ Profile: $$profile"; \
-		echo "→ Target : $(I3_TARGET_MONITOR)"; \
-		echo "→ Source : $$monitor_dir"; \
-		BACKUP_PATH=""; \
-		$(call prepare_stow_target,$(I3_TARGET_MONITOR),$$monitor_dir); \
-		monitor_backup="$$BACKUP_PATH"; \
-		ln -s "$$monitor_dir" "$(I3_TARGET_MONITOR)"; \
-		monitor_linked=1; \
-	fi; \
+	echo "🖥️  Selected profile: $$profile"; \
+	$(call replace_with_symlink,$(I3_TARGET_MONITOR),$$monitor_dir,i3 host profile); \
 	echo "------------------------------------------------------------"; \
 	echo "🔍 Final validation of installed i3 config..."; \
 	if ! i3 -C -c "$(I3_TARGET_CONFIG)" >/dev/null 2>&1; then \
-		echo "❌ Installed config is invalid. Restoring previous state."; \
+		echo "❌ Installed config is invalid."; \
 		i3 -C -c "$(I3_TARGET_CONFIG)" || true; \
-		restore_previous; \
 		exit 1; \
 	fi; \
 	echo "✅ Final config is valid and active."; \
-	if [ -n "$$config_backup" ]; then \
-		echo "🗄️  Previous config kept at $$config_backup"; \
-	fi; \
-	if [ -n "$$monitor_backup" ]; then \
-		echo "🗄️  Previous monitor setup kept at $$monitor_backup"; \
-	fi; \
 	echo "✅ Setup complete!"
