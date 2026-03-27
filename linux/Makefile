@@ -1,4 +1,4 @@
-.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button common_symlinks symlinks symlink xprofile xp setup bind_mounts zsh
+.PHONY: all mount defrag_work verify_fstab defrag_root compress_root no_beep power_button xprofile xp setup zsh
 .DEFAULT_GOAL :=
 ## ---------------------------
 ## 🧩 Directory configuration
@@ -7,6 +7,7 @@ MAKEFLAGS += --no-print-directory
 WORK_DIR = $(HOME)/$(DIR)
 CONFIGS_DIR = $(WORK_DIR)/Configs
 THIS_MAKEFILE := $(lastword $(MAKEFILE_LIST))
+WORKSPACE_MAKEFILE = $(CONFIGS_DIR)/workspace/Makefile
 ## ---------------------------
 ## 🧩 Mount configuration
 ## ---------------------------
@@ -25,17 +26,6 @@ MOUNT_DIR = $(WORK_DIR)
 ## ---------------------------
 XPROFILE_PACKAGE = xprofile
 TARGET_XPROFILE_FILE = $(HOME)/.xprofile
-## ---------------------------
-## 🧩 Work directory and symlinks
-## ---------------------------
-COMMON_SYMLINKS = \
-	Configs:$(WORK_DIR)/Configs \
-	Projects:$(WORK_DIR)/Projects \
-	Deploys:$(WORK_DIR)/Deploys \
-	Music:$(WORK_DIR)/Music \
-	Documents:$(WORK_DIR)/Documents \
-	Downloads:$(WORK_DIR)/Downloads \
-	Pictures:$(WORK_DIR)/Pictures
 # Default target
 all:
 mount: ## Mounts the work drive, creates mount point, and adds to fstab.
@@ -126,8 +116,6 @@ power_button: ## Configures power button: ignore short press, shutdown on long p
 	@sudo sed -i 's/^#\?HandlePowerKey=.*/HandlePowerKey=ignore/' /etc/systemd/logind.conf
 	@sudo sed -i 's/^#\?HandlePowerKeyLongPress=.*/HandlePowerKeyLongPress=poweroff/' /etc/systemd/logind.conf
 	@sudo systemctl restart systemd-logind && echo "✅ systemd-logind configured and restarted."
-symlinks: bind_mounts ## Configures common home paths via bind mounts in /etc/fstab.
-common_symlinks: symlinks ## Backward-compatible alias; uses bind mounts.
 xprofile xp: ## Link .xprofile from the stow package
 	@echo "📦 Preparing existing $(TARGET_XPROFILE_FILE) for stow..."
 	@$(call prepare_stow_target,$(TARGET_XPROFILE_FILE),$(CONFIGS_DIR)/$(XPROFILE_PACKAGE)/.xprofile)
@@ -136,7 +124,7 @@ xprofile xp: ## Link .xprofile from the stow package
 	@$(call stow_package,$(CONFIGS_DIR),$(HOME),$(XPROFILE_PACKAGE))
 	@echo "✅ xprofile linked to $(TARGET_XPROFILE_FILE)"
 setup: ## Runs initial setup: symlinks, no_beep, zsh, and xprofile
-	@$(MAKE) -f $(THIS_MAKEFILE) symlinks
+	@$(MAKE) -f $(WORKSPACE_MAKEFILE) symlinks
 	@$(MAKE) -f $(THIS_MAKEFILE) no_beep
 	@$(MAKE) -f $(THIS_MAKEFILE) zsh
 	@$(MAKE) -f $(THIS_MAKEFILE) xprofile
@@ -165,31 +153,6 @@ zsh: ## Install zsh if needed and switch current user to it
 	@$(call ensure_stow_installed)
 	@$(call stow_package,$(CONFIGS_DIR),$(HOME),zsh)
 	@echo "✅ zsh config linked to $(HOME)/.zshrc"
-bind_mounts: ## Converts symlinks to bind mounts in fstab.
-	@echo "🔗 Converting common symlinks to bind mounts..."
-	@for pair in $(COMMON_SYMLINKS); do \
-		SOURCE=$${pair#*:}; \
-		TARGET="$(HOME)/$${pair%%:*}"; \
-		echo "🛠️ Processing $$TARGET..."; \
-		if [ -L "$$TARGET" ]; then \
-			echo "🔁 Removing symlink $$TARGET"; \
-			rm -f "$$TARGET"; \
-		fi; \
-		if [ ! -d "$$TARGET" ]; then \
-			echo "📁 Creating directory $$TARGET"; \
-			mkdir -p "$$TARGET"; \
-		fi; \
-		if grep -q "$$TARGET" /etc/fstab; then \
-			echo "✅ Entry for $$TARGET already exists in fstab."; \
-		else \
-			echo "📥 Adding bind mount for $$TARGET to fstab..."; \
-			echo "$$SOURCE $$TARGET none bind 0 0" | sudo tee -a /etc/fstab; \
-		fi; \
-	done
-	@echo "🔄 Reloading systemd and mounting..."
-	@sudo systemctl daemon-reload
-	@sudo mount -a
-	@echo "✅ Bind mounts configured and mounted."
 symlink:  ## Create a symbolic link: make symlink <target> <source>
 	@TARGET=$(word 2, $(MAKECMDGOALS)); \
 	SOURCE=$(word 3, $(MAKECMDGOALS)); \
