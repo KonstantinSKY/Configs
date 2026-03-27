@@ -142,12 +142,11 @@ rc: ## Adds source to custom rc in .bashrc and .zshrc if not present
 		fi; \
 	done
 xprofile xp: ## Link .xprofile from the stow package
+	@echo "📦 Preparing existing $(TARGET_XPROFILE_FILE) for stow..."
+	@$(call backup_if_needed,$(TARGET_XPROFILE_FILE))
 	@echo "🔗 Linking .xprofile with stow..."
-	@if ! command -v stow >/dev/null 2>&1; then \
-		echo "📦 Installing stow..."; \
-		sudo pacman -S --needed --noconfirm stow; \
-	fi
-	stow -d "$(CONFIGS_DIR)" -t "$(HOME)" $(XPROFILE_PACKAGE)
+	@$(call ensure_stow_installed)
+	@$(call stow_package,$(CONFIGS_DIR),$(HOME),$(XPROFILE_PACKAGE))
 	@echo "✅ xprofile linked to $(TARGET_XPROFILE_FILE)"
 setup: ## Runs initial setup: symlinks, no_beep, rc, and xprofile
 	@$(MAKE) symlinks
@@ -173,12 +172,11 @@ zsh: ## Install zsh if needed and switch current user to it
 		chsh -s "$$ZSH_PATH"; \
 		echo "✅ Login shell updated. Open a new session to use zsh by default."; \
 	fi
+	@echo "📦 Preparing existing $(HOME)/.zshrc for stow..."
+	@$(call backup_if_needed,$(HOME)/.zshrc)
 	@echo "🔗 Linking zsh config with stow..."
-	@if ! command -v stow >/dev/null 2>&1; then \
-		echo "📦 Installing stow..."; \
-		sudo pacman -S --needed --noconfirm stow; \
-	fi
-	stow -d "$(CONFIGS_DIR)" -t "$(HOME)" zsh
+	@$(call ensure_stow_installed)
+	@$(call stow_package,$(CONFIGS_DIR),$(HOME),zsh)
 	@echo "✅ zsh config linked to $(HOME)/.zshrc"
 bind_mounts: ## Converts symlinks to bind mounts in fstab.
 	@echo "🔗 Converting common symlinks to bind mounts..."
