@@ -1,4 +1,11 @@
-.PHONY: all install update check refres
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+
+include $(CONFIGS_DIR)/make/update.mk
+
+.PHONY: all install update refresh check list
+
 FONTS = \
 	noto-fonts \
 	noto-fonts-emoji \
@@ -11,22 +18,27 @@ FONTS = \
 	ttf-ubuntu-nerd \
 	ttf-fira-code \
 	ttf-firacode-nerd \
-	ttf-sourcecodepro-nerd \
 	ttf-sourcecodepro-nerd
-all: install update refresh check
+
+all: install refresh check
+
 install:
 	@echo "🔤 Installing fonts with yay..."
+	@$(call ensure_system_updated)
 	@for font in $(FONTS); do \
 		echo "📦 Installing $$font..."; \
-		yay -S --noconfirm $$font || echo "⚠️  Failed to install $$font"; \
+		yay -S --needed --noconfirm $$font || echo "⚠️  Failed to install $$font"; \
 	done
+
 update:
 	@echo "🔁 Updating all packages with yay..."
 	yay -Syu --noconfirm
+
 refresh:
 	@echo "🔄 Refreshing font cache..."
 	fc-cache -fv
 	@echo "✅ Font cache refreshed."
+
 check:
 	@echo "🔍 Checking if fonts are installed and showing examples..."
 	@if ! command -v pango-view >/dev/null 2>&1; then \
@@ -41,11 +53,12 @@ check:
 	done
 	@echo "-------------------------------------------------------------------"
 	@echo "🧪 Testing font cache (fc-list)..."
-		@if ! fc-list > /dev/null 2>&1; then \
-			echo "❌ Font cache seems broken or inaccessible."; \
-		else \
-			echo "✅ Font cache is readable."; \
-		fi
+	@if ! fc-list > /dev/null 2>&1; then \
+		echo "❌ Font cache seems broken or inaccessible."; \
+	else \
+		echo "✅ Font cache is readable."; \
+	fi
+
 list:
 	@echo "📋 Fonts listed in Makefile:"
 	@for font in $(FONTS); do echo " • $$font"; done

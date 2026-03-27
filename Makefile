@@ -1,14 +1,12 @@
 .PHONY: get ai
 
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+AI_MAKEFILE := $(THIS_DIR)/ai/Makefile
 
 REPO_HTTP=https://github.com/KonstantinSKY/Configs.git
 REPO_SSH=git@github.com:KonstantinSKY/Configs.git
 DIR_NAME=Configs
-
-AI_PACKAGES=gemini-cli claude-code openai-codex-bin
-GEMINI_POLICY_DIR=$(HOME)/.gemini/policies
-GEMINI_POLICY_SRC=$(HOME)/Configs/ai/gemini/shell-rules.toml
-GEMINI_POLICY_DEST=$(GEMINI_POLICY_DIR)/shell-rules.toml
 
 get: ## Clone Configs repo via HTTPS and switch remote to SSH
 	@echo "🔍 Checking if ./$(DIR_NAME) exists..."
@@ -30,18 +28,4 @@ get: ## Clone Configs repo via HTTPS and switch remote to SSH
 	@echo "✅ Done! Cloned to ./$(DIR_NAME) with SSH remote."
 
 ai: ## Install AI CLI tools and setup Gemini shell policy
-	@echo "📦 Installing AI Agents from AUR via yay..."
-	yay -S --needed --noconfirm $(AI_PACKAGES)
-	@echo "⚙️  Setting up Gemini shell policies..."
-	mkdir -p $(GEMINI_POLICY_DIR)
-	@if [ -L "$(GEMINI_POLICY_DEST)" ]; then \
-		echo "✅ Symlink already exists: $(GEMINI_POLICY_DEST)"; \
-	elif [ -f "$(GEMINI_POLICY_DEST)" ]; then \
-		echo "📦 Backing up existing shell-rules.toml..."; \
-		mv "$(GEMINI_POLICY_DEST)" "$(GEMINI_POLICY_DEST).bak"; \
-		ln -sf $(GEMINI_POLICY_SRC) $(GEMINI_POLICY_DEST); \
-	else \
-		echo "🔗 Creating symlink: $(GEMINI_POLICY_DEST) -> $(GEMINI_POLICY_SRC)"; \
-		ln -sf $(GEMINI_POLICY_SRC) $(GEMINI_POLICY_DEST); \
-	fi
-	@echo "✅ AI Setup complete."
+	@$(MAKE) -f "$(AI_MAKEFILE)" install
