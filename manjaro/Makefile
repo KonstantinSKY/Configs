@@ -1,7 +1,24 @@
 .PHONY: setup mirrors pacman-update install-yay enable-aur update u yay-update install i install-base check
 FLATPAK_MAKEFILE = $(HOME)/Work/Configs/flatpak/Makefile
+BASE_PACKAGES = \
+	base-devel \
+	manjaro-settings-manager \
+	fzf \
+	git \
+	curl \
+	wget \
+	man-db \
+	man-pages \
+	file \
+	which \
+	lsof \
+	nmap \
+	ripgrep \
+	bat \
+	alsa-utils \
+	pulseaudio
 # Main target
-setup: mirrors pacman-update install-yay yay-update enable-aur
+setup: mirrors pacman-update install-yay yay-update
 	@$(MAKE) -s -f $(FLATPAK_MAKEFILE) install
 	@echo "✅ Manjaro i3 setup complete!"
 # mirrors update
@@ -77,23 +94,7 @@ install i:
 	@echo "✅ Installation process complete."
 install-base:
 	@echo "📦 Installing essential packages via yay..."
-	yay -S --needed --noconfirm \
-		base-devel \
-		manjaro-settings-manager \
-		fzf \
-		git \
-		curl \
-		wget \
-		man-db \
-		man-pages \
-		file \
-		which \
-		lsof \
-		nmap \
-		ripgrep \
-		bat \
-		alsa-utils \
-		pulseaudio
+	yay -S --needed --noconfirm $(BASE_PACKAGES)
 	@echo "✅ Base packages installed via yay."
 	@echo "-------------------------------------------------------------------------------"
 check:
