@@ -26,6 +26,11 @@ MOUNT_DIR = $(WORK_DIR)
 ## ---------------------------
 XPROFILE_PACKAGE = xprofile
 TARGET_XPROFILE_FILE = $(HOME)/.xprofile
+ZSH_TARGET_RC = $(HOME)/.zshrc
+ZSH_CUSTOM_RC = $(CONFIGS_DIR)/zsh/rc
+ZSH_INCLUDE_START = \# >>> custom shell config >>>
+ZSH_INCLUDE_END = \# <<< custom shell config <<<
+ZSH_INCLUDE_LINE = [ -r "$(ZSH_CUSTOM_RC)" ] && source "$(ZSH_CUSTOM_RC)"
 # Default target
 all:
 mount: ## Mounts the work drive, creates mount point, and adds to fstab.
@@ -147,12 +152,21 @@ zsh: ## Install zsh if needed and switch current user to it
 		chsh -s "$$ZSH_PATH"; \
 		echo "✅ Login shell updated. Open a new session to use zsh by default."; \
 	fi
-	@echo "📦 Preparing existing $(HOME)/.zshrc for stow..."
-	@$(call prepare_stow_target,$(HOME)/.zshrc,$(CONFIGS_DIR)/zsh/.zshrc)
-	@echo "🔗 Linking zsh config with stow..."
-	@$(call ensure_stow_installed)
-	@$(call stow_package,$(CONFIGS_DIR),$(HOME),zsh)
-	@echo "✅ zsh config linked to $(HOME)/.zshrc"
+	@$(call require_exists,$(ZSH_CUSTOM_RC),Custom zsh rc not found)
+	@echo "🧩 Ensuring $(ZSH_TARGET_RC) loads $(ZSH_CUSTOM_RC)..."
+	@if [ ! -e "$(ZSH_TARGET_RC)" ]; then \
+		echo "📄 Creating new $(ZSH_TARGET_RC)"; \
+		{ \
+			printf '%s\n' '$(ZSH_INCLUDE_START)'; \
+			printf '%s\n' '$(ZSH_INCLUDE_LINE)'; \
+			printf '%s\n' '$(ZSH_INCLUDE_END)'; \
+		} > "$(ZSH_TARGET_RC)"; \
+	elif rg -Fq '$(ZSH_INCLUDE_LINE)' "$(ZSH_TARGET_RC)"; then \
+		echo "✅ Custom zsh include already present in $(ZSH_TARGET_RC)"; \
+	else \
+		printf '\n%s\n%s\n%s\n' '$(ZSH_INCLUDE_START)' '$(ZSH_INCLUDE_LINE)' '$(ZSH_INCLUDE_END)' >> "$(ZSH_TARGET_RC)"; \
+		echo "✅ Added custom zsh include to $(ZSH_TARGET_RC)"; \
+	fi
 symlink:  ## Create a symbolic link: make symlink <target> <source>
 	@TARGET=$(word 2, $(MAKECMDGOALS)); \
 	SOURCE=$(word 3, $(MAKECMDGOALS)); \
