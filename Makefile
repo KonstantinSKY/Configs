@@ -1,4 +1,5 @@
-.PHONY: get ai
+.PHONY: help get ai
+.DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))

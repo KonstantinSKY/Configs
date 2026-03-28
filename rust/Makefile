@@ -1,8 +1,8 @@
 # --- Defaults
 SHELL := /bin/bash
 .ONESHELL:
-.DEFAULT_GOAL :=
-.PHONY: install i create c repo rp delete_repo dr copy_gitignore gi read rd
+.DEFAULT_GOAL := help
+.PHONY: help install i create c repo rp delete_repo dr copy_gitignore gi read rd
 RUST_MAKEFILE := $(HOME)/Configs/rust/Makefile
 GIT_MAKEFILE := $(HOME)/Configs/git/Makefile
 GITIGNORE_TEMPLATE := $(HOME)/Configs/rust/gitignore

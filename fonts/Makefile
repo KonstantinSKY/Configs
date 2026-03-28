@@ -4,7 +4,8 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 
 include $(CONFIGS_DIR)/make/update.mk
 
-.PHONY: all install update refresh check list
+.PHONY: help all install update refresh check list
+.DEFAULT_GOAL := help
 
 FONTS = \
 	noto-fonts \

@@ -1,4 +1,5 @@
-.PHONY: setup check
+.PHONY: help setup check
+.DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
 

@@ -1,4 +1,5 @@
-.PHONY: all install i link l verify v clean
+.PHONY: help all install i link l verify v clean
+.DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))

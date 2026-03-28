@@ -1,13 +1,13 @@
 # --- Defaults
 SHELL := /bin/bash
 .ONESHELL:
-.DEFAULT_GOAL :=
+.DEFAULT_GOAL := help
 # --- Paths (use $(HOME), not ~)
 RUST_MAKEFILE := $(HOME)/Configs/rust/Makefile
 JS_MAKEFILE   := $(HOME)/Configs/js/Makefile
 PY_MAKEFILE   := $(HOME)/Configs/python/Makefile
 GIT_MAKEFILE  := $(HOME)/Configs/git/Makefile
-.PHONY: setup rust r js j python p repo rp
+.PHONY: help setup rust r js j python p repo rp
 setup:
 	ln -s "$(HOME)/Configs/projects/Makefile" "$(HOME)/Projects/Makefile"
 rust r:
