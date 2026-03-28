@@ -25,7 +25,7 @@ BASE_PACKAGES = \
 	alsa-utils \
 	pulseaudio
 # Main target
-setup: mirrors pacman-update install-yay yay-update
+setup: mirrors pacman-update install-yay
 	@$(MAKE) -s -f $(FLATPAK_MAKEFILE) install
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
 	@echo "✅ Manjaro i3 setup complete!"
