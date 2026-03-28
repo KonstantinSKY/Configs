@@ -2,10 +2,17 @@
 
 MAKEFLAGS += --no-print-directory
 
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+
+include $(CONFIGS_DIR)/make/update.mk
+
 PACKAGE_NAME := openssh
 TARGET_CONFIG := /etc/ssh/sshd_config
 
 install: ## Install OpenSSH server package and start sshd
+	@$(call ensure_system_updated)
 	@echo "📦 Installing $(PACKAGE_NAME)..."
 	sudo pacman -S --needed --noconfirm $(PACKAGE_NAME)
 	@echo "⚙️  Enabling and starting sshd..."
