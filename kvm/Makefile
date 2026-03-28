@@ -3,7 +3,13 @@ KVM_ROOT    := $(HOME)/Work/KVMs
 CONFIG_ROOT := $(HOME)/Work/Configs/kvm
 XML_DIR     := $(CONFIG_ROOT)/xmls
 REMOTE      := gdrive:KVM_Backups
-.PHONY: backup install check-running
+MANJARO_SCRIPT := $(CONFIG_ROOT)/create-manjaro-rehearsal.sh
+MANJARO_VM_NAME ?= manjaro-rehearsal
+MANJARO_ISO ?=
+MANJARO_RAM_MB ?= 8192
+MANJARO_VCPUS ?= 2
+MANJARO_DISK_GB ?= 30
+.PHONY: backup install check-running manjaro-dry-run manjaro-create
 # По умолчанию запускаем бекап всего
 backup: check-running ## Run full KVM backup (ISOs, XMLs, NVRAM, disks)
 	@echo "=== STARTING FULL KVM BACKUP ==="
@@ -39,3 +45,21 @@ install: ## Define VMs from local XML files
 		[ -f "$$xml" ] || continue; \
 		virsh define "$$xml"; \
 	done
+
+manjaro-dry-run: ## Validate Manjaro rehearsal VM creation and print generated XML
+	@ISO_PATH="$(MANJARO_ISO)" \
+	VM_NAME="$(MANJARO_VM_NAME)" \
+	MEMORY_MB="$(MANJARO_RAM_MB)" \
+	VCPUS="$(MANJARO_VCPUS)" \
+	DISK_GB="$(MANJARO_DISK_GB)" \
+	DRY_RUN=1 \
+	"$(MANJARO_SCRIPT)"
+
+manjaro-create: ## Create and start the Manjaro rehearsal VM
+	@ISO_PATH="$(MANJARO_ISO)" \
+	VM_NAME="$(MANJARO_VM_NAME)" \
+	MEMORY_MB="$(MANJARO_RAM_MB)" \
+	VCPUS="$(MANJARO_VCPUS)" \
+	DISK_GB="$(MANJARO_DISK_GB)" \
+	DRY_RUN=0 \
+	"$(MANJARO_SCRIPT)"
