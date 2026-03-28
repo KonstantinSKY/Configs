@@ -1,7 +1,8 @@
 # Databases installer Makefile (Manjaro / Arch)
 # Installs PostgreSQL stack and DBeaver via your Manjaro Makefile.
 # Aliases are inline on each rule. Versions are printed via binaries only.
-.PHONY: installall ia all postgres p PG client c dbeaver d pg_setup pgset pg_enable pgen pg_start pgst pg_status pgss
+.PHONY: help installall ia all postgres p PG client c dbeaver d pg_setup pgset pg_enable pgen pg_start pgst pg_status pgss
+.DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))

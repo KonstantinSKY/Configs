@@ -9,7 +9,8 @@ MANJARO_ISO ?=
 MANJARO_RAM_MB ?= 8192
 MANJARO_VCPUS ?= 2
 MANJARO_DISK_GB ?= 30
-.PHONY: backup install check-running manjaro-dry-run manjaro-create
+.PHONY: help backup install check-running manjaro-dry-run manjaro-create
+.DEFAULT_GOAL := help
 # По умолчанию запускаем бекап всего
 backup: check-running ## Run full KVM backup (ISOs, XMLs, NVRAM, disks)
 	@echo "=== STARTING FULL KVM BACKUP ==="

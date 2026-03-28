@@ -8,7 +8,7 @@ GEMINI_PROMPT := "Generate a concise, professional git commit message in English
 
 
 # --- Validation ---
-check-config:
+check-config: ## Validate required Git identity settings for helper commands
 	@if [ -z "$(GITHUB_USER)" ] || [ -z "$(GITHUB_EMAIL)" ]; then \
 		echo -e "${C_RED}❌ Error: Git user.name or user.email is not set!${C_NC}"; \
 		echo -e "${C_YELLOW}💡 Please configure your git identity or run 'make setup' in Configs/git.${C_NC}"; \

@@ -1,4 +1,5 @@
-.PHONY: symlinks common_symlinks bind_mounts
+.PHONY: help symlinks common_symlinks bind_mounts
+.DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
 WORK_DIR = $(HOME)/Work

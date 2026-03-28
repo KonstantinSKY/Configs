@@ -4,7 +4,8 @@ MAIN_DEPLOY_DIR := $(HOME)/Work/Deploys
 BACKUP_DIR := backups
 MEGA_MAKEFILE := $(HOME)/Work/Configs/mega/Makefile
 REMOTE_DEPLOY_DIR := /Deploys
-.PHONY: sync mkdir
+.PHONY: help sync mkdir
+.DEFAULT_GOAL := help
 mkdir:
 	@if [ "$(words $(MAKECMDGOALS))" -ne 2 ]; then \
 		echo "❌ Error: Exactly one project name is required."; \

@@ -1,4 +1,5 @@
-.PHONY: install i enable e status s update u cleanup c
+.PHONY: help install i enable e status s update u cleanup c
+.DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))

@@ -4,8 +4,8 @@
 .ONESHELL:
 SHELL := /bin/bash
 .SHELLFLAGS := -euo pipefail -c
-.DEFAULT_GOAL :=
-.PHONY: new repo rp expert e indicator i script s %-args-sink
+.DEFAULT_GOAL := help
+.PHONY: help new repo rp expert e indicator i script s %-args-sink
 # Sink rule to allow passing an extra word as an "argument" after targets,
 # so `make new MyProject` won't fail on unknown target "MyProject".
 %-args-sink:

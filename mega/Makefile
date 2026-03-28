@@ -1,4 +1,5 @@
-.PHONY: sync s
+.PHONY: help sync s
+.DEFAULT_GOAL := help
 sync s:
 	@if [ $(words $(MAKECMDGOALS)) -ne 3 ]; then \
 		echo "❌ Usage: make sync <LOCAL_PATH> <REMOTE_PATH>"; \

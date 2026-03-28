@@ -1,4 +1,5 @@
-.PHONY: install password-on password-off
+.PHONY: help install password-on password-off
+.DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
 

@@ -1,7 +1,8 @@
 # Git & GitHub Project Manager (Local aliases)
 SHELL := /bin/bash
 # --- Local Aliases for this repo ---
-.PHONY: c i s dr fc cr git
+.PHONY: help c i s dr fc cr git
+.DEFAULT_GOAL := help
 c: git
 i: git-init
 fc: git-full

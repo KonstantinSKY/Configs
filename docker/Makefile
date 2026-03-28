@@ -4,7 +4,8 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 
 MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
 
-.PHONY: install i setup set version v status s group g
+.PHONY: help install i setup set version v status s group g
+.DEFAULT_GOAL := help
 
 install i:
 	@echo "🐳 Installing Docker ecosystem using universal Manjaro Makefile..."

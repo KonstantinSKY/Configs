@@ -20,7 +20,8 @@ KVANTUM_TARGET := $(HOME)/.config/Kvantum/kvantum.kvconfig
 QT5CT_TARGET := $(HOME)/.config/qt5ct/qt5ct.conf
 QT6CT_TARGET := $(HOME)/.config/qt6ct/qt6ct.conf
 
-.PHONY: all install i env e xprofile xp theme t link l verify v
+.PHONY: help all install i env e xprofile xp theme t link l verify v
+.DEFAULT_GOAL := help
 
 all: install link verify
 

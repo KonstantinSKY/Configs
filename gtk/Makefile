@@ -1,4 +1,5 @@
-.PHONY: all install_theme install_icons apply_theme set_gtk2 set_gtk3 set_gtk4 check_theme
+.PHONY: help all install_theme install_icons apply_theme set_gtk2 set_gtk3 set_gtk4 check_theme
+.DEFAULT_GOAL := help
 GTK_THEME = Matcha-dark-sea
 ICON_THEME = Papirus-Dark
 FONT = Noto Sans 10

@@ -1,4 +1,5 @@
-.PHONY: all remove chrome firefox tor
+.PHONY: help all remove chrome firefox tor
+.DEFAULT_GOAL := help
 MAKEFLAGS += --no-print-directory
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
