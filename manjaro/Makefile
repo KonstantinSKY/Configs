@@ -138,7 +138,8 @@ install i: ## Install one or more packages via yay after updating the system
 	@$(call ensure_system_updated)
 	@echo "📦 Installing packages:"
 	@echo "-------------------------------------------------------------------------------"
-	@for pkg in $(wordlist 2,999,$(MAKECMDGOALS)); do \
+	@status=0; \
+	for pkg in $(wordlist 2,999,$(MAKECMDGOALS)); do \
 		echo "📦 Processing: $$pkg"; \
 		if $(YAY_CMD) -Qi "$$pkg" >/dev/null 2>&1; then \
 			current_ver=$$($(YAY_CMD) -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \
@@ -151,12 +152,15 @@ install i: ## Install one or more packages via yay after updating the system
 					echo "✅ Installed: $$pkg @ $$new_ver"; \
 				else \
 					echo "❌ Failed to install or not found: $$pkg"; \
+					status=1; \
 				fi; \
 			else \
 				echo "❌ Failed to install or not found: $$pkg"; \
+				status=1; \
 			fi; \
 		fi; \
-	done
+	done; \
+	exit $$status
 	@echo "-------------------------------------------------------------------------------"
 	@echo "✅ Installation process complete."
 
