@@ -28,6 +28,10 @@ BASE_PACKAGES = \
 	git \
 	curl \
 	wget \
+	jq \
+	rsync \
+	zip \
+	unzip \
 	man-db \
 	man-pages \
 	file \
@@ -36,6 +40,8 @@ BASE_PACKAGES = \
 	nmap \
 	ripgrep \
 	bat \
+	tmux \
+	tree \
 	alsa-utils \
 	pulseaudio
 
