@@ -25,11 +25,7 @@ COMMON_SYMLINKS = \
 
 symlinks: ## Configures common home paths as symbolic links into $(WORK_DIR).
 	@echo "🔗 Converting common home paths to symbolic links..."
-	@if [ ! -d "$(WORK_DIR)" ]; then \
-		echo "❌ Work directory does not exist: $(WORK_DIR)"; \
-		echo "   Create it before configuring workspace links."; \
-		exit 1; \
-	fi
+	@mkdir -p "$(WORK_DIR)"
 	@for pair in $(COMMON_SYMLINKS); do \
 		SOURCE=$${pair#*:}; \
 		TARGET="$(HOME)/$${pair%%:*}"; \
