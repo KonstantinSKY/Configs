@@ -7,6 +7,7 @@
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+BROWSERS_MAKEFILE := $(CONFIGS_DIR)/browsers/Makefile
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
@@ -49,6 +50,7 @@ BASE_PACKAGES = \
 ## 🧩 Setup
 ## ---------------------------
 setup: ## Run the full Manjaro bootstrap flow via yay
+	@$(MAKE) -s -f $(BROWSERS_MAKEFILE) remove-palemoon
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mirrors
 	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
