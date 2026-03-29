@@ -1,9 +1,16 @@
-.PHONY: help all install i setup set verify v
+# IMPORTANT FOR AI AGENTS:
+# Do not modify this file without explicit user confirmation.
+
+.PHONY: help h all install i setup set verify v
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/../..)
+
+ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/help.mk
+endif
 
 MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
 FIREFOX_DIR := $(HOME)/.config/mozilla/firefox
@@ -14,16 +21,16 @@ USER_JS_SRC := $(THIS_DIR)/user.js
 USER_CHROME_SRC := $(THIS_DIR)/chrome/userChrome.css
 USER_CONTENT_SRC := $(THIS_DIR)/chrome/userContent.css
 
-all: install
+all: install ## Alias for install
 
-install i:
+install i: ## Install Firefox and apply the managed profile overlay
 	@echo "🦊 Installing Firefox..."
 	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install firefox
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" setup
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
 	@echo "✅ Firefox installed and profile overlay configured."
 
-setup set:
+setup set: ## Create or normalize the managed Firefox profile and link overlay files
 	@set -euo pipefail; \
 	die() { printf 'Error: %s\n' "$$1" >&2; exit 1; }; \
 	require_file() { [ -f "$$1" ] || die "missing file: $$1"; }; \
@@ -181,7 +188,7 @@ setup set:
 	printf 'Linked: %s\n' "$(FIREFOX_DIR)/$(PROFILE_PATH)/chrome/userChrome.css"; \
 	printf 'Linked: %s\n' "$(FIREFOX_DIR)/$(PROFILE_PATH)/chrome/userContent.css"
 
-verify v:
+verify v: ## Verify that the managed Firefox profile overlay is linked correctly
 	@echo "🔎 Verifying Firefox overlay..."
 	@if [ ! -r "$(FIREFOX_DIR)/profiles.ini" ]; then \
 		echo "❌ profiles.ini not found: $(FIREFOX_DIR)/profiles.ini"; \
