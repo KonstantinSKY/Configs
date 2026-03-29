@@ -18,6 +18,7 @@ COMMON_SYMLINKS = \
 	Configs:$(WORK_DIR)/Configs \
 	Projects:$(WORK_DIR)/Projects \
 	Deploys:$(WORK_DIR)/Deploys \
+	Security:$(WORK_DIR)/Security \
 	Music:$(WORK_DIR)/Music \
 	Documents:$(WORK_DIR)/Documents \
 	Downloads:$(WORK_DIR)/Downloads \
