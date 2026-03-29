@@ -11,6 +11,7 @@ I3_PROFILE ?= auto
 I3_CONF_DIR := $(HOME)/.i3
 I3_SOURCE_DIR := $(THIS_DIR)
 I3_SOURCE_CONFIG := $(I3_SOURCE_DIR)/config
+I3_SOURCE_MONITOR_VM := $(I3_SOURCE_DIR)/vm
 I3_SOURCE_MONITOR_LAPTOP := $(I3_SOURCE_DIR)/laptop
 I3_SOURCE_MONITOR_DESKTOP := $(I3_SOURCE_DIR)/desktop
 
@@ -57,7 +58,10 @@ endef
 define resolve_i3_profile
 	case "$(I3_PROFILE)" in \
 		auto) \
-			if find /sys/class/power_supply -maxdepth 1 -name 'BAT*' -print -quit 2>/dev/null | grep -q .; then \
+			if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt --quiet; then \
+				profile="vm"; \
+				monitor_dir="$(I3_SOURCE_MONITOR_VM)"; \
+			elif find /sys/class/power_supply -maxdepth 1 -name 'BAT*' -print -quit 2>/dev/null | grep -q .; then \
 				profile="laptop"; \
 				monitor_dir="$(I3_SOURCE_MONITOR_LAPTOP)"; \
 			elif command -v upower >/dev/null 2>&1 && upower -e 2>/dev/null | grep -q BAT; then \
@@ -67,6 +71,10 @@ define resolve_i3_profile
 				profile="desktop"; \
 				monitor_dir="$(I3_SOURCE_MONITOR_DESKTOP)"; \
 			fi; \
+			;; \
+		vm) \
+			profile="vm"; \
+			monitor_dir="$(I3_SOURCE_MONITOR_VM)"; \
 			;; \
 		laptop) \
 			profile="laptop"; \
@@ -78,7 +86,7 @@ define resolve_i3_profile
 			;; \
 		*) \
 			echo "❌ Unsupported I3_PROFILE: $(I3_PROFILE)"; \
-			echo "   Use one of: auto, laptop, desktop"; \
+			echo "   Use one of: auto, vm, laptop, desktop"; \
 			exit 1; \
 			;; \
 	esac
