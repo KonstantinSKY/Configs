@@ -10,7 +10,7 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 MANJARO_MAKEFILE ?= $(CONFIGS_DIR)/manjaro/Makefile
 XPROFILE ?= $(HOME)/.xprofile
 
-KVANTUM_THEME ?= Matcha-Dark
+KVANTUM_THEME ?= KvArcDarkMaia
 
 KVANTUM_SOURCE := $(THIS_DIR)/Kvantum/kvantum.kvconfig
 QT5CT_SOURCE := $(THIS_DIR)/qt5ct/qt5ct.conf
@@ -27,7 +27,7 @@ all: install link verify
 
 install i:
 	@echo "📦 Installing qt5ct, qt6ct, Kvantum..."
-	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install qt5ct qt6ct kvantum
+	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install qt5ct qt6ct kvantum kvantum-qt5
 
 env e xprofile xp:
 	@echo "🔎 Qt environment is managed via $(XPROFILE)"
