@@ -1,4 +1,4 @@
-.PHONY: help all install i link l verify v
+.PHONY: all install i sync-rules sync-gemini-rules sync-codex-rules verify v
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -8,52 +8,58 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 include $(CONFIGS_DIR)/make/update.mk
 
 AI_PACKAGES := gemini-cli claude-code openai-codex-bin
-GEMINI_POLICY_DIR := $(HOME)/.gemini/policies
-GEMINI_POLICY_SRC := $(THIS_DIR)/gemini/shell-rules.toml
-GEMINI_POLICY_DEST := $(GEMINI_POLICY_DIR)/shell-rules.toml
+GEMINI_RULES_DIR := $(HOME)/.gemini/policies
+GEMINI_RULES_SRC := $(THIS_DIR)/gemini/shell-rules.toml
+GEMINI_RULES_DEST := $(GEMINI_RULES_DIR)/shell-rules.toml
+CODEX_RULES_DIR := $(HOME)/.codex/rules
+CODEX_RULES_SRC_DIR := $(THIS_DIR)/codex
 
-define replace_with_symlink
-	TARGET_PATH="$(1)"; \
-	SOURCE_PATH="$(2)"; \
-	DESIRED_LINK="$$(readlink -f "$$SOURCE_PATH")"; \
-	CURRENT_LINK=""; \
-	if [ -L "$$TARGET_PATH" ]; then \
-		CURRENT_LINK="$$(readlink -f "$$TARGET_PATH" 2>/dev/null || true)"; \
-	fi; \
-	if [ "$$CURRENT_LINK" = "$$DESIRED_LINK" ]; then \
-		echo "✅ Gemini policy already linked: $$TARGET_PATH"; \
-	else \
-		if [ -L "$$TARGET_PATH" ]; then \
-			echo "🔁 Replacing existing symlink: $$TARGET_PATH"; \
-			rm -f "$$TARGET_PATH"; \
-		elif [ -e "$$TARGET_PATH" ]; then \
-			BACKUP_PATH="$$TARGET_PATH.bak.$$(date +%Y%m%d_%H%M%S)"; \
-			echo "📦 Backing up existing Gemini policy to $$BACKUP_PATH"; \
-			mv "$$TARGET_PATH" "$$BACKUP_PATH"; \
-		fi; \
-		echo "🔗 Linking Gemini policy:"; \
-		echo "→ Target : $$TARGET_PATH"; \
-		echo "→ Source : $$SOURCE_PATH"; \
-		ln -s "$$SOURCE_PATH" "$$TARGET_PATH"; \
-	fi
-endef
+all: install ## Install AI packages, sync rules, and verify
 
-all: install
-
-install i:
+install i: ## Install AI packages, sync rules, and verify
 	@echo "📦 Installing AI CLI tools via yay..."
 	@$(call ensure_system_updated)
 	@yay -S --needed --noconfirm $(AI_PACKAGES)
-	@$(MAKE) -s -f "$(THIS_MAKEFILE)" link
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" sync-rules
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
 	@echo "✅ AI tools installed and configured."
 
-link l:
-	@echo "⚙️  Setting up Gemini shell policies..."
-	@mkdir -p "$(GEMINI_POLICY_DIR)"
-	@$(call replace_with_symlink,$(GEMINI_POLICY_DEST),$(GEMINI_POLICY_SRC))
+sync-rules: ## Sync all agent rules from this repo into runtime directories
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" sync-gemini-rules
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" sync-codex-rules
 
-verify v:
+sync-gemini-rules: ## Copy Gemini rules into ~/.gemini/policies
+	@echo "⚙️  Syncing Gemini rules..."
+	@mkdir -p "$(GEMINI_RULES_DIR)"
+	@if [ -L "$(GEMINI_RULES_DEST)" ]; then \
+		echo "replacing symlink: $(GEMINI_RULES_DEST)"; \
+		rm -f "$(GEMINI_RULES_DEST)"; \
+	fi
+	@cp -f "$(GEMINI_RULES_SRC)" "$(GEMINI_RULES_DEST)"
+	@echo "synced: $(GEMINI_RULES_DEST)"
+
+sync-codex-rules: ## Copy Codex .rules files into ~/.codex/rules
+	@echo "⚙️  Syncing Codex rules..."
+	@mkdir -p "$(CODEX_RULES_DIR)"
+	@set -eu; \
+	found=0; \
+	for f in "$(CODEX_RULES_SRC_DIR)"/*.rules; do \
+		[ -e "$$f" ] || continue; \
+		found=1; \
+		dest="$(CODEX_RULES_DIR)/$$(basename "$$f")"; \
+		if [ -L "$$dest" ]; then \
+			echo "replacing symlink: $$dest"; \
+			rm -f "$$dest"; \
+		fi; \
+		cp -f "$$f" "$$dest"; \
+		echo "synced: $$(basename "$$f")"; \
+	done; \
+	if [ "$$found" -eq 0 ]; then \
+		echo "❌ No Codex .rules files found in $(CODEX_RULES_SRC_DIR)"; \
+		exit 1; \
+	fi
+
+verify v: ## Verify packages and synced rule files
 	@echo "🔎 Verifying AI tools..."
 	@for pkg in $(AI_PACKAGES); do \
 		if yay -Qi "$$pkg" >/dev/null 2>&1; then \
@@ -63,16 +69,38 @@ verify v:
 			exit 1; \
 		fi; \
 	done
-	@if [ ! -r "$(GEMINI_POLICY_SRC)" ]; then \
-		echo "❌ Gemini policy source not found: $(GEMINI_POLICY_SRC)"; \
+	@if [ ! -r "$(GEMINI_RULES_SRC)" ]; then \
+		echo "❌ Gemini rules source not found: $(GEMINI_RULES_SRC)"; \
 		exit 1; \
 	fi
-	@if [ -L "$(GEMINI_POLICY_DEST)" ]; then \
-		echo "✅ $(GEMINI_POLICY_DEST) -> $$(readlink -f "$(GEMINI_POLICY_DEST)")"; \
-	elif [ -e "$(GEMINI_POLICY_DEST)" ]; then \
-		echo "⚠️  $(GEMINI_POLICY_DEST) exists but is not a symlink"; \
+	@if [ ! -r "$(GEMINI_RULES_DEST)" ]; then \
+		echo "❌ Gemini rules destination not found: $(GEMINI_RULES_DEST)"; \
 		exit 1; \
+	fi
+	@if cmp -s "$(GEMINI_RULES_SRC)" "$(GEMINI_RULES_DEST)"; then \
+		echo "✅ Gemini rules synced: $(GEMINI_RULES_DEST)"; \
 	else \
-		echo "❌ Gemini policy is not linked: $(GEMINI_POLICY_DEST)"; \
+		echo "❌ Gemini rules differ from source: $(GEMINI_RULES_DEST)"; \
+		exit 1; \
+	fi
+	@set -eu; \
+	found=0; \
+	for f in "$(CODEX_RULES_SRC_DIR)"/*.rules; do \
+		[ -e "$$f" ] || continue; \
+		found=1; \
+		dest="$(CODEX_RULES_DIR)/$$(basename "$$f")"; \
+		if [ ! -r "$$dest" ]; then \
+			echo "❌ Codex rule destination not found: $$dest"; \
+			exit 1; \
+		fi; \
+		if cmp -s "$$f" "$$dest"; then \
+			echo "✅ Codex rule synced: $$(basename "$$f")"; \
+		else \
+			echo "❌ Codex rule differs from source: $$dest"; \
+			exit 1; \
+		fi; \
+	done; \
+	if [ "$$found" -eq 0 ]; then \
+		echo "❌ No Codex .rules files found in $(CODEX_RULES_SRC_DIR)"; \
 		exit 1; \
 	fi

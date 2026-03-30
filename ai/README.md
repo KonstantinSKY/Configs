@@ -10,14 +10,14 @@ This directory serves as the centralized repository for managing configurations,
 
 ## Directory Structure
 
-- `gemini/`: Specific configurations for the Gemini CLI agent.
+- `gemini/`: Specific rule sources for the Gemini CLI agent.
 - `claude/`: System prompts and `.claude.json` templates.
-- `codex/`: Settings for the Codex development assistant.
+- `codex/`: Rule sources for the Codex development assistant.
 - `common/`: Shared prompts and instructions used across all agents.
 
 ## Usage
 
-All AI agents should be instructed to consult this directory for behavioral guidelines and system-level constraints to ensure consistency across different platforms and models.
+All AI agents should be instructed to consult this directory for behavioral guidelines and system-level constraints to ensure consistency across different platforms and models. Installation syncs these source files into the agent-specific runtime directories by copying them.
 
 ---
 *Note: This is an authoritative configuration source. Changes should be committed to the Git repository in `~/Work/Configs`.*
