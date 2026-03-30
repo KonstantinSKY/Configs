@@ -1,19 +1,17 @@
-.PHONY: help install password-on password-off
+.PHONY: help install i password-on pon password-off poff
 .DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
-CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
-
-include $(CONFIGS_DIR)/make/update.mk
 
 PACKAGE_NAME := openssh
 TARGET_CONFIG := /etc/ssh/sshd_config
 
-install: ## Install OpenSSH server package and start sshd
-	@$(call ensure_system_updated)
+install i: ## Install OpenSSH server package and start sshd
+	@echo "🔄 Updating system packages with pacman..."
+	sudo pacman -Syu --noconfirm
 	@echo "📦 Installing $(PACKAGE_NAME)..."
 	sudo pacman -S --needed --noconfirm $(PACKAGE_NAME)
 	@echo "⚙️  Enabling and starting sshd..."
@@ -21,7 +19,7 @@ install: ## Install OpenSSH server package and start sshd
 	@echo "🔍 Checking sshd status..."
 	sudo systemctl is-active sshd
 
-password-on: ## Enable password authentication in sshd
+password-on pon: ## Enable password authentication in sshd
 	@echo "🔓 Enabling password authentication in $(TARGET_CONFIG)..."
 	@sudo test -f "$(TARGET_CONFIG)"
 	@sudo sed -i \
@@ -33,7 +31,7 @@ password-on: ## Enable password authentication in sshd
 	@echo "🔄 Restarting sshd service..."
 	sudo systemctl restart sshd
 
-password-off: ## Disable password authentication in sshd
+password-off poff: ## Disable password authentication in sshd
 	@echo "🔐 Disabling password authentication in $(TARGET_CONFIG)..."
 	@sudo test -f "$(TARGET_CONFIG)"
 	@sudo sed -i \
