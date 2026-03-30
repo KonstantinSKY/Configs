@@ -8,6 +8,8 @@ THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 BROWSERS_MAKEFILE := $(CONFIGS_DIR)/browsers/Makefile
+GTK_MAKEFILE := $(CONFIGS_DIR)/gtk/Makefile
+QT_MAKEFILE := $(CONFIGS_DIR)/qt/Makefile
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
@@ -47,6 +49,12 @@ BASE_PACKAGES = \
 	bat \
 	tmux \
 	tree \
+	matcha-gtk-theme \
+	papirus-icon-theme \
+	qt5ct \
+	qt6ct \
+	kvantum \
+	kvantum-qt5 \
 	alsa-utils \
 	pulseaudio
 
@@ -62,6 +70,10 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
 	@$(MAKE) -s -f $(THIS_MAKEFILE) update
+	@$(MAKE) -s -f $(GTK_MAKEFILE) link
+	@$(MAKE) -s -f $(GTK_MAKEFILE) verify
+	@$(MAKE) -s -f $(QT_MAKEFILE) link
+	@$(MAKE) -s -f $(QT_MAKEFILE) verify
 	@echo "✅ Manjaro i3 setup complete!"
 
 ## ---------------------------
