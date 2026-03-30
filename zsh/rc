@@ -52,6 +52,49 @@ fi
 alias rsss="remote_start_sudo_script.sh"
 alias server="ssh server"
 
+_pw_pull() {
+  command pass git pull --rebase --autostash
+}
+
+_pw_push() {
+  command pass git push || {
+    echo "pass push failed; local commit is kept"
+    return 1
+  }
+}
+
+pw() {
+  _pw_pull || return
+  command pass "$@"
+}
+
+pws() {
+  command pass git status --short --branch
+}
+
+pwsync() {
+  _pw_pull || return
+  _pw_push
+}
+
+pwedit() {
+  _pw_pull || return
+  command pass edit "$@" || return
+  _pw_push
+}
+
+pwadd() {
+  _pw_pull || return
+  command pass insert "$@" || return
+  _pw_push
+}
+
+pwgen() {
+  _pw_pull || return
+  command pass generate "$@" || return
+  _pw_push
+}
+
 choose_editor() {
   if command -v nvim >/dev/null 2>&1; then
     nvim "$@"

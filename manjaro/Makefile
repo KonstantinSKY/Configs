@@ -1,7 +1,7 @@
 # IMPORTANT FOR AI AGENTS:
 # Do not modify this file without explicit user confirmation.
 
-.PHONY: help setup mirrors install-yay enable-aur update u yay-update install i install-base no_beep power_button laptop xprofile xp zsh check
+.PHONY: help setup mirrors install-yay enable-aur update u yay-update install i install-base no_beep power_button laptop xprofile xp mimeapps ma zsh check
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -16,6 +16,8 @@ include $(CONFIGS_DIR)/make/update.mk
 
 TARGET_XPROFILE_FILE = $(HOME)/.xprofile
 XPROFILE_SOURCE_FILE = $(CONFIGS_DIR)/xprofile/.xprofile
+TARGET_MIMEAPPS_FILE = $(HOME)/.config/mimeapps.list
+MIMEAPPS_SOURCE_FILE = $(THIS_DIR)/mimeapps.list
 ZSH_TARGET_RC = $(HOME)/.zshrc
 ZSH_CUSTOM_RC = $(CONFIGS_DIR)/zsh/rc
 ZSH_INCLUDE_START = \# >>> custom shell config >>>
@@ -28,6 +30,7 @@ BASE_PACKAGES = \
 	manjaro-settings-manager \
 	fzf \
 	git \
+	github-cli \
 	curl \
 	wget \
 	jq \
@@ -56,6 +59,7 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mirrors
 	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) xprofile
+	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
 	@$(MAKE) -s -f $(THIS_MAKEFILE) update
 	@echo "✅ Manjaro i3 setup complete!"
@@ -222,6 +226,24 @@ xprofile xp: ## Link .xprofile via a direct symlink
 	@echo "🔗 Linking $(TARGET_XPROFILE_FILE) → $(XPROFILE_SOURCE_FILE)..."
 	@ln -sfn "$(XPROFILE_SOURCE_FILE)" "$(TARGET_XPROFILE_FILE)"
 	@echo "✅ xprofile linked to $(TARGET_XPROFILE_FILE)"
+
+mimeapps ma: ## Link managed XDG default applications file
+	@$(call require_exists,$(MIMEAPPS_SOURCE_FILE),Source mimeapps file not found)
+	@mkdir -p "$(dir $(TARGET_MIMEAPPS_FILE))"
+	@echo "📦 Preparing existing $(TARGET_MIMEAPPS_FILE)..."
+	@if [ -L "$(TARGET_MIMEAPPS_FILE)" ]; then \
+		CURRENT_LINK="$$(readlink -f "$(TARGET_MIMEAPPS_FILE)" 2>/dev/null || true)"; \
+		DESIRED_LINK="$$(readlink -f "$(MIMEAPPS_SOURCE_FILE)" 2>/dev/null || true)"; \
+		if [ "$$CURRENT_LINK" != "$$DESIRED_LINK" ]; then \
+			BACKUP_PATH="$(TARGET_MIMEAPPS_FILE).bak.$$(date +%Y%m%d_%H%M%S)"; \
+			echo "📦 Backing up existing mimeapps symlink to $$BACKUP_PATH"; \
+			mv "$(TARGET_MIMEAPPS_FILE)" "$$BACKUP_PATH"; \
+		fi; \
+	fi
+	@$(call backup_if_needed,$(TARGET_MIMEAPPS_FILE))
+	@echo "🔗 Linking $(TARGET_MIMEAPPS_FILE) → $(MIMEAPPS_SOURCE_FILE)..."
+	@ln -sfn "$(MIMEAPPS_SOURCE_FILE)" "$(TARGET_MIMEAPPS_FILE)"
+	@echo "✅ mimeapps linked to $(TARGET_MIMEAPPS_FILE)"
 
 zsh: ## Install zsh if needed and switch current user to it
 	@if ! command -v yay >/dev/null 2>&1; then \
