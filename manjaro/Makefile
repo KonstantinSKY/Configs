@@ -1,7 +1,23 @@
-# IMPORTANT FOR AI AGENTS:
-# Do not modify this file without explicit user confirmation.
+# IMPORTANT:
+# Humans and AI agents must not modify this file without explicit user confirmation.
 
-.PHONY: help setup mirrors install-yay enable-aur update u yay-update install i install-base no_beep power_button laptop xprofile xp mimeapps ma zsh check
+.PHONY: \
+	help \
+	setup \
+	mirrors \
+	install-yay \
+	enable-aur \
+	update u \
+	yay-update \
+	install i \
+	install-base \
+	no_beep \
+	power_button \
+	laptop \
+	xprofile xp \
+	mimeapps ma \
+	zsh \
+	check
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -10,7 +26,6 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 BROWSERS_MAKEFILE := $(CONFIGS_DIR)/browsers/Makefile
 GTK_MAKEFILE := $(CONFIGS_DIR)/gtk/Makefile
 QT_MAKEFILE := $(CONFIGS_DIR)/qt/Makefile
-NVIM_MAKEFILE := $(CONFIGS_DIR)/nvim/Makefile
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
@@ -33,8 +48,6 @@ BASE_PACKAGES = \
 	fzf \
 	git \
 	github-cli \
-	neovim \
-	tree-sitter-cli \
 	curl \
 	wget \
 	jq \
@@ -78,8 +91,6 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(GTK_MAKEFILE) verify
 	@$(MAKE) -s -f $(QT_MAKEFILE) link
 	@$(MAKE) -s -f $(QT_MAKEFILE) verify
-	@$(MAKE) -s -f $(NVIM_MAKEFILE) link
-	@$(MAKE) -s -f $(NVIM_MAKEFILE) verify
 	@echo "✅ Manjaro i3 setup complete!"
 
 ## ---------------------------
