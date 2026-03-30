@@ -12,6 +12,7 @@ endif
 NVIM_SOURCE_DIR := $(THIS_DIR)
 NVIM_TARGET_DIR := $(HOME)/.config/nvim
 CORE_PACKAGES := neovim tree-sitter-cli
+LEGACY_VIM_PACKAGES := vim
 # Keep this list in sync with nvim/lua/plugins/treesitter.lua.
 TREESITTER_PARSERS := bash diff json lua luadoc markdown markdown_inline python query rust toml vim vimdoc yaml
 
@@ -55,6 +56,18 @@ packages p: ## Install Neovim and tree-sitter CLI from official repositories
 	@if ! command -v pacman >/dev/null 2>&1; then \
 		echo "❌ pacman not found. This target currently supports Arch/Manjaro only."; \
 		exit 1; \
+	fi
+	@legacy_packages=""; \
+	for pkg in $(LEGACY_VIM_PACKAGES); do \
+		if pacman -Q "$$pkg" >/dev/null 2>&1; then \
+			legacy_packages="$$legacy_packages $$pkg"; \
+		fi; \
+	done; \
+	if [ -n "$$legacy_packages" ]; then \
+		echo "🧹 Removing legacy Vim packages:$$legacy_packages"; \
+		sudo pacman -Rns --noconfirm $$legacy_packages; \
+	else \
+		echo "✅ No legacy Vim packages installed."; \
 	fi
 	@echo "📦 Installing core Neovim packages from official repositories..."
 	@sudo pacman -S --needed --noconfirm $(CORE_PACKAGES)
