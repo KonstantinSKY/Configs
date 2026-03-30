@@ -12,7 +12,7 @@ endif
 NVIM_SOURCE_DIR := $(THIS_DIR)
 NVIM_TARGET_DIR := $(HOME)/.config/nvim
 CORE_PACKAGES := neovim tree-sitter-cli
-LEGACY_VIM_PACKAGES := vim
+LEGACY_VIM_PACKAGES := vim ex-vi-compat
 # Keep this list in sync with nvim/lua/plugins/treesitter.lua.
 TREESITTER_PARSERS := bash diff json lua luadoc markdown markdown_inline python query rust toml vim vimdoc yaml
 
