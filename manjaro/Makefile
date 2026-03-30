@@ -10,6 +10,7 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 BROWSERS_MAKEFILE := $(CONFIGS_DIR)/browsers/Makefile
 GTK_MAKEFILE := $(CONFIGS_DIR)/gtk/Makefile
 QT_MAKEFILE := $(CONFIGS_DIR)/qt/Makefile
+NVIM_MAKEFILE := $(CONFIGS_DIR)/nvim/Makefile
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
@@ -25,7 +26,6 @@ ZSH_CUSTOM_RC = $(CONFIGS_DIR)/zsh/rc
 ZSH_INCLUDE_START = \# >>> custom shell config >>>
 ZSH_INCLUDE_END = \# <<< custom shell config <<<
 ZSH_INCLUDE_LINE = [ -r "$(ZSH_CUSTOM_RC)" ] && source "$(ZSH_CUSTOM_RC)"
-YAY_CMD = env -u MAKEFILES yay
 
 BASE_PACKAGES = \
 	base-devel \
@@ -33,6 +33,8 @@ BASE_PACKAGES = \
 	fzf \
 	git \
 	github-cli \
+	neovim \
+	tree-sitter-cli \
 	curl \
 	wget \
 	jq \
@@ -63,6 +65,8 @@ BASE_PACKAGES = \
 ## ---------------------------
 setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(BROWSERS_MAKEFILE) remove-palemoon
+	@echo "⬆️  Updating all system packages via pacman before yay bootstrap..."
+	@sudo pacman -Syu --noconfirm
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mirrors
 	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
@@ -74,6 +78,8 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(GTK_MAKEFILE) verify
 	@$(MAKE) -s -f $(QT_MAKEFILE) link
 	@$(MAKE) -s -f $(QT_MAKEFILE) verify
+	@$(MAKE) -s -f $(NVIM_MAKEFILE) link
+	@$(MAKE) -s -f $(NVIM_MAKEFILE) verify
 	@echo "✅ Manjaro i3 setup complete!"
 
 ## ---------------------------
@@ -83,7 +89,7 @@ mirrors: ## Refresh Manjaro mirrors and package databases
 	@echo "🔄 Updating mirrors..."
 	@sudo pacman-mirrors --fasttrack
 	@if command -v yay >/dev/null 2>&1; then \
-		$(YAY_CMD) -Syy --noconfirm; \
+		yay -Syy --noconfirm; \
 	else \
 		echo "ℹ️  yay is not installed yet; package database refresh will happen after bootstrap."; \
 	fi
@@ -94,7 +100,7 @@ install-yay: ## Install yay if needed, using pacman only for bootstrap
 		echo "✅ yay is already installed."; \
 	else \
 		echo "📦 Installing yay from official repository..."; \
-		sudo pacman -Sy --needed --noconfirm yay; \
+		sudo pacman -S --needed --noconfirm yay; \
 	fi
 	@echo "-------------------------------------------------------------------------------"
 
@@ -104,7 +110,7 @@ yay-update: ## Update official and AUR packages via yay
 		exit 1; \
 	fi
 	@echo "⬆️  Updating AUR and system packages with yay..."
-	@$(YAY_CMD) -Syu --noconfirm --answerclean None --answerdiff None
+	@yay -Syu --noconfirm --answerclean None --answerdiff None
 	@echo "-------------------------------------------------------------------------------"
 
 enable-aur: ## Enable AUR support in pamac when pamac is available
@@ -125,15 +131,15 @@ update u: ## Run full maintenance: yay update, orphan cleanup, cache cleanup, fl
 	@$(MAKE) -s -f $(THIS_MAKEFILE) yay-update
 	@echo "-------------------------------------------------------------------------------"
 	@echo "🧹 Removing unused dependencies..."
-	@ORPHANS="$$(env -u MAKEFILES yay -Qtdq 2>/dev/null || true)"; \
+	@ORPHANS="$$(yay -Qtdq 2>/dev/null || true)"; \
 	if [ -n "$$ORPHANS" ]; then \
-		$(YAY_CMD) -Rns --noconfirm $$ORPHANS; \
+		yay -Rns --noconfirm $$ORPHANS; \
 	else \
 		echo "✅ No unused dependencies found"; \
 	fi
 	@echo "-------------------------------------------------------------------------------"
 	@echo "🧼 Cleaning cache..."
-	@$(YAY_CMD) -Sc --noconfirm
+	@yay -Sc --noconfirm
 	@echo "-------------------------------------------------------------------------------"
 	@echo "⬆️  Updating flatpak apps/runtimes..."
 	@flatpak update -y || { rc=$$?; [ $$rc -eq 127 ] && echo "⚠️ flatpak not installed — skipping" || exit $$rc; }
@@ -157,14 +163,14 @@ install i: ## Install one or more packages via yay after updating the system
 	@status=0; \
 	for pkg in $(wordlist 2,999,$(MAKECMDGOALS)); do \
 		echo "📦 Processing: $$pkg"; \
-		if $(YAY_CMD) -Qi "$$pkg" >/dev/null 2>&1; then \
-			current_ver=$$($(YAY_CMD) -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \
+		if yay -Qi "$$pkg" >/dev/null 2>&1; then \
+			current_ver=$$(yay -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \
 			echo "🔁 Already installed: $$pkg @ $$current_ver — skipping"; \
 		else \
 			echo "⬇️  Installing: $$pkg"; \
-			if $(YAY_CMD) -S --noconfirm --needed "$$pkg"; then \
-				if $(YAY_CMD) -Qi "$$pkg" >/dev/null 2>&1; then \
-					new_ver=$$($(YAY_CMD) -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \
+			if yay -S --noconfirm --needed "$$pkg"; then \
+				if yay -Qi "$$pkg" >/dev/null 2>&1; then \
+					new_ver=$$(yay -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \
 					echo "✅ Installed: $$pkg @ $$new_ver"; \
 				else \
 					echo "❌ Failed to install or not found: $$pkg"; \
@@ -186,7 +192,7 @@ install-base: ## Install the default base package set via yay
 		exit 1; \
 	fi
 	@echo "📦 Installing essential packages via yay..."
-	$(YAY_CMD) -S --needed --noconfirm $(BASE_PACKAGES)
+	yay -S --needed --noconfirm $(BASE_PACKAGES)
 	@echo "✅ Base packages installed via yay."
 	@echo "-------------------------------------------------------------------------------"
 
@@ -268,7 +274,7 @@ zsh: ## Install zsh if needed and switch current user to it
 		echo "✅ zsh is installed: $$ZSH_PATH"; \
 	else \
 		echo "📦 Installing zsh..."; \
-		$(YAY_CMD) -S --needed --noconfirm zsh; \
+		yay -S --needed --noconfirm zsh; \
 		ZSH_PATH="$$(command -v zsh)"; \
 	fi; \
 	CURRENT_SHELL="$$(getent passwd "$$USER" | cut -d: -f7)"; \
