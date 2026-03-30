@@ -10,7 +10,7 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 MANJARO_MAKEFILE ?= $(CONFIGS_DIR)/manjaro/Makefile
 XPROFILE ?= $(HOME)/.xprofile
 
-KVANTUM_THEME ?= KvArcDarkMaia
+KVANTUM_THEME ?= KvAdaptaMaiaDark
 
 KVANTUM_SOURCE := $(THIS_DIR)/Kvantum/kvantum.kvconfig
 QT5CT_SOURCE := $(THIS_DIR)/qt5ct/qt5ct.conf
