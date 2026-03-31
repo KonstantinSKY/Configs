@@ -1,0 +1,66 @@
+.PHONY: install-yay yay-update install i install-base
+
+install-yay: ## Install yay if needed, using pacman only for bootstrap
+	@if command -v yay >/dev/null 2>&1; then \
+		echo "✅ yay is already installed."; \
+	else \
+		echo "📦 Installing yay from official repository..."; \
+		$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings; \
+		sudo pacman -S --needed --noconfirm yay; \
+	fi
+	@echo "-------------------------------------------------------------------------------"
+
+yay-update: ## Update official and AUR packages via yay
+	@if ! command -v yay >/dev/null 2>&1; then \
+		echo "❌ yay is not installed. Run 'make -f $(THIS_MAKEFILE) setup' first."; \
+		exit 1; \
+	fi
+	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
+	@echo "⬆️  Updating AUR and system packages with yay..."
+	@yay -Syu --noconfirm --answerclean None --answerdiff None
+	@echo "-------------------------------------------------------------------------------"
+
+install i: ## Install one or more packages via yay after updating the system
+	@if [ "$(wordlist 2,999,$(MAKECMDGOALS))" = "" ]; then \
+		echo "❌ No packages specified. Usage: make install [list of packages]"; \
+		exit 1; \
+	fi
+	@$(call ensure_system_updated)
+	@echo "📦 Installing packages:"
+	@echo "-------------------------------------------------------------------------------"
+	@status=0; \
+	for pkg in $(wordlist 2,999,$(MAKECMDGOALS)); do \
+		echo "📦 Processing: $$pkg"; \
+		if yay -Qi "$$pkg" >/dev/null 2>&1; then \
+			current_ver=$$(yay -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \
+			echo "🔁 Already installed: $$pkg @ $$current_ver — skipping"; \
+		else \
+			echo "⬇️  Installing: $$pkg"; \
+			if yay -S --noconfirm --needed "$$pkg"; then \
+				if yay -Qi "$$pkg" >/dev/null 2>&1; then \
+					new_ver=$$(yay -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \
+					echo "✅ Installed: $$pkg @ $$new_ver"; \
+				else \
+					echo "❌ Failed to install or not found: $$pkg"; \
+					status=1; \
+				fi; \
+			else \
+				echo "❌ Failed to install or not found: $$pkg"; \
+				status=1; \
+			fi; \
+		fi; \
+	done; \
+	exit $$status
+	@echo "-------------------------------------------------------------------------------"
+	@echo "✅ Installation process complete."
+
+install-base: ## Install the default base package set via yay
+	@if ! command -v yay >/dev/null 2>&1; then \
+		echo "❌ yay is not installed. Run 'make -f $(THIS_MAKEFILE) setup' first."; \
+		exit 1; \
+	fi
+	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
+	@echo "📦 Installing essential packages via yay..."
+	yay -S --needed --noconfirm $(BASE_PACKAGES)
+	@echo "✅ Base packages installed via yay."
+	@echo "-------------------------------------------------------------------------------"

@@ -11,10 +11,16 @@ NETWORK_NAME="${NETWORK_NAME:-default}"
 OS_VARIANT="${OS_VARIANT:-manjaro}"
 MEMORY_MB="${MEMORY_MB:-8192}"
 VCPUS="${VCPUS:-2}"
+VCPU_SOCKETS="${VCPU_SOCKETS:-1}"
+VCPU_CORES="${VCPU_CORES:-$VCPUS}"
+VCPU_THREADS="${VCPU_THREADS:-1}"
 DISK_GB="${DISK_GB:-30}"
 CPU_MODE="${CPU_MODE:-host-passthrough}"
 GRAPHICS="${GRAPHICS:-spice}"
 VIDEO_MODEL="${VIDEO_MODEL:-virtio}"
+DISK_BUS="${DISK_BUS:-virtio}"
+NETWORK_MODEL="${NETWORK_MODEL:-virtio}"
+BOOT_OPTS="${BOOT_OPTS:-uefi,menu=on}"
 DRY_RUN="${DRY_RUN:-0}"
 SAVE_XML="${SAVE_XML:-1}"
 
@@ -140,23 +146,26 @@ virt_install_cmd=(
     --connect "$LIBVIRT_URI"
     --name "$VM_NAME"
     --memory "$MEMORY_MB"
-    --vcpus "$VCPUS"
+    --vcpus "$VCPUS,sockets=$VCPU_SOCKETS,cores=$VCPU_CORES,threads=$VCPU_THREADS"
     --cpu "$CPU_MODE"
     --machine q35
     --osinfo "$OS_VARIANT"
     --cdrom "$RUNTIME_ISO_PATH"
-    --disk "path=$DISK_PATH,format=qcow2,bus=virtio,discard=unmap"
-    --network "network=$NETWORK_NAME,model=virtio"
+    --disk "path=$DISK_PATH,format=qcow2,bus=$DISK_BUS,discard=unmap"
+    --network "network=$NETWORK_NAME,model=$NETWORK_MODEL"
     --graphics "$GRAPHICS"
     --video "$VIDEO_MODEL"
     --sound none
     --controller "type=usb,model=qemu-xhci"
     --input "tablet,bus=usb"
-    --channel spicevmc
     --rng /dev/urandom
-    --boot "uefi,menu=on"
+    --boot "$BOOT_OPTS"
     --noautoconsole
 )
+
+if [[ "$GRAPHICS" == spice* ]]; then
+    virt_install_cmd+=(--channel spicevmc)
+fi
 
 if [[ "$DRY_RUN" == "1" ]]; then
     virt_install_cmd+=(--dry-run --print-xml)
@@ -168,8 +177,16 @@ printf 'RUNTIME_ISO_PATH=%s\n' "$RUNTIME_ISO_PATH"
 printf 'DISK_PATH=%s\n' "$DISK_PATH"
 printf 'MEMORY_MB=%s\n' "$MEMORY_MB"
 printf 'VCPUS=%s\n' "$VCPUS"
+printf 'VCPU_SOCKETS=%s\n' "$VCPU_SOCKETS"
+printf 'VCPU_CORES=%s\n' "$VCPU_CORES"
+printf 'VCPU_THREADS=%s\n' "$VCPU_THREADS"
 printf 'DISK_GB=%s\n' "$DISK_GB"
+printf 'DISK_BUS=%s\n' "$DISK_BUS"
 printf 'NETWORK_NAME=%s\n' "$NETWORK_NAME"
+printf 'NETWORK_MODEL=%s\n' "$NETWORK_MODEL"
+printf 'GRAPHICS=%s\n' "$GRAPHICS"
+printf 'VIDEO_MODEL=%s\n' "$VIDEO_MODEL"
+printf 'BOOT_OPTS=%s\n' "$BOOT_OPTS"
 printf 'DRY_RUN=%s\n' "$DRY_RUN"
 
 "${virt_install_cmd[@]}"

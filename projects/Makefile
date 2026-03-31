@@ -3,13 +3,17 @@ SHELL := /bin/bash
 .ONESHELL:
 .DEFAULT_GOAL := help
 # --- Paths (use $(HOME), not ~)
-RUST_MAKEFILE := $(HOME)/Configs/rust/Makefile
-JS_MAKEFILE   := $(HOME)/Configs/js/Makefile
-PY_MAKEFILE   := $(HOME)/Configs/python/Makefile
-GIT_MAKEFILE  := $(HOME)/Configs/git/Makefile
+WORK_DIR      ?= $(HOME)/Work
+CONFIGS_DIR   ?= $(WORK_DIR)/Configs
+PROJECTS_DIR  ?= $(WORK_DIR)/Projects
+RUST_MAKEFILE := $(CONFIGS_DIR)/rust/Makefile
+JS_MAKEFILE   := $(CONFIGS_DIR)/js/Makefile
+PY_MAKEFILE   := $(CONFIGS_DIR)/python/Makefile
+GIT_MAKEFILE  := $(CONFIGS_DIR)/git/Makefile
 .PHONY: help setup rust r js j python p repo rp
 setup:
-	ln -s "$(HOME)/Configs/projects/Makefile" "$(HOME)/Projects/Makefile"
+	@mkdir -p "$(PROJECTS_DIR)"
+	ln -sfn "$(CONFIGS_DIR)/projects/Makefile" "$(PROJECTS_DIR)/Makefile"
 rust r:
 	@proj="$(word 2,$(MAKECMDGOALS))"; \
 	if [ -z "$$proj" ]; then read -p "📛 Enter Rust project name: " proj; fi; \

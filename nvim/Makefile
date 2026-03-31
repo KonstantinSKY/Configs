@@ -57,6 +57,14 @@ packages p: ## Install Neovim and tree-sitter CLI from official repositories
 		echo "❌ pacman not found. This target currently supports Arch/Manjaro only."; \
 		exit 1; \
 	fi
+	@echo "📦 Installing core Neovim packages from official repositories..."
+	@sudo pacman -S --needed --noconfirm $(CORE_PACKAGES)
+
+remove-legacy-vim rv: ## Remove legacy Vim packages when you explicitly want Neovim-only
+	@if ! command -v pacman >/dev/null 2>&1; then \
+		echo "❌ pacman not found. This target currently supports Arch/Manjaro only."; \
+		exit 1; \
+	fi
 	@legacy_packages=""; \
 	for pkg in $(LEGACY_VIM_PACKAGES); do \
 		if pacman -Q "$$pkg" >/dev/null 2>&1; then \
@@ -69,8 +77,6 @@ packages p: ## Install Neovim and tree-sitter CLI from official repositories
 	else \
 		echo "✅ No legacy Vim packages installed."; \
 	fi
-	@echo "📦 Installing core Neovim packages from official repositories..."
-	@sudo pacman -S --needed --noconfirm $(CORE_PACKAGES)
 
 link l: ## Link managed Neovim config into ~/.config
 	@mkdir -p "$(HOME)/.config"

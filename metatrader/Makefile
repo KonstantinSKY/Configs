@@ -11,7 +11,9 @@ SHELL := /bin/bash
 %-args-sink:
 # ------------------------------------------------------------
 # Paths
-METATRADERS_DIR      := $(HOME)/Work/MetaTraders
+WORK_DIR            ?= $(HOME)/Work
+CONFIGS_DIR         ?= $(WORK_DIR)/Configs
+METATRADERS_DIR      := $(WORK_DIR)/MetaTraders
 PROJECTS_DIR         := $(METATRADERS_DIR)/Projects
 # MQL4 folders
 MQL4_DIR             := $(METATRADERS_DIR)/MT4/MQL4
@@ -19,10 +21,10 @@ EXPERTS_DIR          := $(MQL4_DIR)/Experts
 INDICATORS_DIR       := $(MQL4_DIR)/Indicators
 SCRIPTS_DIR          := $(MQL4_DIR)/Scripts
 # Other tooling
-GIT_MAKEFILE         := $(HOME)/Configs/git/Makefile
-METATRADER_MAKEFILE  := $(HOME)/Configs/metatrader/Makefile
+GIT_MAKEFILE         := $(CONFIGS_DIR)/git/Makefile
+METATRADER_MAKEFILE  := $(CONFIGS_DIR)/metatrader/Makefile
 # Templates
-MT_CONFIGS_DIR       := $(HOME)/Configs/metatrader
+MT_CONFIGS_DIR       := $(CONFIGS_DIR)/metatrader
 TEMPLATE_DIR         := $(MT_CONFIGS_DIR)/templates
 EXPERT_TEMPLATE      := $(TEMPLATE_DIR)/expert.mq4
 INDICATOR_TEMPLATE   := $(TEMPLATE_DIR)/indicator.mq4
