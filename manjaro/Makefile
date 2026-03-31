@@ -4,7 +4,11 @@
 .PHONY: \
 	help \
 	setup \
+	cleanup \
+	audit \
+	detach-i3-profile \
 	refresh-keyrings \
+	notifications \
 	mirrors \
 	install-yay \
 	enable-aur \
@@ -78,11 +82,42 @@ KEYRING_PACKAGES = \
 	archlinux-keyring \
 	manjaro-keyring
 
+CLEANUP_PACKAGES = \
+	palemoon \
+	palemoon-bin \
+	vim \
+	ex-vi-compat \
+	b43-fwcutter \
+	xorg-twm
+
+I3_PROFILE_KEEP_PACKAGES = \
+	i3-wm \
+	i3status \
+	i3lock \
+	i3-scrot \
+	i3-scripts \
+	i3-help \
+	nitrogen \
+	picom \
+	qt5ct \
+	qt6ct \
+	dmenu-manjaro \
+	conky-i3 \
+	i3-default-artwork \
+	adapta-maia-theme \
+	papirus-maia-icon-theme \
+	breeze-cursors5 \
+	rxvt-unicode \
+	urxvt-perls \
+	xorg-fonts-misc \
+	xorg-mkfontscale \
+	manjaro-base-skel
+
 ## ---------------------------
 ## 🧩 Setup
 ## ---------------------------
 setup: ## Run the full Manjaro bootstrap flow via yay
-	@$(MAKE) -s -f $(BROWSERS_MAKEFILE) remove-palemoon
+	@$(MAKE) -s -f $(THIS_MAKEFILE) cleanup
 	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
 	@echo "⬆️  Updating all system packages via pacman before yay bootstrap..."
 	@sudo pacman -Syu --noconfirm
@@ -92,6 +127,7 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) xprofile
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
+	@$(MAKE) -s -f $(THIS_MAKEFILE) notifications
 	@$(MAKE) -s -f $(THIS_MAKEFILE) update
 	@$(MAKE) -s -f $(GTK_MAKEFILE) link
 	@$(MAKE) -s -f $(GTK_MAKEFILE) verify
@@ -99,12 +135,150 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(QT_MAKEFILE) verify
 	@echo "✅ Manjaro i3 setup complete!"
 
+cleanup: ## Remove legacy preinstalled packages and prune orphaned dependencies
+	@echo "🧹 Removing legacy preinstalled packages..."
+	@for pkg in $(CLEANUP_PACKAGES); do \
+		if pacman -Q "$$pkg" >/dev/null 2>&1; then \
+			echo "🗑️  Removing $$pkg..."; \
+			sudo pacman -Rns --noconfirm "$$pkg"; \
+		else \
+			echo "ℹ️  $$pkg is not installed"; \
+		fi; \
+	done
+	@echo "🧹 Removing orphaned dependencies..."
+	@ORPHANS="$$(pacman -Qqdt 2>/dev/null || true)"; \
+	if [ -n "$$ORPHANS" ]; then \
+		sudo pacman -Rns --noconfirm $$ORPHANS; \
+	else \
+		echo "✅ No orphaned dependencies found"; \
+	fi
+	@echo "-------------------------------------------------------------------------------"
+
+detach-i3-profile: ## Keep the current i3 stack, then remove manjaro-i3-settings and dunst
+	@echo "🧩 Detaching from manjaro-i3-settings while preserving the current i3 stack..."
+	@echo "📌 Marking retained i3 packages as explicitly installed..."
+	@sudo pacman -D --asexplicit $(I3_PROFILE_KEEP_PACKAGES)
+	@if pacman -Q manjaro-i3-settings >/dev/null 2>&1; then \
+		echo "🗑️  Removing manjaro-i3-settings..."; \
+		sudo pacman -R --noconfirm manjaro-i3-settings; \
+	else \
+		echo "ℹ️  manjaro-i3-settings is not installed"; \
+	fi
+	@if pacman -Q dunst >/dev/null 2>&1; then \
+		echo "🗑️  Removing dunst..."; \
+		sudo pacman -R --noconfirm dunst; \
+	else \
+		echo "ℹ️  dunst is not installed"; \
+	fi
+	@echo "✅ manjaro-i3-settings and dunst have been detached from this system."
+	@echo "-------------------------------------------------------------------------------"
+
+audit: ## Print a package audit focused on duplicate tools, Manjaro presets, and cleanup candidates
+	@echo "🧾 Package Audit"
+	@echo "-------------------------------------------------------------------------------"
+	@printf "Installed packages: "; pacman -Qq | wc -l
+	@printf "Explicit packages : "; pacman -Qqe | wc -l
+	@printf "Dependency pkgs   : "; pacman -Qqd | wc -l
+	@echo ""
+	@echo "🖥️  Terminals:"
+	@TERMINALS="$$(pacman -Qq | rg '^(alacritty|rxvt-unicode|xterm|kitty|wezterm|gnome-terminal|konsole|tilix|xfce4-terminal|foot|terminator)$$' || true)"; \
+	if [ -n "$$TERMINALS" ]; then \
+		printf '%s\n' "$$TERMINALS"; \
+	else \
+		echo "ℹ️  No known terminal packages matched"; \
+	fi
+	@echo ""
+	@echo "📝 Editors:"
+	@EDITORS="$$(pacman -Qq | rg '^(neovim|vim|nano|micro|zed|code)$$' || true)"; \
+	if [ -n "$$EDITORS" ]; then \
+		printf '%s\n' "$$EDITORS"; \
+	else \
+		echo "ℹ️  No known editor packages matched"; \
+	fi
+	@echo ""
+	@echo "🎨 Themes and Appearance:"
+	@THEMES="$$(pacman -Qq | rg '^(matcha-gtk-theme|materia-gtk-theme|adapta-maia-theme|papirus-icon-theme|papirus-maia-icon-theme|breeze-cursors5|kvantum-manjaro|qt5ct|qt6ct|nitrogen|picom|conky|conky-i3)$$' || true)"; \
+	if [ -n "$$THEMES" ]; then \
+		printf '%s\n' "$$THEMES"; \
+	else \
+		echo "ℹ️  No known theme/appearance packages matched"; \
+	fi
+	@echo ""
+	@echo "📦 Manjaro Presets and Meta Packages:"
+	@MANJARO_PKGS="$$(pacman -Qq | rg '^(manjaro-.*|dmenu-manjaro|i3-default-artwork|i3-help|i3-scripts|i3-scrot|dunst)$$' || true)"; \
+	if [ -n "$$MANJARO_PKGS" ]; then \
+		printf '%s\n' "$$MANJARO_PKGS"; \
+	else \
+		echo "ℹ️  No matching Manjaro preset packages found"; \
+	fi
+	@echo ""
+	@echo "🌐 Network and Remote Access Extras:"
+	@NET_PKGS="$$(pacman -Qq | rg '^(networkmanager-openconnect|networkmanager-openvpn|networkmanager-vpnc|modemmanager|nfs-utils|avahi|nss-mdns|blueman|bluez|bluez-utils|network-manager-applet|wpa_supplicant|netctl)$$' || true)"; \
+	if [ -n "$$NET_PKGS" ]; then \
+		printf '%s\n' "$$NET_PKGS"; \
+	else \
+		echo "ℹ️  No matching network extras found"; \
+	fi
+	@echo ""
+	@echo "🧰 Developer Tooling:"
+	@DEV_PKGS="$$(pacman -Qq | rg '^(autoconf|automake|bison|flex|fakeroot|pkgconf|make|patch|patchutils|cmake|rustup|zig|tree-sitter-cli|github-cli|claude-code|gemini-cli|openai-codex-bin)$$' || true)"; \
+	if [ -n "$$DEV_PKGS" ]; then \
+		printf '%s\n' "$$DEV_PKGS"; \
+	else \
+		echo "ℹ️  No matching development tools found"; \
+	fi
+	@echo ""
+	@echo "🖼️  Desktop Utilities:"
+	@UTIL_PKGS="$$(pacman -Qq | rg '^(clipit|font-manager|galculator|gcolor3|mousepad|viewnior|pavucontrol|pcmanfm|lxappearance|lxinput|screenfetch|btop|htop|powertop|dfc|duf|eza|ncdu|telegram-desktop|zoom|megacmd|mupdf|pass|sbxkb)$$' || true)"; \
+	if [ -n "$$UTIL_PKGS" ]; then \
+		printf '%s\n' "$$UTIL_PKGS"; \
+	else \
+		echo "ℹ️  No matching desktop utilities found"; \
+	fi
+	@echo ""
+	@echo "🧪 Virtualization Stack:"
+	@VIRT_PKGS="$$(pacman -Qq | rg '^(libvirt|virt-manager|qemu-full|edk2-ovmf|swtpm|dnsmasq)$$' || true)"; \
+	if [ -n "$$VIRT_PKGS" ]; then \
+		printf '%s\n' "$$VIRT_PKGS"; \
+	else \
+		echo "ℹ️  No matching virtualization packages found"; \
+	fi
+	@echo ""
+	@echo "🗑️  Cleanup Target Package Set:"
+	@printf '%s\n' $(CLEANUP_PACKAGES)
+	@echo ""
+	@echo "🧹 Orphaned Dependencies:"
+	@ORPHANS="$$(pacman -Qqdt 2>/dev/null || true)"; \
+	if [ -n "$$ORPHANS" ]; then \
+		printf '%s\n' "$$ORPHANS"; \
+	else \
+		echo "✅ No orphaned dependencies found"; \
+	fi
+	@echo "-------------------------------------------------------------------------------"
+
 ## ---------------------------
 ## 📦 Updates
 ## ---------------------------
 refresh-keyrings: ## Refresh Arch and Manjaro keyrings before system upgrades
 	@echo "🔑 Refreshing pacman keyrings..."
 	@sudo pacman -Sy --needed --noconfirm $(KEYRING_PACKAGES)
+	@echo "-------------------------------------------------------------------------------"
+
+notifications: ## Ensure xfce4-notifyd is the active desktop notification daemon
+	@echo "🔔 Configuring notification stack for i3..."
+	@sudo pacman -S --needed --noconfirm xfce4-notifyd
+	@if pacman -Q dunst >/dev/null 2>&1; then \
+		echo "🧹 Removing dunst to avoid D-Bus notification provider conflicts..."; \
+		sudo pacman -Rns --noconfirm dunst; \
+	else \
+		echo "✅ dunst is not installed"; \
+	fi
+	@rm -f "$(HOME)/.config/autostart/xfce4-notifyd.desktop"
+	@systemctl --user stop dunst.service >/dev/null 2>&1 || true
+	@pkill -x dunst >/dev/null 2>&1 || true
+	@systemctl --user reset-failed xfce4-notifyd.service >/dev/null 2>&1 || true
+	@systemctl --user start xfce4-notifyd.service >/dev/null 2>&1 || true
+	@echo "✅ xfce4-notifyd is now the only managed notification daemon for this user."
 	@echo "-------------------------------------------------------------------------------"
 
 mirrors: ## Refresh Manjaro mirrors and package databases
@@ -378,6 +552,31 @@ check: ## Run a full local system diagnostic report
 	@echo "🔥 Temperature Sensors (if available):"
 	@command -v sensors >/dev/null && sensors || echo "ℹ️  'sensors' command not available"
 	@echo ""
+	@echo "🔔 Notification Providers:"
+	@INSTALLED=""; \
+	for pkg in xfce4-notifyd dunst; do \
+		if pacman -Q "$$pkg" >/dev/null 2>&1; then \
+			echo "✔️  $$pkg installed"; \
+			INSTALLED="$$INSTALLED $$pkg"; \
+		else \
+			echo "ℹ️  $$pkg not installed"; \
+		fi; \
+	done; \
+	set -- $$INSTALLED; \
+	if pacman -Q xfce4-notifyd >/dev/null 2>&1 && ! pacman -Q dunst >/dev/null 2>&1; then \
+		echo "✅ Notification provider selection is clean"; \
+	elif [ "$$#" -gt 1 ]; then \
+		echo "❌ Multiple notification providers installed:$$INSTALLED"; \
+	else \
+		echo "⚠️  Expected xfce4-notifyd only, found:$$INSTALLED"; \
+	fi
+	@OVERRIDE="$(HOME)/.config/autostart/xfce4-notifyd.desktop"; \
+	if [ -f "$$OVERRIDE" ]; then \
+		echo "⚠️  xfce4-notifyd autostart override is still present"; \
+	else \
+		echo "✅ xfce4-notifyd autostart override is not blocking startup"; \
+	fi
+	@echo ""
 	@echo "🐳 Docker Status:"
 	@if command -v docker >/dev/null; then \
 		echo "Docker is installed."; \
@@ -389,9 +588,9 @@ check: ## Run a full local system diagnostic report
 		echo "ℹ️  Docker is not installed."; \
 	fi
 	@echo ""
-	@echo "\n🧪 Testing Dunst Notification (without emoji):"
+	@echo "\n🧪 Testing Desktop Notification:"
 	@if command -v notify-send >/dev/null 2>&1; then \
-		notify-send "Notification test" "Dunst is working!" || echo "⚠️  Notification could not be delivered"; \
+		notify-send "Notification test" "Desktop notifications are working!" || echo "⚠️  Notification could not be delivered"; \
 	else \
 		echo "ℹ️  notify-send is not installed"; \
 	fi
