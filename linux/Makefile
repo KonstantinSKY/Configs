@@ -16,7 +16,7 @@ WORK_DIR = $(HOME)/$(DIR)
 LABEL = Work
 DIR = Work
 FS_TYPE = btrfs
-OPTIONS = compress=zstd,noatime
+OPTIONS = compress=zstd:3,noatime
 DUMP = 0
 PASS = 2
 FSTAB = /etc/fstab
