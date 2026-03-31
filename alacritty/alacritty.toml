@@ -1,4 +1,3 @@
-
 [env]
 TERM = "xterm-256color"
 
@@ -7,10 +6,7 @@ program = "/bin/zsh"
 args = ["-l"]
 
 [general]
-
-
 live_config_reload = true
-
 
 [font]
 size = 10.0
@@ -30,8 +26,6 @@ style = "Heavy Italic"
 [font.italic]
 family = "JetBrainsMono"
 style = "Medium Italic"
-
-
 
 # Default colors
 [colors.primary]
@@ -70,13 +64,11 @@ yellow = '#fac761'
 background = '#4e5a65'
 text = '#d8dee9'
 
-
 [window]
 padding = { x = 5, y = 5 }
 dynamic_padding = true
 opacity = 0.8
 dynamic_title = true
-
 
 [scrolling]
 history = 50000
@@ -88,11 +80,11 @@ vi_mode_style = { shape = "Beam", blinking = "On"}
 blink_interval = 750
 
 [keyboard]
-#Toggle vi mode   -
+# Toggle vi mode
 bindings = [
 	{ key = "Space", mods = "Control", mode = "~Vi", action = "ToggleViMode" },
 	{ key = "Escape", mode = "Vi", action = "ToggleViMode" },
-	 # Key bindings for copy and paste   -
+	# Copy and paste
 	{ key = "V", mods = "Control|Shift", action = "Paste" },
 	{ key = "C", mods = "Control|Shift", action = "Copy" },
 	{ key = "Return", mods = "Shift", chars = "\u001B\r" }
