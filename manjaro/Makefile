@@ -4,6 +4,7 @@
 .PHONY: \
 	help \
 	setup \
+	refresh-keyrings \
 	mirrors \
 	install-yay \
 	enable-aur \
@@ -73,11 +74,16 @@ BASE_PACKAGES = \
 	alsa-utils \
 	pulseaudio
 
+KEYRING_PACKAGES = \
+	archlinux-keyring \
+	manjaro-keyring
+
 ## ---------------------------
 ## 🧩 Setup
 ## ---------------------------
 setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(BROWSERS_MAKEFILE) remove-palemoon
+	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
 	@echo "⬆️  Updating all system packages via pacman before yay bootstrap..."
 	@sudo pacman -Syu --noconfirm
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-yay
@@ -96,6 +102,11 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 ## ---------------------------
 ## 📦 Updates
 ## ---------------------------
+refresh-keyrings: ## Refresh Arch and Manjaro keyrings before system upgrades
+	@echo "🔑 Refreshing pacman keyrings..."
+	@sudo pacman -Sy --needed --noconfirm $(KEYRING_PACKAGES)
+	@echo "-------------------------------------------------------------------------------"
+
 mirrors: ## Refresh Manjaro mirrors and package databases
 	@echo "🔄 Updating mirrors..."
 	@sudo pacman-mirrors --fasttrack
@@ -111,6 +122,7 @@ install-yay: ## Install yay if needed, using pacman only for bootstrap
 		echo "✅ yay is already installed."; \
 	else \
 		echo "📦 Installing yay from official repository..."; \
+		sudo pacman -Sy --needed --noconfirm $(KEYRING_PACKAGES); \
 		sudo pacman -S --needed --noconfirm yay; \
 	fi
 	@echo "-------------------------------------------------------------------------------"
