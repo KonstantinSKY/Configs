@@ -3,10 +3,12 @@ SHELL := /bin/bash
 .ONESHELL:
 .DEFAULT_GOAL := help
 .PHONY: help install i create c repo rp delete_repo dr copy_gitignore gi read rd
-RUST_MAKEFILE := $(HOME)/Configs/rust/Makefile
-GIT_MAKEFILE := $(HOME)/Configs/git/Makefile
-GITIGNORE_TEMPLATE := $(HOME)/Configs/rust/gitignore
-MANJARO_MAKEFILE := $(HOME)/Configs/manjaro/Makefile
+WORK_DIR ?= $(HOME)/Work
+CONFIGS_DIR ?= $(WORK_DIR)/Configs
+RUST_MAKEFILE := $(CONFIGS_DIR)/rust/Makefile
+GIT_MAKEFILE := $(CONFIGS_DIR)/git/Makefile
+GITIGNORE_TEMPLATE := $(CONFIGS_DIR)/rust/gitignore
+MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
 # ────────────────────────────────────────────────────────────────────────────────
 # Helpers
 # PROJECT аргумент: второе слово после цели, иначе текущая папка
@@ -36,7 +38,7 @@ create c:
 	echo "📦 Creating Rust project: $$project"; \
 	cargo new "$$project" --vcs none; \
 	echo "🔗 Linking shared Makefile into project"; \
-	ln -sfn "$(HOME)/Configs/rust/Makefile" "$$project/Makefile"; \
+	ln -sfn "$(CONFIGS_DIR)/rust/Makefile" "$$project/Makefile"; \
 	echo "✅ Done → $$project"
 # Initialize Git and create remote repo, then force SSH & copy .gitignore
 repo rp:

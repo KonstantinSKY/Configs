@@ -8,8 +8,10 @@
 SCRIPT_NAME="create_rust_project.sh"
 
 # --- Constants ---
-PROJECTS_DIR="$HOME/Projects"
-GITIGNORE_SOURCE="$HOME/Configs/rust/gitignore"
+WORK_DIR="${WORK_DIR:-$HOME/Work}"
+CONFIGS_DIR="${CONFIGS_DIR:-$WORK_DIR/Configs}"
+PROJECTS_DIR="${PROJECTS_DIR:-$WORK_DIR/Projects}"
+GITIGNORE_SOURCE="${GITIGNORE_SOURCE:-$CONFIGS_DIR/rust/gitignore}"
 DEFAULT_PROJECT_NAME="rust-new-project"
 
 # --- Colors and Logging ---
