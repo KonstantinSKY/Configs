@@ -6,14 +6,7 @@
 	setup \
 	mirrors \
 	enable-aur \
-	update u \
-	no_beep \
-	power_button \
-	laptop \
-	xprofile xp \
-	mimeapps ma \
-	zsh \
-	check
+	update u
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -28,52 +21,16 @@ include $(CONFIGS_DIR)/make/help.mk
 endif
 include $(CONFIGS_DIR)/make/update.mk
 include $(THIS_DIR)/packages/keyrings.mk
+include $(THIS_DIR)/packages/base-packages.mk
 include $(THIS_DIR)/packages/install.mk
 include $(THIS_DIR)/packages/clean.mk
 include $(THIS_DIR)/packages/ssh.mk
 include $(THIS_DIR)/packages/audio.mk
 include $(THIS_DIR)/packages/notifications.mk
 include $(THIS_DIR)/packages/audit.mk
-
-TARGET_XPROFILE_FILE = $(HOME)/.xprofile
-XPROFILE_SOURCE_FILE = $(CONFIGS_DIR)/xprofile/.xprofile
-TARGET_MIMEAPPS_FILE = $(HOME)/.config/mimeapps.list
-MIMEAPPS_SOURCE_FILE = $(THIS_DIR)/mimeapps.list
-ZSH_TARGET_RC = $(HOME)/.zshrc
-ZSH_CUSTOM_RC = $(CONFIGS_DIR)/zsh/rc
-ZSH_INCLUDE_START = \# >>> custom shell config >>>
-ZSH_INCLUDE_END = \# <<< custom shell config <<<
-ZSH_INCLUDE_LINE = [ -r "$(ZSH_CUSTOM_RC)" ] && source "$(ZSH_CUSTOM_RC)"
-
-BASE_PACKAGES = \
-	base-devel \
-	manjaro-settings-manager \
-	fzf \
-	git \
-	github-cli \
-	curl \
-	wget \
-	jq \
-	rsync \
-	zip \
-	unzip \
-	man-db \
-	man-pages \
-	file \
-	which \
-	lsof \
-	nmap \
-	ripgrep \
-	bat \
-	tmux \
-	tree \
-	matcha-gtk-theme \
-	papirus-icon-theme \
-	qt5ct \
-	qt6ct \
-	kvantum \
-	kvantum-qt5 \
-	alsa-utils
+include $(THIS_DIR)/laptop.mk
+include $(THIS_DIR)/session.mk
+include $(THIS_DIR)/check.mk
 
 	## ---------------------------
 	## 🧩 Setup
@@ -100,6 +57,7 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(QT_MAKEFILE) verify
 	@$(MAKE) -s -f $(THIS_MAKEFILE) configure-notifications
 	@echo "✅ Manjaro i3 setup complete!"
+
 mirrors: ## Refresh Manjaro mirrors and package databases
 	@echo "🔄 Updating mirrors..."
 	@sudo pacman-mirrors --fasttrack
@@ -145,209 +103,6 @@ update u: ## Run full maintenance: yay update, orphan cleanup, cache cleanup, fl
 	@echo "-------------------------------------------------------------------------------"
 	@echo "✅ Update completed successfully!"
 	@echo "-------------------------------------------------------------------------------"
-
-## ---------------------------
-## 💻 Laptop
-## ---------------------------
-no_beep: ## Disables the PC speaker beep.
-	@echo "🔇 Disabling PC speaker (pcspkr)..."
-	@if [ ! -f /etc/modprobe.d/nobeep.conf ]; then \
-		echo "blacklist pcspkr" | sudo tee /etc/modprobe.d/nobeep.conf >/dev/null; \
-	else \
-		echo "⚠️  Configuration already exists."; \
-	fi
-	@if lsmod | grep -q pcspkr; then \
-		sudo rmmod pcspkr && echo "✅ pcspkr unloaded."; \
-	else \
-		echo "✅ pcspkr not loaded."; \
-	fi
-
-power_button: ## Configures power button: ignore short press, shutdown on long press.
-	@echo "🔌 Configuring power button..."
-	@if command -v xfconf-query >/dev/null; then \
-		xfconf-query -c xfce4-power-manager -p /xfce4-power-manager/power-button-action -n -t int -s 0 && echo "✅ XFCE Power Manager configured."; \
-	fi
-	@sudo sed -i 's/^#\?HandlePowerKey=.*/HandlePowerKey=ignore/' /etc/systemd/logind.conf
-	@sudo sed -i 's/^#\?HandlePowerKeyLongPress=.*/HandlePowerKeyLongPress=poweroff/' /etc/systemd/logind.conf
-	@sudo systemctl restart systemd-logind && echo "✅ systemd-logind configured and restarted."
-
-laptop: ## Applies laptop-specific Manjaro settings.
-	@$(MAKE) -s -f $(THIS_MAKEFILE) no_beep
-	@$(MAKE) -s -f $(THIS_MAKEFILE) power_button
-
-## ---------------------------
-## 👤 User Session
-## ---------------------------
-xprofile xp: ## Link .xprofile via a direct symlink
-	@$(call require_exists,$(XPROFILE_SOURCE_FILE),Source xprofile not found)
-	@echo "📦 Preparing existing $(TARGET_XPROFILE_FILE)..."
-	@if [ -L "$(TARGET_XPROFILE_FILE)" ]; then \
-		CURRENT_LINK="$$(readlink -f "$(TARGET_XPROFILE_FILE)" 2>/dev/null || true)"; \
-		DESIRED_LINK="$$(readlink -f "$(XPROFILE_SOURCE_FILE)" 2>/dev/null || true)"; \
-		if [ "$$CURRENT_LINK" != "$$DESIRED_LINK" ]; then \
-			BACKUP_PATH="$(TARGET_XPROFILE_FILE).bak.$$(date +%Y%m%d_%H%M%S)"; \
-			echo "📦 Backing up existing .xprofile symlink to $$BACKUP_PATH"; \
-			mv "$(TARGET_XPROFILE_FILE)" "$$BACKUP_PATH"; \
-		fi; \
-	fi
-	@$(call backup_if_needed,$(TARGET_XPROFILE_FILE))
-	@echo "🔗 Linking $(TARGET_XPROFILE_FILE) → $(XPROFILE_SOURCE_FILE)..."
-	@ln -sfn "$(XPROFILE_SOURCE_FILE)" "$(TARGET_XPROFILE_FILE)"
-	@echo "✅ xprofile linked to $(TARGET_XPROFILE_FILE)"
-
-mimeapps ma: ## Link managed XDG default applications file
-	@$(call require_exists,$(MIMEAPPS_SOURCE_FILE),Source mimeapps file not found)
-	@mkdir -p "$(dir $(TARGET_MIMEAPPS_FILE))"
-	@echo "📦 Preparing existing $(TARGET_MIMEAPPS_FILE)..."
-	@if [ -L "$(TARGET_MIMEAPPS_FILE)" ]; then \
-		CURRENT_LINK="$$(readlink -f "$(TARGET_MIMEAPPS_FILE)" 2>/dev/null || true)"; \
-		DESIRED_LINK="$$(readlink -f "$(MIMEAPPS_SOURCE_FILE)" 2>/dev/null || true)"; \
-		if [ "$$CURRENT_LINK" != "$$DESIRED_LINK" ]; then \
-			BACKUP_PATH="$(TARGET_MIMEAPPS_FILE).bak.$$(date +%Y%m%d_%H%M%S)"; \
-			echo "📦 Backing up existing mimeapps symlink to $$BACKUP_PATH"; \
-			mv "$(TARGET_MIMEAPPS_FILE)" "$$BACKUP_PATH"; \
-		fi; \
-	fi
-	@$(call backup_if_needed,$(TARGET_MIMEAPPS_FILE))
-	@echo "🔗 Linking $(TARGET_MIMEAPPS_FILE) → $(MIMEAPPS_SOURCE_FILE)..."
-	@ln -sfn "$(MIMEAPPS_SOURCE_FILE)" "$(TARGET_MIMEAPPS_FILE)"
-	@echo "✅ mimeapps linked to $(TARGET_MIMEAPPS_FILE)"
-
-zsh: ## Install zsh if needed and switch current user to it
-	@if ! command -v yay >/dev/null 2>&1; then \
-		echo "❌ yay is not installed. Run 'make -f $(THIS_MAKEFILE) setup' first."; \
-		exit 1; \
-	fi
-	@echo "🔍 Checking zsh installation..."
-	@if command -v zsh >/dev/null 2>&1; then \
-		ZSH_PATH="$$(command -v zsh)"; \
-		echo "✅ zsh is installed: $$ZSH_PATH"; \
-	else \
-		echo "📦 Installing zsh..."; \
-		yay -S --needed --noconfirm zsh; \
-		ZSH_PATH="$$(command -v zsh)"; \
-	fi; \
-	CURRENT_SHELL="$$(getent passwd "$$USER" | cut -d: -f7)"; \
-	echo "👤 Current login shell: $$CURRENT_SHELL"; \
-	if [ "$$CURRENT_SHELL" = "$$ZSH_PATH" ]; then \
-		echo "✅ Login shell is already set to $$ZSH_PATH"; \
-	else \
-		echo "🔄 Switching login shell to $$ZSH_PATH"; \
-		chsh -s "$$ZSH_PATH"; \
-		echo "✅ Login shell updated. Open a new session to use zsh by default."; \
-	fi
-	@$(call require_exists,$(ZSH_CUSTOM_RC),Custom zsh rc not found)
-	@echo "🧩 Ensuring $(ZSH_TARGET_RC) loads $(ZSH_CUSTOM_RC)..."
-	@if [ ! -e "$(ZSH_TARGET_RC)" ]; then \
-		echo "📄 Creating new $(ZSH_TARGET_RC)"; \
-		{ \
-			printf '%s\n' '$(ZSH_INCLUDE_START)'; \
-			printf '%s\n' '$(ZSH_INCLUDE_LINE)'; \
-			printf '%s\n' '$(ZSH_INCLUDE_END)'; \
-		} > "$(ZSH_TARGET_RC)"; \
-	elif grep -Fqx '$(ZSH_INCLUDE_LINE)' "$(ZSH_TARGET_RC)"; then \
-		echo "✅ Custom zsh include already present in $(ZSH_TARGET_RC)"; \
-	else \
-		printf '\n%s\n%s\n%s\n' '$(ZSH_INCLUDE_START)' '$(ZSH_INCLUDE_LINE)' '$(ZSH_INCLUDE_END)' >> "$(ZSH_TARGET_RC)"; \
-		echo "✅ Added custom zsh include to $(ZSH_TARGET_RC)"; \
-	fi
-
-## ---------------------------
-## 🔎 Diagnostics
-## ---------------------------
-check: ## Run a full local system diagnostic report
-	@echo "🔍 Starting full system diagnostic..."
-	@echo ""
-	@echo "👤 User and Host Info:"
-	@echo "User: $$(whoami)"
-	@echo "Host: $$(hostname)"
-	@echo "Home Dir: $$HOME"
-	@echo ""
-	@echo "🕒 Uptime and Load:"
-	@uptime
-	@echo ""
-	@echo "🧠 Memory and Swap Usage:"
-	@free -h
-	@echo ""
-	@echo "💾 Disk Usage for / and /var:"
-	@df -hT -x squashfs -x tmpfs -x devtmpfs
-	@echo ""
-	@echo "🔌 Network Interfaces:"
-	@ip -brief address
-	@echo ""
-	@echo "🌐 Open Network Ports:"
-	@ss -tuln
-	@echo ""
-	@echo "📊 Top Processes Snapshot:"
-	@top -bn1 | head -15
-	@echo ""
-	@echo "⚙️  Systemd Services with Errors:"
-	@systemctl --failed --no-pager
-	@echo ""
-	@echo "👻 Zombie or Suspicious Processes:"
-	@ps -eo pid,ppid,stat,cmd | awk '$$3 ~ /^Z/ { found=1; print } END { exit(found ? 0 : 1) }' || echo "✔️  No zombie processes found"
-	@echo ""
-	@echo "🔐 Running Processes as root:"
-	@ps -U root -u root u
-	@echo ""
-	@echo "📄 Recent System Errors (priority 3, current boot):"
-	@journalctl -p 3 -xb -n 20 || echo "✔️  No recent critical errors"
-	@echo ""
-	@echo "🚨 Kernel Critical Logs (OOM, segfaults, panics):"
-	@journalctl -k -p 0..3 | grep -Ei 'Out of memory|Kernel panic|segfault' || echo "✔️  No kernel-level issues detected"
-	@echo ""
-	@echo "⏱️  Active Timers (Cron/Systemd):"
-	@systemctl list-timers --all --no-pager | head -15
-	@echo ""
-	@echo "🔑 Wheel (Admin) Group Members:"
-	@grep '^wheel:' /etc/group || echo "ℹ️  No 'wheel' group found"
-	@echo ""
-	@echo "🔥 Temperature Sensors (if available):"
-	@command -v sensors >/dev/null && sensors || echo "ℹ️  'sensors' command not available"
-	@echo ""
-	@echo "🔔 Notification Providers:"
-	@INSTALLED=""; \
-	for pkg in xfce4-notifyd dunst; do \
-		if pacman -Q "$$pkg" >/dev/null 2>&1; then \
-			echo "✔️  $$pkg installed"; \
-			INSTALLED="$$INSTALLED $$pkg"; \
-		else \
-			echo "ℹ️  $$pkg not installed"; \
-		fi; \
-	done; \
-	set -- $$INSTALLED; \
-	if pacman -Q xfce4-notifyd >/dev/null 2>&1 && ! pacman -Q dunst >/dev/null 2>&1; then \
-		echo "✅ Notification provider selection is clean"; \
-	elif [ "$$#" -gt 1 ]; then \
-		echo "❌ Multiple notification providers installed:$$INSTALLED"; \
-	else \
-		echo "⚠️  Expected xfce4-notifyd only, found:$$INSTALLED"; \
-	fi
-	@OVERRIDE="$(HOME)/.config/autostart/xfce4-notifyd.desktop"; \
-	if [ -f "$$OVERRIDE" ]; then \
-		echo "⚠️  xfce4-notifyd autostart override is still present"; \
-	else \
-		echo "✅ xfce4-notifyd autostart override is not blocking startup"; \
-	fi
-	@echo ""
-	@echo "🐳 Docker Status:"
-	@if command -v docker >/dev/null; then \
-		echo "Docker is installed."; \
-		docker info --format='Version: {{.ServerVersion}}, OS: {{.OperatingSystem}}'; \
-		systemctl is-active docker && echo "✔️  Docker is running" || echo "❌ Docker is not running"; \
-		echo "Running containers:"; \
-		docker ps --format='  - {{.Names}} ({{.Image}})' || echo "❌ Failed to list containers"; \
-	else \
-		echo "ℹ️  Docker is not installed."; \
-	fi
-	@echo ""
-	@echo "\n🧪 Testing Desktop Notification:"
-	@if command -v notify-send >/dev/null 2>&1; then \
-		notify-send "Notification test" "Desktop notifications are working!" || echo "⚠️  Notification could not be delivered"; \
-	else \
-		echo "ℹ️  notify-send is not installed"; \
-	fi
-	@echo "✅ System check completed."
 
 # Prevent make from treating package names as targets
 %:
