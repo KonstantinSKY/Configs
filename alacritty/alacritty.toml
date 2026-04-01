@@ -12,19 +12,19 @@ live_config_reload = true
 size = 10.0
 
 [font.normal]
-family = "JetBrainsMono"
+family = "JetBrainsMono Nerd Font"
 style = "Medium"
 
 [font.bold]
-family = "JetBrainsMono"
-style = "Heavy"
+family = "JetBrainsMono Nerd Font"
+style = "ExtraBold"
 
 [font.bold_italic]
-family = "JetBrainsMono"
-style = "Heavy Italic"
+family = "JetBrainsMono Nerd Font"
+style = "ExtraBold Italic"
 
 [font.italic]
-family = "JetBrainsMono"
+family = "JetBrainsMono Nerd Font"
 style = "Medium Italic"
 
 # Default colors
