@@ -5,6 +5,7 @@ MAKEFLAGS += --no-print-directory
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 
 I3_PROFILE ?= auto
 
@@ -92,7 +93,7 @@ define resolve_i3_profile
 	esac
 endef
 
-check:
+check: ## Validate i3 config and detect host profile (vm/laptop/desktop)
 	@set -euo pipefail; \
 	echo "🔍 Detecting i3 version..."; \
 	if command -v i3 >/dev/null 2>&1; then \
@@ -125,7 +126,7 @@ check:
 	fi; \
 	echo "✅ i3 config is valid for $$profile profile."
 
-setup:
+setup: ## Link i3 config and host profile (auto-detects vm/laptop/desktop)
 	@$(MAKE) -f "$(THIS_MAKEFILE)" check I3_PROFILE="$(I3_PROFILE)"
 	@set -euo pipefail; \
 	$(resolve_i3_profile); \
