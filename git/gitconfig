@@ -1,0 +1,19 @@
+[user]
+    name = sky
+    email = KonstantinSKY@users.noreply.github.com
+
+[init]
+    defaultBranch = main
+
+[pull]
+    rebase = true
+
+[rebase]
+    autostash = true
+
+[fetch]
+    prune = true
+
+[push]
+    default = simple
+    autoSetupRemote = true
