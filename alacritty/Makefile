@@ -5,6 +5,9 @@ THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 
+ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/help.mk
+endif
 include $(CONFIGS_DIR)/make/update.mk
 
 CONFIG_DIR := $(HOME)/.config/alacritty
@@ -40,7 +43,7 @@ endef
 
 all: install
 
-install i:
+install i: ## Install Alacritty via yay and link config
 	@echo "📥 Installing Alacritty via yay..."
 	@$(call ensure_system_updated)
 	@yay -S --needed --noconfirm alacritty
@@ -48,12 +51,12 @@ install i:
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
 	@echo "✅ Alacritty installed and configured."
 
-link l:
+link l: ## Link alacritty.toml config to ~/.config/alacritty/
 	@echo "📁 Ensuring config directory exists at $(CONFIG_DIR)..."
 	@mkdir -p "$(CONFIG_DIR)"
 	@$(call replace_with_symlink,$(TARGET_CONFIG),$(SOURCE_CONFIG))
 
-verify v:
+verify v: ## Verify alacritty config symlink is correct
 	@echo "🔎 Verifying Alacritty config..."
 	@if [ ! -r "$(SOURCE_CONFIG)" ]; then \
 		echo "❌ Source config not found: $(SOURCE_CONFIG)"; \
