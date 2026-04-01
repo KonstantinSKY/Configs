@@ -7,6 +7,10 @@ THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 
+ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/help.mk
+endif
+
 I3_PROFILE ?= auto
 
 I3_CONF_DIR := $(HOME)/.i3
