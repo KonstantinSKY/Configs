@@ -1,11 +1,14 @@
+.PHONY: help all install update refresh check list
+.DEFAULT_GOAL := help
+
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 
+ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/help.mk
+endif
 include $(CONFIGS_DIR)/make/update.mk
-
-.PHONY: help all install update refresh check list
-.DEFAULT_GOAL := help
 
 FONTS = \
 	noto-fonts \
@@ -19,11 +22,12 @@ FONTS = \
 	ttf-ubuntu-nerd \
 	ttf-fira-code \
 	ttf-firacode-nerd \
-	ttf-sourcecodepro-nerd
+	ttf-sourcecodepro-nerd \
+	ttf-nerd-fonts-symbols-mono
 
 all: install refresh check
 
-install:
+install: ## Install all fonts via yay
 	@echo "🔤 Installing fonts with yay..."
 	@$(call ensure_system_updated)
 	@for font in $(FONTS); do \
@@ -31,17 +35,17 @@ install:
 		yay -S --needed --noconfirm $$font || echo "⚠️  Failed to install $$font"; \
 	done
 
-update:
-	@echo "🔁 Updating all packages with yay..."
-	yay -Syu --noconfirm
+update: ## Update system and reinstall fonts
+	@$(call ensure_system_updated)
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" install
 
-refresh:
+refresh: ## Refresh font cache
 	@echo "🔄 Refreshing font cache..."
 	fc-cache -fv
 	@echo "✅ Font cache refreshed."
 
-check:
-	@echo "🔍 Checking if fonts are installed and showing examples..."
+check: ## Check which fonts from the list are installed
+	@echo "🔍 Checking if fonts are installed..."
 	@if ! command -v pango-view >/dev/null 2>&1; then \
 		echo "⚠️  pango-view is not installed. Previews won't be shown."; \
 	fi
@@ -60,7 +64,7 @@ check:
 		echo "✅ Font cache is readable."; \
 	fi
 
-list:
+list: ## List all configured fonts and their install status
 	@echo "📋 Fonts listed in Makefile:"
 	@for font in $(FONTS); do echo " • $$font"; done
 	@echo "-------------------------------------------------------------------"
