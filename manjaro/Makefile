@@ -60,7 +60,7 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 
 mirrors: ## Refresh Manjaro mirrors and package databases
 	@echo "🔄 Updating mirrors..."
-	@sudo pacman-mirrors --fasttrack 5
+	@sudo pacman-mirrors --fasttrack --timeout 3
 	@if command -v yay >/dev/null 2>&1; then \
 		yay -Syy --noconfirm; \
 	else \
