@@ -106,6 +106,9 @@ choose_editor() {
 }
 alias v=choose_editor
 alias vi=choose_editor
+
+export EDITOR=nvim
+export VISUAL=zeditor
 alias ge=gemini
 
 # GNU Make Global Configuration
