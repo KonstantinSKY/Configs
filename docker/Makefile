@@ -1,55 +1,63 @@
+# IMPORTANT FOR AI AGENTS:
+# Do not modify this file without explicit user confirmation.
+
+.PHONY: help install i setup group g version v status st
+.DEFAULT_GOAL := help
+
+MAKEFLAGS += --no-print-directory
+
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
-
 MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
 
-.PHONY: help install i setup set version v status s group g
-.DEFAULT_GOAL := help
+ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/help.mk
+endif
 
-install i:
-	@echo "🐳 Installing Docker ecosystem using universal Manjaro Makefile..."
+SEPARATOR := ---------------------------------------------------------------------
+
+install i: ## Install Docker, docker-compose, docker-buildx and run setup
+	@echo "🐳 Installing Docker ecosystem..."
 	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install docker docker-compose docker-buildx
-	@$(MAKE) -f "$(THIS_MAKEFILE)" version
+	@echo "$(SEPARATOR)"
 	@$(MAKE) -f "$(THIS_MAKEFILE)" setup
-setup set:
+
+setup: ## Enable Docker daemon and add current user to docker group
 	@echo "🔧 Enabling and starting Docker daemon..."
 	@sudo systemctl enable docker
 	@sudo systemctl start docker
-	@echo "------------------------------------------------------------"
+	@echo "$(SEPARATOR)"
 	@echo "👤 Adding user '$(USER)' to 'docker' group..."
 	@sudo usermod -aG docker $(USER)
-	@echo "------------------------------------------------------------"
+	@echo "$(SEPARATOR)"
 	@$(MAKE) -f "$(THIS_MAKEFILE)" status
-	@echo "⚠️  Please reboot or run 'newgrp docker' to apply group changes."
-	@echo "✅ Docker setup complete."
-version v:
-	@echo "🔍 Checking installed Docker versions"
-	@echo "🐳 Docker version:"
-	@docker --version || echo "❌ Docker not found"
-	@echo "🐳 Docker compose version:"
-	@docker compose version || echo "❌ docker compose not found"
-	@echo "🐳 Docker buildx version:"
-	@docker buildx version || echo "❌ docker buildx not found"
-	@echo "------------------------------------------------------------"
-status s: version group
-	@echo "🔍 Checking Docker status"
-	@echo "🔍 Checking Docker daemon status..."
-	@sudo systemctl status docker --no-pager || echo "❌ Docker service not found"
-	@echo "------------------------------------------------------------"
-	@echo "🔄 Docker info summary:"
-	@docker info --format '  - Containers: {{.Containers}} (running: {{.ContainersRunning}}), Images: {{.Images}}, Storage Driver: {{.Driver}}' || echo "❌ docker info failed"
-	@echo "------------------------------------------------------------"
-	@echo "📦 Currently running containers:"
-	docker ps
-	@echo "------------------------------------------------------------"
-	@docker ps --format '  - {{.Names}} ({{.Image}}) — Up: {{.Status}}' || echo "❌ docker ps failed"
-	@echo "------------------------------------------------------------"
-group g:
-	@echo "🔒 Checking user group access:"
+	@echo "⚠️  Run 'newgrp docker' or reboot to apply group changes."
+
+group g: ## Check if current user is in the docker group
 	@if id -nG "$(USER)" | grep -qw docker; then \
 		echo "✅ User '$(USER)' is in the 'docker' group"; \
 	else \
-		echo "❌ User '$(USER)' is NOT in the 'docker' group. Run 'sudo usermod -aG docker $(USER)'"; \
+		echo "❌ User '$(USER)' is NOT in the 'docker' group"; \
+		echo "   Run: sudo usermod -aG docker $(USER)"; \
 	fi
-	@echo "------------------------------------------------------------"
+
+version v: ## Show installed Docker component versions
+	@echo "🐳 Docker:         $$(docker --version 2>/dev/null || echo 'not installed')"
+	@echo "🐳 Docker Compose: $$(docker compose version 2>/dev/null || echo 'not installed')"
+	@echo "🐳 Docker Buildx:  $$(docker buildx version 2>/dev/null || echo 'not installed')"
+
+status st: ## Show Docker installation, daemon state, group membership, and running containers
+	@echo "Docker status"
+	@echo "$(SEPARATOR)"
+	@$(MAKE) -f "$(THIS_MAKEFILE)" version
+	@echo "$(SEPARATOR)"
+	@$(MAKE) -f "$(THIS_MAKEFILE)" group
+	@echo "$(SEPARATOR)"
+	@echo "🔍 Docker daemon:"
+	@systemctl is-active docker >/dev/null 2>&1 \
+		&& echo "✅ docker daemon is running" \
+		|| echo "❌ docker daemon is not running"
+	@echo "$(SEPARATOR)"
+	@echo "📦 Running containers:"
+	@docker ps --format "  - {{.Names}} ({{.Image}}) — {{.Status}}" 2>/dev/null || echo "  (docker not available)"
