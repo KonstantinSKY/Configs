@@ -13,8 +13,8 @@ THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 BROWSERS_MAKEFILE := $(CONFIGS_DIR)/browsers/Makefile
-GTK_MAKEFILE := $(CONFIGS_DIR)/gtk/Makefile
-QT_MAKEFILE := $(CONFIGS_DIR)/qt/Makefile
+GTK_MAKEFILE := $(THIS_DIR)/gtk/Makefile
+QT_MAKEFILE := $(THIS_DIR)/qt/Makefile
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk

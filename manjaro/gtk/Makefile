@@ -3,11 +3,11 @@
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
-CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+CONFIGS_DIR := $(abspath $(THIS_DIR)/../..)
 
 include $(CONFIGS_DIR)/make/update.mk
 
-MANJARO_MAKEFILE ?= $(CONFIGS_DIR)/manjaro/Makefile
+MANJARO_MAKEFILE ?= $(abspath $(THIS_DIR)/..)/Makefile
 
 GTK_THEME ?= Matcha-dark-sea
 ICON_THEME ?= Papirus-Dark

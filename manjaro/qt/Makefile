@@ -5,9 +5,9 @@
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
-CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+CONFIGS_DIR := $(abspath $(THIS_DIR)/../..)
 
-MANJARO_MAKEFILE ?= $(CONFIGS_DIR)/manjaro/Makefile
+MANJARO_MAKEFILE ?= $(abspath $(THIS_DIR)/..)/Makefile
 XPROFILE ?= $(HOME)/.xprofile
 
 KVANTUM_THEME ?= KvAdaptaMaiaDark
