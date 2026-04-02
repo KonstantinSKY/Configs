@@ -1,7 +1,7 @@
 .PHONY: xprofile xp mimeapps ma zsh
 
 TARGET_XPROFILE_FILE = $(HOME)/.xprofile
-XPROFILE_SOURCE_FILE = $(CONFIGS_DIR)/xprofile/.xprofile
+XPROFILE_SOURCE_FILE = $(THIS_DIR)/xprofile/.xprofile
 TARGET_MIMEAPPS_FILE = $(HOME)/.config/mimeapps.list
 MIMEAPPS_SOURCE_FILE = $(THIS_DIR)/mimeapps.list
 ZSH_TARGET_RC = $(HOME)/.zshrc
