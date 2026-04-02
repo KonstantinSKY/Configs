@@ -1,5 +1,5 @@
 voice-ptt/voice-ptt.log
 voice-ptt/.env
-megacmd/*.tar.gz
-megacmd/src/
-megacmd/pkg/
+megasync/*.tar.gz
+megasync/src/
+megasync/pkg/
