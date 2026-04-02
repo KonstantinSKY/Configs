@@ -1,5 +1,6 @@
 voice-ptt/voice-ptt.log
 voice-ptt/.env
+.nvimlog
 megasync/*.tar.gz
 megasync/src/
 megasync/pkg/
