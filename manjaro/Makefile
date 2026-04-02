@@ -11,15 +11,9 @@
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
-CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
-BROWSERS_MAKEFILE := $(CONFIGS_DIR)/browsers/Makefile
 GTK_MAKEFILE := $(THIS_DIR)/gtk/Makefile
 QT_MAKEFILE := $(THIS_DIR)/qt/Makefile
 
-ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
-include $(CONFIGS_DIR)/make/help.mk
-endif
-include $(CONFIGS_DIR)/make/update.mk
 include $(THIS_DIR)/packages/keyrings.mk
 include $(THIS_DIR)/packages/base-packages.mk
 include $(THIS_DIR)/packages/install.mk
@@ -50,12 +44,11 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-audio
-	@$(MAKE) -s -f $(THIS_MAKEFILE) update
-	@$(MAKE) -s -f $(GTK_MAKEFILE) link
-	@$(MAKE) -s -f $(GTK_MAKEFILE) verify
-	@$(MAKE) -s -f $(QT_MAKEFILE) link
-	@$(MAKE) -s -f $(QT_MAKEFILE) verify
+	@$(MAKE) -s -f $(GTK_MAKEFILE) install
+	@$(MAKE) -s -f $(QT_MAKEFILE) install
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-notifications
 	@$(MAKE) -s -f $(THIS_MAKEFILE) configure-notifications
+	@$(MAKE) -s -f $(THIS_MAKEFILE) clean-orphans
 	@echo "✅ Manjaro i3 setup complete!"
 
 mirrors: ## Refresh Manjaro mirrors and package databases
@@ -78,21 +71,9 @@ enable-aur: ## Enable AUR support in pamac when pamac is available
 	@echo "-------------------------------------------------------------------------------"
 
 update u: ## Run full maintenance: yay update, orphan cleanup, cache cleanup, flatpak update
-	@if ! command -v yay >/dev/null 2>&1; then \
-		echo "❌ yay is not installed. Update expects an already bootstrapped system."; \
-		echo "   Run 'make -f $(THIS_MAKEFILE) setup' first."; \
-		exit 1; \
-	fi
+	@$(require_yay)
 	@$(MAKE) -s -f $(THIS_MAKEFILE) yay-update
-	@echo "-------------------------------------------------------------------------------"
-	@echo "🧹 Removing unused dependencies..."
-	@ORPHANS="$$(yay -Qtdq 2>/dev/null || true)"; \
-	if [ -n "$$ORPHANS" ]; then \
-		yay -Rns --noconfirm $$ORPHANS; \
-	else \
-		echo "✅ No unused dependencies found"; \
-	fi
-	@echo "-------------------------------------------------------------------------------"
+	@$(MAKE) -s -f $(THIS_MAKEFILE) clean-orphans
 	@echo "🧼 Cleaning cache..."
 	@yay -Sc --noconfirm
 	@echo "-------------------------------------------------------------------------------"

@@ -20,10 +20,4 @@ BASE_PACKAGES = \
 	bat \
 	tmux \
 	tree \
-	matcha-gtk-theme \
-	papirus-icon-theme \
-	qt5ct \
-	qt6ct \
-	kvantum \
-	kvantum-qt5 \
 	alsa-utils

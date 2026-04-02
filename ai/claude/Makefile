@@ -18,9 +18,5 @@ STATUSLINE_TARGET = $(HOME)/.claude/statusline-command.sh
 ## 🤖 Claude Code
 ## ---------------------------
 link: ## Link Claude Code config files into ~/.claude
-	@$(call require_exists,$(STATUSLINE_SOURCE),statusline-command.sh not found)
-	@$(call backup_if_needed,$(STATUSLINE_TARGET))
-	@echo "🔗 Linking $(STATUSLINE_TARGET) → $(STATUSLINE_SOURCE)..."
-	@ln -sfn "$(STATUSLINE_SOURCE)" "$(STATUSLINE_TARGET)"
+	@$(call link,$(STATUSLINE_SOURCE),$(STATUSLINE_TARGET))
 	@chmod +x "$(STATUSLINE_SOURCE)"
-	@echo "✅ Claude Code config linked"

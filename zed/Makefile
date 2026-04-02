@@ -17,32 +17,6 @@ ZED_EXTENSIONS := material-icon-theme gruvbox lua dockerfile sql bash toml make
 ZED_SOURCE_CONFIG := $(THIS_DIR)
 ZED_TARGET_CONFIG := $(HOME)/.config/zed
 
-define replace_with_symlink
-	TARGET_PATH="$(1)"; \
-	SOURCE_PATH="$(2)"; \
-	DESIRED_LINK="$$(readlink -f "$$SOURCE_PATH")"; \
-	CURRENT_LINK=""; \
-	if [ -L "$$TARGET_PATH" ]; then \
-		CURRENT_LINK="$$(readlink -f "$$TARGET_PATH" 2>/dev/null || true)"; \
-	fi; \
-	if [ "$$CURRENT_LINK" = "$$DESIRED_LINK" ]; then \
-		echo "✅ Zed config already linked: $$TARGET_PATH"; \
-	else \
-		if [ -L "$$TARGET_PATH" ]; then \
-			echo "🔁 Replacing existing symlink: $$TARGET_PATH"; \
-			rm -f "$$TARGET_PATH"; \
-		elif [ -e "$$TARGET_PATH" ]; then \
-			BACKUP_PATH="$$TARGET_PATH.bak.$$(date +%Y%m%d_%H%M%S)"; \
-			echo "📦 Backing up existing Zed config to $$BACKUP_PATH"; \
-			mv "$$TARGET_PATH" "$$BACKUP_PATH"; \
-		fi; \
-		echo "🔗 Linking Zed config:"; \
-		echo "→ Target : $$TARGET_PATH"; \
-		echo "→ Source : $$SOURCE_PATH"; \
-		ln -s "$$SOURCE_PATH" "$$TARGET_PATH"; \
-	fi
-endef
-
 all: install
 
 install i: ## Install Zed and link configuration
@@ -53,10 +27,8 @@ install i: ## Install Zed and link configuration
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
 	@echo "✅ Zed installed and configured."
 
-link l:
-	@echo "📁 Ensuring parent config directory exists..."
-	@mkdir -p "$(HOME)/.config"
-	@$(call replace_with_symlink,$(ZED_TARGET_CONFIG),$(ZED_SOURCE_CONFIG))
+link l: ## Link Zed config directory into ~/.config
+	@$(call link,$(ZED_SOURCE_CONFIG),$(ZED_TARGET_CONFIG))
 
 verify v:
 	@echo "🔎 Verifying Zed config..."
