@@ -1,6 +1,6 @@
 MAIN_DEPLOY_DIR := $(HOME)/Work/Deploys
 BACKUP_DIR := backups
-MEGA_MAKEFILE := $(HOME)/Work/Configs/mega/Makefile
+MEGA_MAKEFILE := $(HOME)/Work/Configs/megacmd/Makefile
 REMOTE_DEPLOY_DIR := /Deploys
 
 .PHONY: help h sync mkdir create

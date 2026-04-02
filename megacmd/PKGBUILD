@@ -1,0 +1,101 @@
+# Maintainer: Chris Lane <aur at chrislane dot com>
+# Contributor: Stephanie Wilde-Hobbs <hi@stephanie.is>
+
+pkgname=megacmd
+pkgver=2.5.1
+pkgrel=1
+pkgdesc="MEGA Command Line Interactive and Scriptable Application"
+url="https://github.com/meganz/MEGAcmd"
+arch=('x86_64')
+license=('LicenseRef-megacmd')
+depends=(
+  'crypto++'
+  'curl'
+  'icu'
+  'libsodium'
+  'libuv'
+  'openssl'
+  'pcre'
+  'readline'
+  'sqlite'
+  'zlib'
+  'fuse2'
+)
+makedepends=('cmake' 'git')
+_sdkhash=acfdf8d3a73d3f636cb4bb4b183845f4feb5af9a
+source=("${pkgname}-${pkgver}-${pkgrel}.tar.gz::https://github.com/meganz/MEGAcmd/archive/${pkgver}_Linux.tar.gz"
+        "mega-sdk-${_sdkhash}.tar.gz::https://github.com/meganz/sdk/archive/${_sdkhash}.tar.gz"
+        "fix-icu-linking.patch::https://github.com/meganz/sdk/pull/2768.patch")
+sha512sums=('bc0248c7c2656466042cc817f00aac77d60a08d85e2876acc8246bcaaf3b8fc6ecd71a3595b8fc23c54c29629086691fb8c049f60d6c8bb3a0e13e83870040ba'
+            '6eb0fa3d1620bf864dcb4f2e5062e4a56e228ce65e9c00b9855cc14c57ee7c0b16c72e2d697b6b574e627b55e90a0ad172de218e0085b01be98d29d53f1e903d'
+            '2d720030596a9721a2e6ad9d426d3de9a1f2a625438e2b7df0e7363ffb0178097c87d9ee7b4e36ef0277ced78b754564517fd73ca4502a8723fa8132a1b37810')
+
+prepare() {
+  # Remove existing directory if it exists
+  rm -rf "${pkgname}-${pkgver}"
+
+  mv "MEGAcmd-${pkgver}_Linux" "${pkgname}-${pkgver}"
+  cd "${pkgname}-${pkgver}"
+
+  rm -r sdk
+  ln -sf "${srcdir}/sdk-${_sdkhash}" sdk
+
+  sed -i '/^set(VCPKG_ROOT/d' CMakeLists.txt
+
+  echo true > build/clone_vcpkg_from_baseline.sh # this script is executed by bash (not using shebang)
+  sed -i '/IMPORTED_TARGET libcrypto++/s/++/pp/' sdk/cmake/modules/sdklib_libraries.cmake
+
+  # Fix ICU linking - https://github.com/meganz/sdk/pull/2768
+  patch -Np1 -d "${srcdir}/sdk-${_sdkhash}" -i "${srcdir}/fix-icu-linking.patch"
+
+  # Remove hardcoded install paths that break build-time options
+  sed -i \
+    '/set(CMAKE_INSTALL_LIBDIR "opt\/megacmd\/lib")/d; /set(CMAKE_INSTALL_BINDIR "usr\/bin")/d' \
+    CMakeLists.txt
+
+  # Fix PCRE and ZLib linking
+  sed -i '/target_link_libraries(LMegacmdServer PUBLIC MEGA::SDKlib LMEGAcmdCommonUtils)/a target_link_libraries(LMegacmdServer PUBLIC pcrecpp z)' CMakeLists.txt
+}
+
+build() {
+  local cmake_options=(
+    -B build
+    -S "${pkgname}-${pkgver}"
+    -DCMAKE_INSTALL_PREFIX=/usr
+    -DCMAKE_BUILD_TYPE=RelWithDebInfo # None does not work: https://github.com/meganz/sdk/issues/2679
+    -DUSE_FREEIMAGE=no
+    -DUSE_PDFIUM=no
+    -DFULL_REQS=off
+  )
+  cmake "${cmake_options[@]}"
+  cmake --build build
+}
+
+package() {
+  DESTDIR="${pkgdir}" cmake --install build
+  cd "${pkgname}-${pkgver}"
+
+  # Remove unnecessary /usr/lib dir containing symlinks
+  rm -rf ${pkgdir}/usr/lib
+
+  # Fix completions location (/usr/etc/bash_completions.d/ -> /usr/share/bash-completion/completions)
+  rm -rf ${pkgdir}/usr/etc/
+  install -Dm644 src/client/megacmd_completion.sh ${pkgdir}/usr/share/bash-completion/completions/${pkgname}
+
+  # Add completions for sub-commands
+  for completion_cmd in ${pkgdir}/usr/bin/mega*;
+  do
+    completion_cmd=$(basename "$completion_cmd")
+    ln -s "${pkgname}" "${pkgdir}/usr/share/bash-completion/completions/$completion_cmd"
+  done
+
+  # Documentation
+  install -Dm644 README.md UserGuide.md -t "${pkgdir}/usr/share/doc/${pkgname}/"
+  install -Dm644 contrib/docs/*.md -t "${pkgdir}/usr/share/doc/${pkgname}/docs/"
+  install -Dm644 contrib/docs/commands/*.md -t "${pkgdir}/usr/share/doc/${pkgname}/docs/commands/"
+
+  # License
+  install -Dm644 LICENSE ${pkgdir}/usr/share/licenses/${pkgname}/LICENSE
+}
+
+# vim:set ts=2 sw=2 et:
