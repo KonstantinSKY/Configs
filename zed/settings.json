@@ -2,6 +2,16 @@
   // ==========================================
   // COMMON MODES
   // ==========================================
+  "auto_install_extensions": {
+    "material-icon-theme": true,
+    "gruvbox": true,
+    "lua": true,
+    "dockerfile": true,
+    "sql": true,
+    "bash": true,
+    "toml": true,
+    "make": true,
+  },
   "context_servers": {},
   "agent": {
     "default_model": {
