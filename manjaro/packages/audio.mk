@@ -17,7 +17,6 @@ remove-audio: ## Remove PulseAudio before switching to the managed PipeWire stac
 	@echo "-------------------------------------------------------------------------------"
 
 install-audio: ## Install the managed PipeWire audio stack
-	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
 	@echo "📦 Installing PipeWire audio packages..."
 	@sudo pacman -S --needed --noconfirm $(PIPEWIRE_PACKAGES)
 	@echo "✅ PipeWire audio stack is installed."

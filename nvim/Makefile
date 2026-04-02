@@ -16,32 +16,6 @@ LEGACY_VIM_PACKAGES := vim ex-vi-compat
 # Keep this list in sync with nvim/lua/plugins/treesitter.lua.
 TREESITTER_PARSERS := bash diff json lua luadoc markdown markdown_inline python query rust toml vim vimdoc yaml
 
-define replace_with_symlink
-	TARGET_PATH="$(1)"; \
-	SOURCE_PATH="$(2)"; \
-	DESIRED_LINK="$$(readlink -f "$$SOURCE_PATH")"; \
-	CURRENT_LINK=""; \
-	if [ -L "$$TARGET_PATH" ]; then \
-		CURRENT_LINK="$$(readlink -f "$$TARGET_PATH" 2>/dev/null || true)"; \
-	fi; \
-	if [ "$$CURRENT_LINK" = "$$DESIRED_LINK" ]; then \
-		echo "✅ Neovim config already linked: $$TARGET_PATH"; \
-	else \
-		if [ -L "$$TARGET_PATH" ]; then \
-			echo "🔁 Replacing existing symlink: $$TARGET_PATH"; \
-			rm -f "$$TARGET_PATH"; \
-		elif [ -e "$$TARGET_PATH" ]; then \
-			BACKUP_PATH="$$TARGET_PATH.bak.$$(date +%Y%m%d_%H%M%S)"; \
-			echo "📦 Backing up existing Neovim config to $$BACKUP_PATH"; \
-			mv "$$TARGET_PATH" "$$BACKUP_PATH"; \
-		fi; \
-		echo "🔗 Linking Neovim config:"; \
-		echo "→ Target : $$TARGET_PATH"; \
-		echo "→ Source : $$SOURCE_PATH"; \
-		ln -s "$$SOURCE_PATH" "$$TARGET_PATH"; \
-	fi
-endef
-
 all: install
 
 install i: ## Install Neovim, restore locked plugins, install parsers, and verify
@@ -79,8 +53,7 @@ remove-legacy-vim rv: ## Remove legacy Vim packages when you explicitly want Neo
 	fi
 
 link l: ## Link managed Neovim config into ~/.config
-	@mkdir -p "$(HOME)/.config"
-	@$(call replace_with_symlink,$(NVIM_TARGET_DIR),$(NVIM_SOURCE_DIR))
+	@$(call link,$(NVIM_SOURCE_DIR),$(NVIM_TARGET_DIR))
 
 sync s: ## Restore lazy.nvim plugins to the versions pinned in lazy-lock.json
 	@if ! command -v nvim >/dev/null 2>&1; then \

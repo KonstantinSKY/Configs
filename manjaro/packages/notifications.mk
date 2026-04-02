@@ -1,4 +1,4 @@
-.PHONY: remove-notifications configure-notifications notifications
+.PHONY: remove-notifications install-notifications configure-notifications notifications
 
 remove-notifications: ## Remove dunst safely by first detaching manjaro-i3-settings
 	@echo "🔔 Removing dunst without breaking the current i3 stack..."
@@ -42,6 +42,12 @@ remove-notifications: ## Remove dunst safely by first detaching manjaro-i3-setti
 	@echo "✅ dunst has been removed and the i3 package set was preserved."
 	@echo "-------------------------------------------------------------------------------"
 
+install-notifications: ## Install xfce4-notifyd notification daemon
+	@$(require_yay)
+	@echo "📦 Installing xfce4-notifyd..."
+	@yay -S --needed --noconfirm xfce4-notifyd
+	@echo "-------------------------------------------------------------------------------"
+
 configure-notifications: ## Configure the already installed xfce4-notifyd session state
 	@echo "🔔 Configuring xfce4-notifyd session state..."
 	@rm -f "$(HOME)/.config/autostart/xfce4-notifyd.desktop"
@@ -52,5 +58,7 @@ configure-notifications: ## Configure the already installed xfce4-notifyd sessio
 	@echo "✅ xfce4-notifyd session state has been refreshed."
 	@echo "-------------------------------------------------------------------------------"
 
-notifications: ## Remove dunst safely while leaving notification setup to a separate task
+notifications: ## Remove dunst, install and configure xfce4-notifyd
 	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-notifications
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-notifications
+	@$(MAKE) -s -f $(THIS_MAKEFILE) configure-notifications

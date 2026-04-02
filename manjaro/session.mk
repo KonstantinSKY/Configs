@@ -14,45 +14,13 @@ ZSH_INCLUDE_LINE = [ -r "$(ZSH_CUSTOM_RC)" ] && source "$(ZSH_CUSTOM_RC)"
 ## 👤 User Session
 ## ---------------------------
 xprofile xp: ## Link .xprofile via a direct symlink
-	@$(call require_exists,$(XPROFILE_SOURCE_FILE),Source xprofile not found)
-	@echo "📦 Preparing existing $(TARGET_XPROFILE_FILE)..."
-	@if [ -L "$(TARGET_XPROFILE_FILE)" ]; then \
-		CURRENT_LINK="$$(readlink -f "$(TARGET_XPROFILE_FILE)" 2>/dev/null || true)"; \
-		DESIRED_LINK="$$(readlink -f "$(XPROFILE_SOURCE_FILE)" 2>/dev/null || true)"; \
-		if [ "$$CURRENT_LINK" != "$$DESIRED_LINK" ]; then \
-			BACKUP_PATH="$(TARGET_XPROFILE_FILE).bak.$$(date +%Y%m%d_%H%M%S)"; \
-			echo "📦 Backing up existing .xprofile symlink to $$BACKUP_PATH"; \
-			mv "$(TARGET_XPROFILE_FILE)" "$$BACKUP_PATH"; \
-		fi; \
-	fi
-	@$(call backup_if_needed,$(TARGET_XPROFILE_FILE))
-	@echo "🔗 Linking $(TARGET_XPROFILE_FILE) → $(XPROFILE_SOURCE_FILE)..."
-	@ln -sfn "$(XPROFILE_SOURCE_FILE)" "$(TARGET_XPROFILE_FILE)"
-	@echo "✅ xprofile linked to $(TARGET_XPROFILE_FILE)"
+	@$(call link,$(XPROFILE_SOURCE_FILE),$(TARGET_XPROFILE_FILE))
 
 mimeapps ma: ## Link managed XDG default applications file
-	@$(call require_exists,$(MIMEAPPS_SOURCE_FILE),Source mimeapps file not found)
-	@mkdir -p "$(dir $(TARGET_MIMEAPPS_FILE))"
-	@echo "📦 Preparing existing $(TARGET_MIMEAPPS_FILE)..."
-	@if [ -L "$(TARGET_MIMEAPPS_FILE)" ]; then \
-		CURRENT_LINK="$$(readlink -f "$(TARGET_MIMEAPPS_FILE)" 2>/dev/null || true)"; \
-		DESIRED_LINK="$$(readlink -f "$(MIMEAPPS_SOURCE_FILE)" 2>/dev/null || true)"; \
-		if [ "$$CURRENT_LINK" != "$$DESIRED_LINK" ]; then \
-			BACKUP_PATH="$(TARGET_MIMEAPPS_FILE).bak.$$(date +%Y%m%d_%H%M%S)"; \
-			echo "📦 Backing up existing mimeapps symlink to $$BACKUP_PATH"; \
-			mv "$(TARGET_MIMEAPPS_FILE)" "$$BACKUP_PATH"; \
-		fi; \
-	fi
-	@$(call backup_if_needed,$(TARGET_MIMEAPPS_FILE))
-	@echo "🔗 Linking $(TARGET_MIMEAPPS_FILE) → $(MIMEAPPS_SOURCE_FILE)..."
-	@ln -sfn "$(MIMEAPPS_SOURCE_FILE)" "$(TARGET_MIMEAPPS_FILE)"
-	@echo "✅ mimeapps linked to $(TARGET_MIMEAPPS_FILE)"
+	@$(call link,$(MIMEAPPS_SOURCE_FILE),$(TARGET_MIMEAPPS_FILE))
 
 zsh: ## Install zsh if needed and switch current user to it
-	@if ! command -v yay >/dev/null 2>&1; then \
-		echo "❌ yay is not installed. Run 'make -f $(THIS_MAKEFILE) setup' first."; \
-		exit 1; \
-	fi
+	@$(require_yay)
 	@echo "🔍 Checking zsh installation..."
 	@if command -v zsh >/dev/null 2>&1; then \
 		ZSH_PATH="$$(command -v zsh)"; \
@@ -80,7 +48,7 @@ zsh: ## Install zsh if needed and switch current user to it
 			printf '%s\n' '$(ZSH_INCLUDE_LINE)'; \
 			printf '%s\n' '$(ZSH_INCLUDE_END)'; \
 		} > "$(ZSH_TARGET_RC)"; \
-	elif grep -Fqx '$(ZSH_INCLUDE_LINE)' "$(ZSH_TARGET_RC)"; then \
+	elif grep -Fq '$(ZSH_INCLUDE_START)' "$(ZSH_TARGET_RC)"; then \
 		echo "✅ Custom zsh include already present in $(ZSH_TARGET_RC)"; \
 	else \
 		printf '\n%s\n%s\n%s\n' '$(ZSH_INCLUDE_START)' '$(ZSH_INCLUDE_LINE)' '$(ZSH_INCLUDE_END)' >> "$(ZSH_TARGET_RC)"; \

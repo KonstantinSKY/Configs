@@ -5,16 +5,12 @@ install-yay: ## Install yay if needed, using pacman only for bootstrap
 		echo "✅ yay is already installed."; \
 	else \
 		echo "📦 Installing yay from official repository..."; \
-		$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings; \
 		sudo pacman -S --needed --noconfirm yay; \
 	fi
 	@echo "-------------------------------------------------------------------------------"
 
 yay-update: ## Update official and AUR packages via yay
-	@if ! command -v yay >/dev/null 2>&1; then \
-		echo "❌ yay is not installed. Run 'make -f $(THIS_MAKEFILE) setup' first."; \
-		exit 1; \
-	fi
+	@$(require_yay)
 	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
 	@echo "⬆️  Updating AUR and system packages with yay..."
 	@yay -Syu --noconfirm --answerclean None --answerdiff None
@@ -55,11 +51,7 @@ install i: ## Install one or more packages via yay after updating the system
 	@echo "✅ Installation process complete."
 
 install-base: ## Install the default base package set via yay
-	@if ! command -v yay >/dev/null 2>&1; then \
-		echo "❌ yay is not installed. Run 'make -f $(THIS_MAKEFILE) setup' first."; \
-		exit 1; \
-	fi
-	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
+	@$(require_yay)
 	@echo "📦 Installing essential packages via yay..."
 	yay -S --needed --noconfirm $(BASE_PACKAGES)
 	@echo "✅ Base packages installed via yay."
