@@ -1,4 +1,4 @@
-.PHONY: help all install i link l verify v clean
+.PHONY: help all install i link l verify v status st clean
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -6,6 +6,13 @@ THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 
 include $(CONFIGS_DIR)/make/update.mk
+
+ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/help.mk
+endif
+
+SEPARATOR := ---------------------------------------------------------------------
+ZED_EXTENSIONS := material-icon-theme gruvbox lua dockerfile sql bash toml make
 
 ZED_SOURCE_CONFIG := $(THIS_DIR)
 ZED_TARGET_CONFIG := $(HOME)/.config/zed
@@ -66,6 +73,28 @@ verify v:
 		echo "❌ Target config is missing: $(ZED_TARGET_CONFIG)"; \
 		exit 1; \
 	fi
+
+status st: ## Show Zed installation, config link, and configured extensions
+	@echo "Zed status"
+	@echo "$(SEPARATOR)"
+	@if command -v zed >/dev/null 2>&1; then \
+		echo "✅ zed installed: $$(zed --version 2>/dev/null || echo unknown)"; \
+	else \
+		echo "❌ zed not installed"; \
+	fi
+	@echo "$(SEPARATOR)"
+	@if [ -L "$(ZED_TARGET_CONFIG)" ]; then \
+		echo "✅ config linked: $(ZED_TARGET_CONFIG) -> $$(readlink -f "$(ZED_TARGET_CONFIG)")"; \
+	elif [ -e "$(ZED_TARGET_CONFIG)" ]; then \
+		echo "⚠️  config exists but is not a symlink: $(ZED_TARGET_CONFIG)"; \
+	else \
+		echo "❌ config not linked: $(ZED_TARGET_CONFIG)"; \
+	fi
+	@echo "$(SEPARATOR)"
+	@echo "Auto-install extensions:"
+	@for ext in $(ZED_EXTENSIONS); do \
+		echo "  - $$ext"; \
+	done
 
 clean: ## Cleanup placeholder target for Zed
 	@echo "Cleaning zed..."
