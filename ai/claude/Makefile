@@ -5,7 +5,7 @@
 .DEFAULT_GOAL := help
 
 THIS_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
-CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+CONFIGS_DIR := $(abspath $(THIS_DIR)/../..)
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
