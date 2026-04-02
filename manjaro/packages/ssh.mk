@@ -6,10 +6,14 @@ SSH_CONFIG := /etc/ssh/sshd_config
 define ssh_set_password
 	echo "$(2) password authentication in $(SSH_CONFIG)..."; \
 	sudo test -f "$(SSH_CONFIG)"; \
-	sudo sed -i \
-		-e 's/^[#[:space:]]*PasswordAuthentication[[:space:]].*/PasswordAuthentication $(1)/' \
-		-e 's/^[#[:space:]]*KbdInteractiveAuthentication[[:space:]].*/KbdInteractiveAuthentication $(1)/' \
-		"$(SSH_CONFIG)"; \
+	for param in PasswordAuthentication KbdInteractiveAuthentication; do \
+		if sudo grep -qE "^[#[:space:]]*$$param[[:space:]]" "$(SSH_CONFIG)"; then \
+			sudo sed -i "s/^[#[:space:]]*$$param[[:space:]].*/$$param $(1)/" "$(SSH_CONFIG)"; \
+		else \
+			printf '\n%s %s\n' "$$param" "$(1)" | sudo tee -a "$(SSH_CONFIG)" > /dev/null; \
+			echo "ℹ️  $$param was missing — appended to $(SSH_CONFIG)"; \
+		fi; \
+	done; \
 	echo "🔍 Validating sshd configuration..."; \
 	sudo sshd -t; \
 	echo "🔄 Restarting sshd service..."; \

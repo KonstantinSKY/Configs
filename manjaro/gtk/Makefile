@@ -6,7 +6,9 @@ THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 
 GTK_THEME ?= Matcha-dark-sea
 ICON_THEME ?= Papirus-Dark
-GTK_PACKAGES = matcha-gtk-theme papirus-icon-theme
+GTK_THEME_PACKAGE ?= matcha-gtk-theme
+GTK_ICON_PACKAGE ?= papirus-icon-theme
+GTK_PACKAGES = $(GTK_THEME_PACKAGE) $(GTK_ICON_PACKAGE)
 
 GTK2_SOURCE := $(THIS_DIR)/.gtkrc-2.0
 GTK3_SOURCE := $(THIS_DIR)/gtk-3.0/settings.ini
@@ -31,12 +33,12 @@ install i: ## Install GTK theme/icon packages and link managed configs
 install_theme install-theme: ## Install the configured GTK theme package
 	@$(require_yay)
 	@echo "🎨 Installing GTK theme package for $(GTK_THEME)..."
-	@yay -S --needed --noconfirm matcha-gtk-theme
+	@yay -S --needed --noconfirm $(GTK_THEME_PACKAGE)
 
 install_icons install-icons: ## Install the configured GTK icon theme package
 	@$(require_yay)
 	@echo "🖼️  Installing GTK icon theme package for $(ICON_THEME)..."
-	@yay -S --needed --noconfirm papirus-icon-theme
+	@yay -S --needed --noconfirm $(GTK_ICON_PACKAGE)
 
 apply_theme apply-theme link l: ## Link managed GTK config files into the home directory
 	@$(call link,$(GTK2_SOURCE),$(GTK2_TARGET))
@@ -45,15 +47,15 @@ apply_theme apply-theme link l: ## Link managed GTK config files into the home d
 
 verify v check_theme: ## Verify managed GTK config sources and symlinks
 	@echo "🔎 Verifying GTK package installation..."
-	@if yay -Q matcha-gtk-theme >/dev/null 2>&1; then \
-		echo "✅ GTK theme package installed: matcha-gtk-theme"; \
+	@if yay -Q $(GTK_THEME_PACKAGE) >/dev/null 2>&1; then \
+		echo "✅ GTK theme package installed: $(GTK_THEME_PACKAGE)"; \
 	else \
-		echo "⚠️  GTK theme package missing: matcha-gtk-theme"; \
+		echo "⚠️  GTK theme package missing: $(GTK_THEME_PACKAGE)"; \
 	fi
-	@if yay -Q papirus-icon-theme >/dev/null 2>&1; then \
-		echo "✅ GTK icon package installed: papirus-icon-theme"; \
+	@if yay -Q $(GTK_ICON_PACKAGE) >/dev/null 2>&1; then \
+		echo "✅ GTK icon package installed: $(GTK_ICON_PACKAGE)"; \
 	else \
-		echo "⚠️  GTK icon package missing: papirus-icon-theme"; \
+		echo "⚠️  GTK icon package missing: $(GTK_ICON_PACKAGE)"; \
 	fi
 	@echo "🔎 Current home targets:"
 	@$(call verify_link,$(GTK2_TARGET))
