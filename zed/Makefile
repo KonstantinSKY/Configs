@@ -77,8 +77,8 @@ verify v:
 status st: ## Show Zed installation, config link, and configured extensions
 	@echo "Zed status"
 	@echo "$(SEPARATOR)"
-	@if command -v zed >/dev/null 2>&1; then \
-		echo "✅ zed installed: $$(zed --version 2>/dev/null || echo unknown)"; \
+	@if command -v zeditor >/dev/null 2>&1; then \
+		echo "✅ zed installed: $$(zeditor --version 2>/dev/null | head -1 || echo unknown)"; \
 	else \
 		echo "❌ zed not installed"; \
 	fi
