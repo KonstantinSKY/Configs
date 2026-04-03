@@ -1,5 +1,8 @@
 .PHONY: install-yay yay-update install i install-base
 
+PKGS ?=
+EXTRA_INSTALL_GOALS := $(filter-out install i,$(MAKECMDGOALS))
+
 install-yay: ## Install yay if needed, using pacman only for bootstrap
 	@if command -v yay >/dev/null 2>&1; then \
 		echo "✅ yay is already installed."; \
@@ -17,15 +20,20 @@ yay-update: ## Update official and AUR packages via yay
 	@echo "-------------------------------------------------------------------------------"
 
 install i: ## Install one or more packages via yay after updating the system
-	@if [ "$(wordlist 2,999,$(MAKECMDGOALS))" = "" ]; then \
-		echo "❌ No packages specified. Usage: make install [list of packages]"; \
+	@if [ -n "$(strip $(EXTRA_INSTALL_GOALS))" ]; then \
+		echo '❌ Positional package names are not supported. Use: make install PKGS="pkg1 pkg2"'; \
+		echo 'ℹ️  Unexpected make goals: $(EXTRA_INSTALL_GOALS)'; \
+		exit 1; \
+	fi
+	@if [ -z "$(strip $(PKGS))" ]; then \
+		echo '❌ No packages specified. Usage: make install PKGS="pkg1 pkg2"'; \
 		exit 1; \
 	fi
 	@$(call ensure_system_updated)
 	@echo "📦 Installing packages:"
 	@echo "-------------------------------------------------------------------------------"
 	@status=0; \
-	for pkg in $(wordlist 2,999,$(MAKECMDGOALS)); do \
+	for pkg in $(PKGS); do \
 		echo "📦 Processing: $$pkg"; \
 		if yay -Qi "$$pkg" >/dev/null 2>&1; then \
 			current_ver=$$(yay -Qi "$$pkg" | awk -F': ' '/^Version/ {print $$2}'); \

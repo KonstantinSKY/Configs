@@ -11,6 +11,7 @@
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+export MAKEFILES := $(THIS_DIR)/../make/all.mk
 GTK_MAKEFILE := $(THIS_DIR)/gtk/Makefile
 QT_MAKEFILE := $(THIS_DIR)/qt/Makefile
 

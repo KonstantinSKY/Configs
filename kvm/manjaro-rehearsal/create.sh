@@ -5,8 +5,8 @@ set -euo pipefail
 VM_NAME="${VM_NAME:-manjaro-rehearsal}"
 LIBVIRT_URI="${LIBVIRT_URI:-qemu:///system}"
 KVM_ROOT="${KVM_ROOT:-$HOME/Work/KVMs}"
-CONFIG_ROOT="${CONFIG_ROOT:-$HOME/Work/Configs/kvm}"
-XML_DIR="${XML_DIR:-$CONFIG_ROOT/xmls}"
+CONFIG_ROOT="${CONFIG_ROOT:-$HOME/Work/Configs/kvm/manjaro-rehearsal}"
+XML_DIR="${XML_DIR:-$CONFIG_ROOT}"
 NETWORK_NAME="${NETWORK_NAME:-default}"
 OS_VARIANT="${OS_VARIANT:-manjaro}"
 MEMORY_MB="${MEMORY_MB:-8192}"
@@ -28,7 +28,7 @@ ISO_PATH="${ISO_PATH:-}"
 STAGED_ISO_PATH="${STAGED_ISO_PATH:-$KVM_ROOT/isos/$(basename "${ISO_PATH:-manjaro.iso}")}"
 RUNTIME_ISO_PATH=""
 DISK_PATH="${DISK_PATH:-$KVM_ROOT/disks/${VM_NAME}.qcow2}"
-XML_PATH="${XML_PATH:-$XML_DIR/${VM_NAME}.xml}"
+XML_PATH="${XML_PATH:-$XML_DIR/domain.xml}"
 
 fail() {
     printf 'ERROR: %s\n' "$*" >&2
