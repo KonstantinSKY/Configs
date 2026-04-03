@@ -4,6 +4,18 @@
 .PHONY: help mount verify_fstab
 .DEFAULT_GOAL := help
 
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+
+MAKEFILES ?= $(CONFIGS_DIR)/make/all.mk
+export MAKEFILES
+
+ifeq ($(filter -I$(CONFIGS_DIR)/make,$(MAKEFLAGS)),)
+MAKEFLAGS += -I$(CONFIGS_DIR)/make
+endif
+export MAKEFLAGS
+
 ## ---------------------------
 ## 🧩 Directory configuration
 ## ---------------------------
