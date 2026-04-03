@@ -40,11 +40,11 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) cleanup
 	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-audio
 	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-notifications
+	@$(MAKE) -s -f $(THIS_MAKEFILE) mirrors
 	@echo "⬆️  Updating all system packages via pacman before yay bootstrap..."
 	@sudo pacman -Syu --noconfirm
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-ssh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-yay
-	@$(MAKE) -s -f $(THIS_MAKEFILE) mirrors
 	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) xprofile
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
@@ -59,7 +59,7 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 
 mirrors: ## Refresh Manjaro mirrors and package databases
 	@echo "🔄 Updating mirrors..."
-	@sudo pacman-mirrors --fasttrack 5 --timeout 5 || echo "⚠️  Mirror refresh failed, continuing with existing mirrors."
+	@sudo pacman-mirrors --fasttrack --timeout 5 || echo "⚠️  Mirror refresh failed, continuing with existing mirrors."
 	@if command -v yay >/dev/null 2>&1; then \
 		yay -Syy --noconfirm; \
 	else \
