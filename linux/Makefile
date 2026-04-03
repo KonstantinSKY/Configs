@@ -48,7 +48,7 @@ mount: ## Mounts the work drive, creates mount point, and adds to fstab.
 		echo "📥 Adding new entry to $(FSTAB)..."; \
 		echo "UUID=$(UUID) $(MOUNT_DIR) $(FS_TYPE) $(OPTIONS) $(DUMP) $(PASS)" | sudo tee -a $(FSTAB); \
 	fi
-	@$(MAKE) verify_fstab
+	@$(MAKE) -f "$(THIS_MAKEFILE)" verify_fstab
 	@echo "🔄 Reloading systemd daemon..."
 	@sudo systemctl daemon-reexec
 	@echo "📦 Mounting all entries..."
@@ -62,9 +62,10 @@ mount: ## Mounts the work drive, creates mount point, and adds to fstab.
 	fi
 	@echo "📂 Listing contents of $(MOUNT_DIR)..."
 	@ls -la "$(MOUNT_DIR)"
-	@echo "🔐 Setting ownership and permissions for $(MOUNT_DIR)..."
+	@echo "⏳ Recursively updating ownership for $(MOUNT_DIR). This may take a while on large disks. Please wait until the command finishes."
 	@sudo chown -R $(shell whoami):$(shell whoami) "$(MOUNT_DIR)"
-	@sudo chmod -R 700 "$(MOUNT_DIR)"
+	@echo "🔐 Setting permissions on the mount root..."
+	@sudo chmod 700 "$(MOUNT_DIR)"
 	@echo "✅ Done. $(DIR) is mounted with options: $(OPTIONS)."
 
 verify_fstab: ## Verifies the integrity of /etc/fstab.
