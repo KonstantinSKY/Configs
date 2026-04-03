@@ -37,21 +37,21 @@ include $(THIS_DIR)/check.mk
 	## ---------------------------
 setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
-	@$(MAKE) -s -f $(THIS_MAKEFILE) cleanup
-	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-audio
-	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-notifications
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mirrors
 	@echo "⬆️  Updating all system packages via pacman before yay bootstrap..."
 	@sudo pacman -Syu --noconfirm
+	@$(MAKE) -s -f $(THIS_MAKEFILE) clean
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-ssh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) xprofile
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
+	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-audio
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-audio
 	@$(MAKE) -s -f $(GTK_MAKEFILE) install
 	@$(MAKE) -s -f $(QT_MAKEFILE) install
+	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-notifications
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-notifications
 	@$(MAKE) -s -f $(THIS_MAKEFILE) configure-notifications
 	@$(MAKE) -s -f $(THIS_MAKEFILE) clean-orphans
