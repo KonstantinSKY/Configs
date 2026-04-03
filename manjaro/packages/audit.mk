@@ -24,7 +24,7 @@ audit: ## Print a package audit focused on duplicate tools, Manjaro presets, and
 	fi
 	@echo ""
 	@echo "🎨 Themes and Appearance:"
-	@THEMES="$$(pacman -Qq | rg '^(matcha-gtk-theme|materia-gtk-theme|adapta-maia-theme|papirus-icon-theme|papirus-maia-icon-theme|breeze-cursors5|kvantum-manjaro|qt5ct|qt6ct|nitrogen|picom|conky|conky-i3)$$' || true)"; \
+	@THEMES="$$(pacman -Qq | rg '^(matcha-gtk-theme|materia-gtk-theme|adapta-maia-theme|papirus-icon-theme|papirus-maia-icon-theme|breeze-cursors5|kvantum|kvantum-qt5|kvantum-manjaro|qt5ct|qt6ct|nitrogen|picom|conky|conky-i3)$$' || true)"; \
 	if [ -n "$$THEMES" ]; then \
 		printf '%s\n' "$$THEMES"; \
 	else \
@@ -40,11 +40,27 @@ audit: ## Print a package audit focused on duplicate tools, Manjaro presets, and
 	fi
 	@echo ""
 	@echo "🌐 Network and Remote Access Extras:"
-	@NET_PKGS="$$(pacman -Qq | rg '^(networkmanager-openconnect|networkmanager-openvpn|networkmanager-vpnc|modemmanager|nfs-utils|avahi|nss-mdns|blueman|bluez|bluez-utils|network-manager-applet|wpa_supplicant|netctl)$$' || true)"; \
+	@NET_PKGS="$$(pacman -Qq | rg '^(networkmanager-openconnect|networkmanager-openvpn|networkmanager-vpnc|modemmanager|nfs-utils|avahi|nss-mdns|blueman|bluez|bluez-utils|network-manager-applet|wpa_supplicant|netctl|openssh)$$' || true)"; \
 	if [ -n "$$NET_PKGS" ]; then \
 		printf '%s\n' "$$NET_PKGS"; \
 	else \
 		echo "ℹ️  No matching network extras found"; \
+	fi
+	@echo ""
+	@echo "🔊 Audio Stack:"
+	@AUDIO_PKGS="$$(pacman -Qq | rg '^(pipewire|pipewire-pulse|pipewire-alsa|wireplumber|pulseaudio|pavucontrol)$$' || true)"; \
+	if [ -n "$$AUDIO_PKGS" ]; then \
+		printf '%s\n' "$$AUDIO_PKGS"; \
+	else \
+		echo "ℹ️  No matching audio packages found"; \
+	fi
+	@echo ""
+	@echo "🔔 Notification Providers:"
+	@NOTIFY_PKGS="$$(pacman -Qq | rg '^(xfce4-notifyd|dunst|libnotify)$$' || true)"; \
+	if [ -n "$$NOTIFY_PKGS" ]; then \
+		printf '%s\n' "$$NOTIFY_PKGS"; \
+	else \
+		echo "ℹ️  No matching notification packages found"; \
 	fi
 	@echo ""
 	@echo "🧰 Developer Tooling:"

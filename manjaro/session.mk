@@ -41,16 +41,19 @@ zsh: ## Install zsh if needed and switch current user to it
 	fi
 	@$(call require_exists,$(ZSH_CUSTOM_RC),Custom zsh rc not found)
 	@echo "🧩 Ensuring $(ZSH_TARGET_RC) loads $(ZSH_CUSTOM_RC)..."
-	@if [ ! -e "$(ZSH_TARGET_RC)" ]; then \
-		echo "📄 Creating new $(ZSH_TARGET_RC)"; \
-		{ \
-			printf '%s\n' '$(ZSH_INCLUDE_START)'; \
-			printf '%s\n' '$(ZSH_INCLUDE_LINE)'; \
-			printf '%s\n' '$(ZSH_INCLUDE_END)'; \
-		} > "$(ZSH_TARGET_RC)"; \
-	elif grep -Fq '$(ZSH_INCLUDE_START)' "$(ZSH_TARGET_RC)"; then \
-		echo "✅ Custom zsh include already present in $(ZSH_TARGET_RC)"; \
+	@tmp="$$(mktemp)"; \
+	if [ -e "$(ZSH_TARGET_RC)" ]; then \
+		awk -v start='$(ZSH_INCLUDE_START)' -v end='$(ZSH_INCLUDE_END)' '\
+			$$0 == start { skip=1; next } \
+			skip && $$0 == end { skip=0; next } \
+			!skip { print }' "$(ZSH_TARGET_RC)" > "$$tmp"; \
+		echo "✅ Normalized custom zsh include block in $(ZSH_TARGET_RC)"; \
 	else \
-		printf '\n%s\n%s\n%s\n' '$(ZSH_INCLUDE_START)' '$(ZSH_INCLUDE_LINE)' '$(ZSH_INCLUDE_END)' >> "$(ZSH_TARGET_RC)"; \
-		echo "✅ Added custom zsh include to $(ZSH_TARGET_RC)"; \
-	fi
+		echo "📄 Creating new $(ZSH_TARGET_RC)"; \
+		: > "$$tmp"; \
+	fi; \
+	if [ -s "$$tmp" ]; then \
+		printf '\n' >> "$$tmp"; \
+	fi; \
+	printf '%s\n%s\n%s\n' '$(ZSH_INCLUDE_START)' '$(ZSH_INCLUDE_LINE)' '$(ZSH_INCLUDE_END)' >> "$$tmp"; \
+	mv "$$tmp" "$(ZSH_TARGET_RC)"
