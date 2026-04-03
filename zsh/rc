@@ -110,7 +110,3 @@ alias vi=choose_editor
 export EDITOR=nvim
 export VISUAL=zeditor
 alias ge=gemini
-
-# GNU Make Global Configuration
-export MAKEFILES="$CONFIGS_PATH/make/all.mk"
-export MAKEFLAGS="-I $CONFIGS_PATH/make"

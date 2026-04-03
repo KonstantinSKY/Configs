@@ -13,13 +13,9 @@ THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 
-MAKEFILES ?= $(CONFIGS_DIR)/make/all.mk
-export MAKEFILES
-
-ifeq ($(filter -I$(CONFIGS_DIR)/make,$(MAKEFLAGS)),)
-MAKEFLAGS += -I$(CONFIGS_DIR)/make
+ifeq ($(filter $(CONFIGS_DIR)/make/all.mk,$(abspath $(MAKEFILE_LIST))),)
+include $(CONFIGS_DIR)/make/all.mk
 endif
-export MAKEFLAGS
 
 GTK_MAKEFILE := $(THIS_DIR)/gtk/Makefile
 QT_MAKEFILE := $(THIS_DIR)/qt/Makefile

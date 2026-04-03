@@ -1,5 +1,7 @@
-# Global GNU Make extensions
-# These files are found because of MAKEFLAGS="-I /home/sky/Work/Configs/make"
+# Global GNU Make extensions for repo entrypoint Makefiles.
+
+ifndef CONFIGS_MAKE_ALL_INCLUDED
+CONFIGS_MAKE_ALL_INCLUDED := 1
 
 MAKE_MODULE_DIR := $(patsubst %/,%,$(dir $(abspath $(lastword $(MAKEFILE_LIST)))))
 CONFIGS_DIR := $(abspath $(MAKE_MODULE_DIR)/..)
@@ -17,3 +19,4 @@ include $(MAKE_MODULE_DIR)/update.mk
 endif
 
 # Add more global modules here in the future
+endif
