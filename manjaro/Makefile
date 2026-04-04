@@ -52,7 +52,14 @@ init: ## Minimal bootstrap: prepare a fresh machine for further configuration
 	## 🧩 Setup
 	## ---------------------------
 setup: ## Run the full Manjaro bootstrap flow via yay
-	@$(MAKE) -s -f $(THIS_MAKEFILE) init
+	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
+	@$(MAKE) -s -f $(THIS_MAKEFILE) mirrors
+	@echo "⬆️  Updating all system packages via pacman before yay bootstrap..."
+	@sudo pacman -Syu
+	@$(MAKE) -s -f $(THIS_MAKEFILE) clean
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-yay
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-ssh
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
 	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) xprofile
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
