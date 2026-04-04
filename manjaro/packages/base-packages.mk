@@ -21,5 +21,6 @@ BASE_PACKAGES = \
 	tmux \
 	tree \
 	alsa-utils \
+	pacman-contrib \
 	firefox \
 	claude-code

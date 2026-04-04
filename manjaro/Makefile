@@ -90,7 +90,7 @@ update u: ## Run full maintenance: yay update, orphan cleanup, cache cleanup, fl
 	@$(MAKE) -s -f $(THIS_MAKEFILE) yay-update
 	@$(MAKE) -s -f $(THIS_MAKEFILE) clean-orphans
 	@echo "🧼 Cleaning cache..."
-	@yay -Sc --noconfirm
+	@paccache -rk1 --noconfirm
 	@echo "-------------------------------------------------------------------------------"
 	@echo "⬆️  Updating flatpak apps/runtimes..."
 	@flatpak update -y || { rc=$$?; [ $$rc -eq 127 ] && echo "⚠️ flatpak not installed — skipping" || exit $$rc; }
