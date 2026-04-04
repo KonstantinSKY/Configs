@@ -3,6 +3,7 @@
 
 .PHONY: \
 	help \
+	init \
 	setup \
 	mirrors \
 	enable-aur \
@@ -33,20 +34,28 @@ include $(THIS_DIR)/session.mk
 include $(THIS_DIR)/check.mk
 
 	## ---------------------------
+	## 🚀 Init
+	## ---------------------------
+init: ## Minimal bootstrap: prepare a fresh machine for further configuration
+	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
+	@$(MAKE) -s -f $(THIS_MAKEFILE) mirrors
+	@echo "⬆️  Updating all system packages via pacman..."
+	@sudo pacman -Syu
+	@$(MAKE) -s -f $(THIS_MAKEFILE) clean
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-yay
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-ssh
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
+	@echo "✅ Init complete! Machine is ready for further configuration."
+	@echo "-------------------------------------------------------------------------------"
+
+	## ---------------------------
 	## 🧩 Setup
 	## ---------------------------
 setup: ## Run the full Manjaro bootstrap flow via yay
-	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
-	@$(MAKE) -s -f $(THIS_MAKEFILE) mirrors
-	@echo "⬆️  Updating all system packages via pacman before yay bootstrap..."
-	@sudo pacman -Syu
-	@$(MAKE) -s -f $(THIS_MAKEFILE) clean
-	@$(MAKE) -s -f $(THIS_MAKEFILE) install-ssh
-	@$(MAKE) -s -f $(THIS_MAKEFILE) install-yay
+	@$(MAKE) -s -f $(THIS_MAKEFILE) init
 	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) xprofile
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
-	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
 	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-audio
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-audio
 	@$(MAKE) -s -f $(GTK_MAKEFILE) install
