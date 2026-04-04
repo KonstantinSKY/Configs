@@ -107,6 +107,7 @@ choose_editor() {
 alias v=choose_editor
 alias vi=choose_editor
 
+export PASSWORD_STORE_DIR="$HOME/Work/.password-store"
 export EDITOR=nvim
 export VISUAL=zeditor
 alias ge=gemini
