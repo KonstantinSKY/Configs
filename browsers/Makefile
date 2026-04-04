@@ -37,14 +37,14 @@ remove-palemoon: ## Remove legacy Pale Moon packages before a full system update
 
 chrome install-chrome: ## Install Google Chrome via the Manjaro package flow
 	@echo "🌐 Installing Google Chrome..."
-	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install google-chrome
+	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install PKGS="google-chrome"
 
 firefox install-firefox: ## Install Firefox and apply the managed Firefox profile overlay
 	@$(MAKE) -s -f "$(FIREFOX_MAKEFILE)" install
 
 tor install-tor: ## Install Tor Browser Launcher via the Manjaro package flow
 	@echo "🕵️  Installing Tor Browser..."
-	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install torbrowser-launcher
+	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install PKGS="torbrowser-launcher"
 
 %:
 	@:
