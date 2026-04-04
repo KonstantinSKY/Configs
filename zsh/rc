@@ -110,3 +110,10 @@ alias vi=choose_editor
 export EDITOR=nvim
 export VISUAL=zeditor
 alias ge=gemini
+
+POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon dir vcs)
+POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time background_jobs direnv asdf virtualenv anaconda pyenv goenv nodenv nvm nodeenv rbenv rvm fvm luaenv jenv plenv phpenv scalaenv haskell_stack kubecontext terraform aws aws_eb_env azure gcloud google_app_cred toolbox ranger nnn xplr vim_shell midnight_commander nix_shell vi_mode todo timewarrior taskwarrior)
+POWERLEVEL9K_CONTEXT_TEMPLATE='%n@%m'
+unset POWERLEVEL9K_CONTEXT_DEFAULT_CONTENT_EXPANSION
+unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
+(( $+functions[p10k] )) && p10k reload
