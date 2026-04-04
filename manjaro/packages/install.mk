@@ -1,7 +1,6 @@
 .PHONY: install-yay yay-update install i install-base
 
-PKGS ?=
-EXTRA_INSTALL_GOALS := $(filter-out install i,$(MAKECMDGOALS))
+PKGS ?= $(filter-out install i,$(MAKECMDGOALS))
 
 install-yay: ## Install yay if needed, using pacman only for bootstrap
 	@if command -v yay >/dev/null 2>&1; then \
@@ -19,13 +18,8 @@ yay-update: ## Update official and AUR packages via yay
 	@echo "-------------------------------------------------------------------------------"
 
 install i: ## Install one or more packages via yay after updating the system
-	@if [ -n "$(strip $(EXTRA_INSTALL_GOALS))" ]; then \
-		echo '❌ Positional package names are not supported. Use: make install PKGS="pkg1 pkg2"'; \
-		echo 'ℹ️  Unexpected make goals: $(EXTRA_INSTALL_GOALS)'; \
-		exit 1; \
-	fi
 	@if [ -z "$(strip $(PKGS))" ]; then \
-		echo '❌ No packages specified. Usage: make install PKGS="pkg1 pkg2"'; \
+		echo '❌ No packages specified. Usage: make install pkg1 pkg2  OR  make install PKGS="pkg1 pkg2"'; \
 		exit 1; \
 	fi
 	@$(call ensure_system_updated)
