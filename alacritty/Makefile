@@ -8,6 +8,9 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
 endif
+ifeq ($(filter $(CONFIGS_DIR)/make/link.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/link.mk
+endif
 include $(CONFIGS_DIR)/make/update.mk
 
 CONFIG_DIR := $(HOME)/.config/alacritty
