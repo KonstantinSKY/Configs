@@ -25,7 +25,7 @@ all: install ## Alias for install
 
 install i: ## Install Firefox and apply the managed profile overlay
 	@echo "🦊 Installing Firefox..."
-	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install firefox
+	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install PKGS="firefox"
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" setup
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
 	@echo "✅ Firefox installed and profile overlay configured."
