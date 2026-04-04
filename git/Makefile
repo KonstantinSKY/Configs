@@ -8,6 +8,9 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
 endif
+ifeq ($(filter $(CONFIGS_DIR)/make/link.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/link.mk
+endif
 
 SOURCE_CONFIG := $(THIS_DIR)/gitconfig
 TARGET_CONFIG := $(HOME)/.gitconfig

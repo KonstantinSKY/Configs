@@ -3,6 +3,11 @@
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/../..)
+
+ifeq ($(filter $(CONFIGS_DIR)/make/link.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/link.mk
+endif
 
 GTK_THEME ?= Matcha-dark-sea
 ICON_THEME ?= Papirus-Dark
