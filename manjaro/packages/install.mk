@@ -14,7 +14,6 @@ install-yay: ## Install yay if needed, using pacman only for bootstrap
 
 yay-update: ## Update official and AUR packages via yay
 	@$(require_yay)
-	@$(MAKE) -s -f $(THIS_MAKEFILE) refresh-keyrings
 	@echo "⬆️  Updating AUR and system packages with yay..."
 	@yay -Syu --noconfirm --answerclean None --answerdiff None
 	@echo "-------------------------------------------------------------------------------"

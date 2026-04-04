@@ -20,4 +20,6 @@ BASE_PACKAGES = \
 	bat \
 	tmux \
 	tree \
-	alsa-utils
+	alsa-utils \
+	firefox \
+	claude-code
