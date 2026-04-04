@@ -1,4 +1,4 @@
-.PHONY: remove-audio install-audio
+.PHONY: remove-audio install-audio audio
 
 PIPEWIRE_PACKAGES = \
 	pipewire \
@@ -21,3 +21,7 @@ install-audio: ## Install the managed PipeWire audio stack
 	@sudo pacman -S --needed --noconfirm $(PIPEWIRE_PACKAGES)
 	@echo "✅ PipeWire audio stack is installed."
 	@echo "-------------------------------------------------------------------------------"
+
+audio: ## Remove PulseAudio and install the managed PipeWire stack
+	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-audio
+	@$(MAKE) -s -f $(THIS_MAKEFILE) install-audio

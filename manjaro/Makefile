@@ -56,8 +56,7 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) xprofile
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
-	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-audio
-	@$(MAKE) -s -f $(THIS_MAKEFILE) install-audio
+	@$(MAKE) -s -f $(THIS_MAKEFILE) audio
 	@$(MAKE) -s -f $(GTK_MAKEFILE) install
 	@$(MAKE) -s -f $(QT_MAKEFILE) install
 	@$(MAKE) -s -f $(THIS_MAKEFILE) notifications
