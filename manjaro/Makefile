@@ -45,12 +45,13 @@ init: ## Minimal bootstrap: prepare a fresh machine for further configuration
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-ssh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-base
+	@$(MAKE) -s -f $(THIS_MAKEFILE) update
 	@echo "✅ Init complete! Machine is ready for further configuration."
 	@echo "-------------------------------------------------------------------------------"
 
-	## ---------------------------
-	## 🧩 Setup
-	## ---------------------------
+## ---------------------------
+## 🧩 Setup
+## ---------------------------
 setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
 	@$(MAKE) -s -f $(THIS_MAKEFILE) xprofile
