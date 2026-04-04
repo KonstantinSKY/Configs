@@ -30,7 +30,7 @@ endif
 ## ---------------------------
 install: ## Install MegaCMD package only
 	@echo "📦 Installing MegaCMD..."
-	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install megacmd
+	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install PKGS="megacmd"
 	@echo "$(SEPARATOR)"
 	@echo "✅ MegaCMD package installation finished."
 	@echo "   Next step: make -f $(THIS_MAKEFILE) auth"
