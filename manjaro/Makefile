@@ -63,7 +63,7 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) remove-notifications
 	@$(MAKE) -s -f $(THIS_MAKEFILE) install-notifications
 	@$(MAKE) -s -f $(THIS_MAKEFILE) configure-notifications
-	@$(MAKE) -s -f $(THIS_MAKEFILE) clean-orphans
+	@$(MAKE) -s -f $(THIS_MAKEFILE) update
 	@echo "✅ Manjaro i3 setup complete!"
 
 mirrors: ## Refresh Manjaro mirrors and package databases
