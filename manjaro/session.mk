@@ -1,4 +1,4 @@
-.PHONY: xprofile xp mimeapps ma zsh
+.PHONY: xprofile xp mimeapps ma zsh picom
 
 TARGET_XPROFILE_FILE = $(HOME)/.xprofile
 XPROFILE_SOURCE_FILE = $(THIS_DIR)/xprofile/.xprofile
@@ -10,9 +10,14 @@ ZSH_INCLUDE_START = \# >>> custom shell config >>>
 ZSH_INCLUDE_END = \# <<< custom shell config <<<
 ZSH_INCLUDE_LINE = [ -r "$(ZSH_CUSTOM_RC)" ] && source "$(ZSH_CUSTOM_RC)"
 
+PICOM_MAKEFILE := $(CONFIGS_DIR)/picom/Makefile
+
 ## ---------------------------
 ## 👤 User Session
 ## ---------------------------
+picom: ## Install picom compositor and link config
+	@$(MAKE) -s -f $(PICOM_MAKEFILE) install
+
 xprofile xp: ## Link .xprofile via a direct symlink
 	@$(call link,$(XPROFILE_SOURCE_FILE),$(TARGET_XPROFILE_FILE))
 
