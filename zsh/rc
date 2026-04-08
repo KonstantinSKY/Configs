@@ -123,3 +123,8 @@ POWERLEVEL9K_CONTEXT_TEMPLATE='%n@%m'
 unset POWERLEVEL9K_CONTEXT_DEFAULT_CONTENT_EXPANSION
 unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
 (( $+functions[p10k] )) && p10k reload
+
+# Auto-attach to tmux on SSH
+if [[ -n "$SSH_CONNECTION" && -z "$TMUX" ]] && command -v tmux >/dev/null 2>&1; then
+    tmux attach-session -t main 2>/dev/null || tmux new-session -s main
+fi
