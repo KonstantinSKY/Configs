@@ -10,6 +10,7 @@ export DISPLAY="${DISPLAY:-:0}"
 export XAUTHORITY="${XAUTHORITY:-$HOME/.Xauthority}"
 
 pkill -x voice-ptt 2>/dev/null || true
+pkill -x voice-ptt-macos 2>/dev/null || true
 sleep 0.5
 
 cd "$APP_DIR"
@@ -19,10 +20,15 @@ cd "$APP_DIR"
   echo "XDG_RUNTIME_DIR=$XDG_RUNTIME_DIR"
   echo "XAUTHORITY=$XAUTHORITY"
 } >"$LOG_FILE"
-nohup "$APP_DIR/voice-ptt" >>"$LOG_FILE" 2>&1 &
+if [[ "$(uname)" == "Darwin" ]]; then
+  BINARY="$APP_DIR/voice-ptt-macos"
+else
+  BINARY="$APP_DIR/voice-ptt"
+fi
+nohup "$BINARY" >>"$LOG_FILE" 2>&1 &
 sleep 1
 
-if pgrep -x voice-ptt >/dev/null; then
+if pgrep -x voice-ptt >/dev/null || pgrep -x voice-ptt-macos >/dev/null; then
   echo "voice-ptt started"
 else
   echo "voice-ptt failed to start"
