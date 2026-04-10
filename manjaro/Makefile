@@ -20,6 +20,8 @@ endif
 
 GTK_MAKEFILE := $(THIS_DIR)/gtk/Makefile
 QT_MAKEFILE := $(THIS_DIR)/qt/Makefile
+PICOM_MAKEFILE := $(CONFIGS_DIR)/picom/Makefile
+FONTS_MAKEFILE := $(CONFIGS_DIR)/fonts/Makefile
 
 include $(THIS_DIR)/packages/keyrings.mk
 include $(THIS_DIR)/packages/base-packages.mk
@@ -59,6 +61,8 @@ setup: ## Run the full Manjaro bootstrap flow via yay
 	@$(MAKE) -s -f $(THIS_MAKEFILE) audio
 	@$(MAKE) -s -f $(GTK_MAKEFILE) install
 	@$(MAKE) -s -f $(QT_MAKEFILE) install
+	@$(MAKE) -s -f $(PICOM_MAKEFILE) install
+	@$(MAKE) -s -f $(FONTS_MAKEFILE) install
 	@$(MAKE) -s -f $(THIS_MAKEFILE) notifications
 	@$(MAKE) -s -f $(CONFIGS_DIR)/linux/Makefile install-logind
 	@$(MAKE) -s -f $(THIS_MAKEFILE) update
