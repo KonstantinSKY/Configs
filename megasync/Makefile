@@ -60,10 +60,7 @@ auth login: ## Run interactive MegaCMD login unless an active session already ex
 		echo "✅ MegaCMD session is already active."; \
 		mega-whoami; \
 	else \
-		echo "🔐 MegaCMD login"; \
-		printf "   Email: "; read MEGA_EMAIL; \
-		printf "   Password: "; stty -echo; read MEGA_PASS; stty echo; echo; \
-		mega-login "$$MEGA_EMAIL" "$$MEGA_PASS"; \
+		bash -c 'read -r -p "   Email: " MEGA_EMAIL; read -r -s -p "   Password: " MEGA_PASS; echo; mega-login "$$MEGA_EMAIL" "$$MEGA_PASS"'; \
 	fi
 
 check: ## Verify MegaCMD commands exist and that the current session is authenticated
