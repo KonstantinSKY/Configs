@@ -94,10 +94,10 @@ install-logind: ## Disable automatic suspend via systemd logind drop-in (works o
 	@cat /etc/systemd/logind.conf.d/no-sleep.conf
 	@echo "-------------------------------------------------------------------------------"
 	@echo "⚙️  2. IdleAction active in logind (should be 'ignore'):"
-	@systemctl show systemd-logind --property=IdleAction
+	@SYSTEMD_PAGER= systemctl show systemd-logind --property=IdleAction
 	@echo "-------------------------------------------------------------------------------"
 	@echo "🔒 3. Active suspend inhibitors:"
-	@systemd-inhibit --list || echo "   (none)"
+	@SYSTEMD_PAGER= systemd-inhibit --list || echo "   (none)"
 	@echo "-------------------------------------------------------------------------------"
 	@echo "✅ Done. The system will no longer suspend on idle."
 
