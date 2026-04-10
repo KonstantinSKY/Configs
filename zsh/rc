@@ -124,7 +124,10 @@ unset POWERLEVEL9K_CONTEXT_DEFAULT_CONTENT_EXPANSION
 unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
 (( $+functions[p10k] )) && p10k reload
 
-# Auto-attach to tmux on SSH
-if [[ -n "$SSH_CONNECTION" && -z "$TMUX" ]] && command -v tmux >/dev/null 2>&1; then
-    tmux attach-session -t main 2>/dev/null || tmux new-session -s main
-fi
+# tmux session aliases: t1/t2/t3 attach to (or create) numbered sessions
+# tl lists all sessions
+for _t in 1 2 3 4 5; do
+    alias "t$_t"="tmux attach-session -t $_t 2>/dev/null || tmux new-session -s $_t"
+done
+unset _t
+alias tl="tmux list-sessions"
