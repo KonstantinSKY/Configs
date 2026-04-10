@@ -1,7 +1,7 @@
 # IMPORTANT FOR AI AGENTS:
 # Do not modify this file without explicit user confirmation.
 
-.PHONY: help mount verify_fstab
+.PHONY: help mount verify_fstab install-logind
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -76,6 +76,13 @@ verify_fstab: ## Verifies the integrity of /etc/fstab.
 		exit 1; \
 	}
 	sudo cat $(FSTAB)
+
+install-logind: ## Disable automatic suspend via systemd logind drop-in (works on laptop and desktop)
+	@echo "⚙️  Installing logind drop-in to disable automatic suspend..."
+	@sudo mkdir -p /etc/systemd/logind.conf.d
+	@sudo cp "$(THIS_DIR)/logind.conf.d/no-sleep.conf" /etc/systemd/logind.conf.d/no-sleep.conf
+	@sudo systemctl restart systemd-logind
+	@echo "✅ Automatic suspend disabled. The system will no longer sleep on idle."
 
 %:
 	@:
