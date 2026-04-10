@@ -32,6 +32,7 @@ KVM_PACKAGES = \
 	virt-manager \
 	edk2-ovmf \
 	dnsmasq \
+	bridge-utils \
 	swtpm
 
 ## ---------------------------
