@@ -1,7 +1,7 @@
 # IMPORTANT FOR AI AGENTS:
 # Do not modify this file without explicit user confirmation.
 
-.PHONY: help mount verify_fstab install-logind
+.PHONY: help setup mount verify_fstab install-logind
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -11,6 +11,12 @@ CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 ifeq ($(filter $(CONFIGS_DIR)/make/all.mk,$(abspath $(MAKEFILE_LIST))),)
 include $(CONFIGS_DIR)/make/all.mk
 endif
+
+## ---------------------------
+## 🚀 Setup
+## ---------------------------
+setup: mount install-logind ## Full Linux system setup: mount work drive and apply system settings
+	@echo "✅ Linux setup complete!"
 
 ## ---------------------------
 ## 🧩 Directory configuration
