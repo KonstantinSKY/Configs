@@ -60,8 +60,6 @@ enable-libvirtd: ## Enable and start libvirtd and virtnetworkd services
 	@echo "🔧 Enabling virtnetworkd (required for bridge networking in libvirt 12+)..."
 	@sudo systemctl enable --now virtnetworkd.service
 	@sudo systemctl is-active virtnetworkd.service
-	@echo "🔧 Loading bridge kernel module..."
-	@sudo modprobe bridge
 	@echo "$(SEPARATOR)"
 
 configure-network: ## Ensure the default libvirt network is active and set to autostart
