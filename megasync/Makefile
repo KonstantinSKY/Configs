@@ -1,7 +1,7 @@
 # IMPORTANT FOR AI AGENTS:
 # Do not modify this file without explicit user confirmation.
 
-.PHONY: help h install setup auth login check sync s
+.PHONY: help h install setup check sync s
 .DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
@@ -18,7 +18,6 @@ MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
 ## 🧩 MegaCMD configuration
 ## ---------------------------
 SEPARATOR := ---------------------------------------------------------------------
-MEGA_LOGIN_COMMANDS := mega-whoami mega-login
 MEGA_SYNC_COMMANDS := mega-whoami mega-ls mega-mkdir mega-sync
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
@@ -35,33 +34,12 @@ install: ## Install MegaCMD package only
 	@echo "✅ MegaCMD package installation finished."
 	@echo "   Next step: make -f $(THIS_MAKEFILE) auth"
 
-setup: ## Install MegaCMD, run interactive login, and verify access
+setup: ## Install MegaCMD and verify access (login manually: mega-login email password)
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" install
 	@echo "$(SEPARATOR)"
-	@$(MAKE) -s -f "$(THIS_MAKEFILE)" auth
+	@echo "ℹ️  Login manually: mega-login your@email.com yourpassword"
 	@echo "$(SEPARATOR)"
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" check
-
-## ---------------------------
-## 🔐 Authentication
-## ---------------------------
-auth login: ## Run interactive MegaCMD login unless an active session already exists
-	@echo "🔍 Verifying MegaCMD tools..."
-	@for cmd in $(MEGA_LOGIN_COMMANDS); do \
-		if ! command -v "$$cmd" >/dev/null 2>&1; then \
-			echo "❌ Missing MegaCMD command: $$cmd"; \
-			echo "   Run: make -f $(THIS_MAKEFILE) install"; \
-			exit 1; \
-		fi; \
-	done
-	@echo "✅ MegaCMD tools are available."
-	@echo "$(SEPARATOR)"
-	@if mega-whoami >/dev/null 2>&1; then \
-		echo "✅ MegaCMD session is already active."; \
-		mega-whoami; \
-	else \
-		bash -c 'read -r -p "   Email: " MEGA_EMAIL; read -r -s -p "   Password: " MEGA_PASS; echo; mega-login "$$MEGA_EMAIL" "$$MEGA_PASS"'; \
-	fi
 
 check: ## Verify MegaCMD commands exist and that the current session is authenticated
 	@echo "🔍 Verifying MegaCMD tools..."
