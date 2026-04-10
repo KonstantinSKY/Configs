@@ -32,7 +32,6 @@ KVM_PACKAGES = \
 	virt-manager \
 	edk2-ovmf \
 	dnsmasq \
-	bridge-utils \
 	swtpm
 
 ## ---------------------------
@@ -54,10 +53,15 @@ install-kvm: ## Install KVM/QEMU/libvirt packages
 	@echo "✅ KVM packages installed."
 	@echo "$(SEPARATOR)"
 
-enable-libvirtd: ## Enable and start libvirtd service
+enable-libvirtd: ## Enable and start libvirtd and virtnetworkd services
 	@echo "🔧 Enabling libvirtd..."
 	@sudo systemctl enable --now libvirtd.service
 	@sudo systemctl is-active libvirtd.service
+	@echo "🔧 Enabling virtnetworkd (required for bridge networking in libvirt 12+)..."
+	@sudo systemctl enable --now virtnetworkd.service
+	@sudo systemctl is-active virtnetworkd.service
+	@echo "🔧 Loading bridge kernel module..."
+	@sudo modprobe bridge
 	@echo "$(SEPARATOR)"
 
 configure-network: ## Ensure the default libvirt network is active and set to autostart
