@@ -1,9 +1,11 @@
-.PHONY: all install i sync-rules sync-gemini-rules sync-codex-rules verify v
+.PHONY: all install i sync-rules sync-gemini-rules sync-codex-rules verify v status codex-status mvs codex-mvs sasha codex-sasha
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+SECURITY_DIR := $(abspath $(CONFIGS_DIR)/../Security)
+CODEX_PROFILE_SWITCH := $(SECURITY_DIR)/ai/codex/switch_profile.sh
 
 include $(CONFIGS_DIR)/make/update.mk
 
@@ -58,6 +60,15 @@ sync-codex-rules: ## Copy Codex .rules files into ~/.codex/rules
 		echo "❌ No Codex .rules files found in $(CODEX_RULES_SRC_DIR)"; \
 		exit 1; \
 	fi
+
+status codex-status: ## Show active Codex auth profile
+	@bash "$(CODEX_PROFILE_SWITCH)" status
+
+mvs codex-mvs: ## Switch Codex auth to mvs
+	@bash "$(CODEX_PROFILE_SWITCH)" switch mvs
+
+sasha codex-sasha: ## Switch Codex auth to sasha
+	@bash "$(CODEX_PROFILE_SWITCH)" switch sasha
 
 verify v: ## Verify packages and synced rule files
 	@echo "🔎 Verifying AI tools..."
