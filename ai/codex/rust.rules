@@ -1,0 +1,27 @@
+# Rust command policy.
+# Keep this file focused on Rust and Cargo commands only.
+
+# Safe inspection commands.
+# These commands do not modify the workspace and are safe to allow by default.
+prefix_rule(pattern=["cargo", "--version"], decision="allow")
+prefix_rule(pattern=["cargo", "metadata"], decision="allow")
+prefix_rule(pattern=["cargo", "tree"], decision="allow")
+prefix_rule(pattern=["cargo", "locate-project"], decision="allow")
+prefix_rule(pattern=["cargo", "pkgid"], decision="allow")
+prefix_rule(pattern=["cargo", "fmt", "--check"], decision="allow")
+prefix_rule(pattern=["rustc", "--version"], decision="allow")
+prefix_rule(pattern=["rustup", "show"], decision="allow")
+prefix_rule(pattern=["rustup", "toolchain", "list"], decision="allow")
+
+# Conditionally safe trusted-repo commands.
+# These are acceptable in trusted repositories, but they may execute build scripts
+# or test binaries and therefore are not strictly read-only.
+prefix_rule(pattern=["cargo", "check"], decision="allow")
+prefix_rule(pattern=["cargo", "build"], decision="allow")
+prefix_rule(pattern=["cargo", "clippy"], decision="allow")
+prefix_rule(pattern=["cargo", "test", "--no-run"], decision="allow")
+prefix_rule(pattern=["cargo", "test"], decision="allow")
+
+# Mutating or release-oriented commands are intentionally omitted.
+# Examples: cargo add, cargo remove, cargo update, cargo clean, cargo fix,
+# cargo install, cargo publish, cargo login, cargo run.

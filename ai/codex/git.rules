@@ -1,0 +1,31 @@
+# Git command policy.
+# Keep this file focused on Git commands only.
+
+# Safe inspection commands.
+# These commands inspect repository state without changing the worktree or refs.
+prefix_rule(pattern=["git", "--version"], decision="allow")
+prefix_rule(pattern=["git", "status"], decision="allow")
+prefix_rule(pattern=["git", "diff"], decision="allow")
+prefix_rule(pattern=["git", "log"], decision="allow")
+prefix_rule(pattern=["git", "show"], decision="allow")
+prefix_rule(pattern=["git", "rev-parse"], decision="allow")
+prefix_rule(pattern=["git", "describe"], decision="allow")
+prefix_rule(pattern=["git", "ls-files"], decision="allow")
+prefix_rule(pattern=["git", "grep"], decision="allow")
+prefix_rule(pattern=["git", "blame"], decision="allow")
+prefix_rule(pattern=["git", "branch", "--show-current"], decision="allow")
+prefix_rule(pattern=["git", "remote", "-v"], decision="allow")
+prefix_rule(pattern=["git", "config", "--get"], decision="allow")
+prefix_rule(pattern=["git", "config", "--get-all"], decision="allow")
+prefix_rule(pattern=["git", "submodule", "status"], decision="allow")
+
+# Conditionally safe trusted-repo commands.
+# These commands may contact remotes or update local Git metadata,
+# but they should not modify tracked worktree files when used as listed.
+prefix_rule(pattern=["git", "fetch"], decision="allow")
+prefix_rule(pattern=["git", "ls-remote"], decision="allow")
+
+# Mutating or potentially destructive commands are intentionally omitted.
+# Examples: git add, git commit, git switch, git checkout, git restore,
+# git reset, git rebase, git merge, git cherry-pick, git clean, git stash,
+# git branch <name>, git tag <name>, git push, git pull.
