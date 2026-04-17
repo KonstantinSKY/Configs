@@ -5,6 +5,7 @@
 	enable-libvirtd \
 	configure-network \
 	configure-user \
+	configure-qemu-user \
 	status s \
 	backup \
 	check-running
@@ -43,6 +44,7 @@ setup: ## Install KVM packages, enable libvirtd, configure network and user grou
 	@$(MAKE) -s -f $(THIS_MAKEFILE) enable-libvirtd
 	@$(MAKE) -s -f $(THIS_MAKEFILE) configure-network
 	@$(MAKE) -s -f $(THIS_MAKEFILE) configure-user
+	@$(MAKE) -s -f $(THIS_MAKEFILE) configure-qemu-user
 	@echo "$(SEPARATOR)"
 	@$(MAKE) -s -f $(THIS_MAKEFILE) status
 	@echo "✅ KVM platform setup complete."
@@ -74,6 +76,14 @@ configure-network: ## Ensure the default libvirt network is active and set to au
 		echo "❌ Network '$(NETWORK_NAME)' not found. Define it first via virt-manager or virsh."; \
 		exit 1; \
 	fi
+	@echo "$(SEPARATOR)"
+
+configure-qemu-user: ## Set QEMU to run as current user in /etc/libvirt/qemu.conf
+	@echo "⚙️  Configuring QEMU to run as '$(USER)'..."
+	@sudo sed -i 's/^#\?user\s*=.*/user = "$(USER)"/' /etc/libvirt/qemu.conf
+	@sudo sed -i 's/^#\?group\s*=.*/group = "$(USER)"/' /etc/libvirt/qemu.conf
+	@sudo systemctl restart libvirtd.service
+	@echo "✅ QEMU will now run as '$(USER)'. libvirtd restarted."
 	@echo "$(SEPARATOR)"
 
 configure-user: ## Add current user to libvirt group

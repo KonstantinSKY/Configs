@@ -115,6 +115,10 @@ export PASSWORD_STORE_DIR="$HOME/Work/.password-store"
 export EDITOR=nvim
 export VISUAL=zeditor
 alias ge=gemini
+alias codex-mvs='cp ~/.codex/auth_mvs.json ~/.codex/auth.json'
+alias codex-sasha='cp ~/.codex/auth_sasha.json ~/.codex/auth.json'
+alias codex-save-mvs='cp -u ~/.codex/auth.json ~/.codex/auth_mvs.json && echo "auth_mvs saved"'
+alias codex-save-sasha='cp -u ~/.codex/auth.json ~/.codex/auth_sasha.json && echo "auth_sasha saved"'
 alias upd='make -C "$HOME/Work/Configs/manjaro" update'
 
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon dir vcs)
