@@ -132,7 +132,7 @@ unset POWERLEVEL9K_CONTEXT_DEFAULT_CONTENT_EXPANSION
 unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
 (( $+functions[p10k] )) && p10k reload
 
-# tmux session aliases: t1/t2/t3 attach to (or create) host-scoped sessions
+# tmux session aliases: t1/t2/t3 attach to (or create) numbered sessions
 # tl lists all sessions
 _tmux_connect() {
     local session="$1"
@@ -147,24 +147,29 @@ _tmux_connect() {
 _tmux_slot() {
     local slot="$1"
     local host="${HOST%%.*}"
-    local session="${host}:${slot}"
+    local legacy_host_session="${host}_${slot}"
 
-    if tmux has-session -t "$session" 2>/dev/null; then
-        _tmux_connect "$session"
+    if tmux has-session -t "$slot" 2>/dev/null; then
+        _tmux_connect "$slot"
         return
     fi
 
-    if tmux has-session -t "$slot" 2>/dev/null; then
-        tmux rename-session -t "$slot" "$session"
-        _tmux_connect "$session"
+    if tmux has-session -t "$legacy_host_session" 2>/dev/null; then
+        tmux rename-session -t "$legacy_host_session" "$slot" 2>/dev/null || true
+
+        if tmux has-session -t "$slot" 2>/dev/null; then
+            _tmux_connect "$slot"
+        else
+            _tmux_connect "$legacy_host_session"
+        fi
         return
     fi
 
     if [[ -n "$TMUX" ]]; then
-        tmux new-session -d -s "$session"
-        tmux switch-client -t "$session"
+        tmux new-session -d -s "$slot"
+        tmux switch-client -t "$slot"
     else
-        tmux new-session -s "$session"
+        tmux new-session -s "$slot"
     fi
 }
 
