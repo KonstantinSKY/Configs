@@ -134,20 +134,38 @@ unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
 
 # tmux session aliases: t1/t2/t3 attach to (or create) host-scoped sessions
 # tl lists all sessions
+_tmux_connect() {
+    local session="$1"
+
+    if [[ -n "$TMUX" ]]; then
+        tmux switch-client -t "$session"
+    else
+        tmux attach-session -t "$session"
+    fi
+}
+
 _tmux_slot() {
     local slot="$1"
     local host="${HOST%%.*}"
     local session="${host}:${slot}"
 
-    tmux attach-session -t "$session" 2>/dev/null && return
-
-    if tmux has-session -t "$slot" 2>/dev/null; then
-        tmux rename-session -t "$slot" "$session"
-        tmux attach-session -t "$session"
+    if tmux has-session -t "$session" 2>/dev/null; then
+        _tmux_connect "$session"
         return
     fi
 
-    tmux new-session -s "$session"
+    if tmux has-session -t "$slot" 2>/dev/null; then
+        tmux rename-session -t "$slot" "$session"
+        _tmux_connect "$session"
+        return
+    fi
+
+    if [[ -n "$TMUX" ]]; then
+        tmux new-session -d -s "$session"
+        tmux switch-client -t "$session"
+    else
+        tmux new-session -s "$session"
+    fi
 }
 
 for _t in 1 2 3 4 5; do
