@@ -132,10 +132,26 @@ unset POWERLEVEL9K_CONTEXT_DEFAULT_CONTENT_EXPANSION
 unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
 (( $+functions[p10k] )) && p10k reload
 
-# tmux session aliases: t1/t2/t3 attach to (or create) numbered sessions
+# tmux session aliases: t1/t2/t3 attach to (or create) host-scoped sessions
 # tl lists all sessions
+_tmux_slot() {
+    local slot="$1"
+    local host="${HOST%%.*}"
+    local session="${host}:${slot}"
+
+    tmux attach-session -t "$session" 2>/dev/null && return
+
+    if tmux has-session -t "$slot" 2>/dev/null; then
+        tmux rename-session -t "$slot" "$session"
+        tmux attach-session -t "$session"
+        return
+    fi
+
+    tmux new-session -s "$session"
+}
+
 for _t in 1 2 3 4 5; do
-    alias "t$_t"="tmux attach-session -t $_t 2>/dev/null || tmux new-session -s $_t"
+    alias "t$_t"="_tmux_slot $_t"
 done
 unset _t
 alias tl="tmux list-sessions"
