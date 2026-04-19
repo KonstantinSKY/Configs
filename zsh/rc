@@ -134,8 +134,14 @@ unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
 
 # tmux session aliases: t1/t2/t3 attach to (or create) numbered sessions
 # tl lists all sessions
+_tmux_apply_status() {
+    tmux set-option -g status-left-length 40 >/dev/null
+    tmux set-option -g status-left " #h:#S " >/dev/null
+}
+
 _tmux_connect() {
     local session="$1"
+    _tmux_apply_status
 
     if [[ -n "$TMUX" ]]; then
         tmux switch-client -t "$session"
@@ -167,9 +173,12 @@ _tmux_slot() {
 
     if [[ -n "$TMUX" ]]; then
         tmux new-session -d -s "$slot"
+        _tmux_apply_status
         tmux switch-client -t "$slot"
     else
-        tmux new-session -s "$slot"
+        tmux new-session -d -s "$slot"
+        _tmux_apply_status
+        tmux attach-session -t "$slot"
     fi
 }
 
