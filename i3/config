@@ -332,6 +332,9 @@ exec_always --no-startup-id clipit
 # exec_always --no-startup-id blueman-applet
 # exec_always --no-startup-id sbxkb
 
+# Cloud sync
+exec_always --no-startup-id megasync
+
 # Background services
 exec_always --no-startup-id start_conky_maia
 # exec_always --no-startup-id start_conky_green

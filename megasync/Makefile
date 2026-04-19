@@ -1,7 +1,7 @@
 # IMPORTANT FOR AI AGENTS:
 # Do not modify this file without explicit user confirmation.
 
-.PHONY: help h install setup check sync s
+.PHONY: help h install setup autostart check sync s
 .DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
@@ -18,6 +18,7 @@ MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
 ## 🧩 MegaCMD configuration
 ## ---------------------------
 SEPARATOR := ---------------------------------------------------------------------
+MEGA_PKGS := megacmd megasync
 MEGA_SYNC_COMMANDS := mega-whoami mega-ls mega-mkdir mega-sync
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
@@ -27,9 +28,13 @@ endif
 ## ---------------------------
 ## 📦 Installation
 ## ---------------------------
-install: ## Install MegaCMD package only
-	@echo "📦 Installing MegaCMD..."
-	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install PKGS="megacmd"
+install: ## Install MegaCMD and MEGAsync desktop app, enable autostart
+	@echo "📦 Installing MegaCMD and MEGAsync..."
+	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install PKGS="$(MEGA_PKGS)"
+	@echo "$(SEPARATOR)"
+	@echo "🔧 Enabling mega-cmd-server autostart..."
+	@systemctl --user enable --now mega-cmd-server.service || \
+		echo "⚠️  Could not enable mega-cmd-server.service (may need to start a user session first)"
 	@echo "$(SEPARATOR)"
 	@echo "✅ MegaCMD package installation finished."
 	@echo "   Next step: make -f $(THIS_MAKEFILE) auth"
@@ -40,6 +45,11 @@ setup: ## Install MegaCMD and verify access (login manually: mega-login email pa
 	@echo "ℹ️  Login manually: mega-login your@email.com yourpassword"
 	@echo "$(SEPARATOR)"
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" check
+
+autostart: ## Enable mega-cmd-server systemd user service (autostart on login)
+	@echo "🔧 Enabling mega-cmd-server autostart..."
+	@systemctl --user enable --now mega-cmd-server.service
+	@echo "✅ mega-cmd-server.service enabled and started."
 
 check: ## Verify MegaCMD commands exist and that the current session is authenticated
 	@echo "🔍 Verifying MegaCMD tools..."
