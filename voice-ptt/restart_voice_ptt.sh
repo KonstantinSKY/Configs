@@ -44,7 +44,7 @@ nohup "$BINARY" >>"$LOG_FILE" 2>&1 &
 CHILD_PID=$!
 sleep 1
 
-if kill -0 "$CHILD_PID" 2>/dev/null; then
+if kill -0 "$CHILD_PID" 2>/dev/null || pgrep -x voice-ptt >/dev/null 2>&1 || pgrep -x voice-ptt-macos >/dev/null 2>&1; then
   echo "voice-ptt started"
 else
   echo "voice-ptt failed to start"
