@@ -78,13 +78,11 @@ bindsym $mod+F5 exec --no-startup-id zeditor
 bindsym $mod+t exec --no-startup-id pkill picom
 bindsym $mod+Ctrl+t exec --no-startup-id picom -b
 bindsym $mod+Shift+d --release exec "systemctl --user restart xfce4-notifyd.service; exec notify-send 'restart notifications'"
-#bindsym Print exec --no-startup-id i3-scrot
 
 #--- SCREENSHOTS -----
 bindsym $mod+Print --release exec --no-startup-id i3-scrot -w
 bindsym $mod+Shift+Print --release exec --no-startup-id i3-scrot -s
-#bindsym $mod+Print --release exec --no-startup-id flameshot gui
-bindsym Print --release exec --no-startup-id sh -c 'command -v flameshot >/dev/null 2>&1 && exec flameshot gui || exit 0'
+bindsym Print --release exec --no-startup-id sh -c 'command -v flameshot >/dev/null 2>&1 && exec flameshot gui || exec i3-scrot'
 # Start Calulator from keyboard key
 bindcode 148 --release exec --no-startup-id galculator
 
