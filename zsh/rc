@@ -135,6 +135,7 @@ unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
 # tmux session aliases: t1/t2/t3 attach to (or create) numbered sessions
 # tl lists all sessions
 _tmux_apply_status() {
+    tmux set-option -g mouse on >/dev/null
     tmux set-option -g status-left-length 40 >/dev/null
     tmux set-option -g status-left " #h:#S " >/dev/null
 }
