@@ -18,10 +18,12 @@ ifeq ($(filter $(CONFIGS_DIR)/make/all.mk,$(abspath $(MAKEFILE_LIST))),)
 include $(CONFIGS_DIR)/make/all.mk
 endif
 
-GTK_MAKEFILE := $(THIS_DIR)/gtk/Makefile
-QT_MAKEFILE := $(THIS_DIR)/qt/Makefile
+GTK_MAKEFILE := $(CONFIGS_DIR)/gtk/Makefile
+QT_MAKEFILE := $(CONFIGS_DIR)/qt/Makefile
 PICOM_MAKEFILE := $(CONFIGS_DIR)/picom/Makefile
 FONTS_MAKEFILE := $(CONFIGS_DIR)/fonts/Makefile
+ZSH_MAKEFILE := $(CONFIGS_DIR)/zsh/Makefile
+XPROFILE_MAKEFILE := $(CONFIGS_DIR)/xprofile/Makefile
 
 include $(THIS_DIR)/packages/keyrings.mk
 include $(THIS_DIR)/packages/base-packages.mk
@@ -55,8 +57,9 @@ init: ## Minimal bootstrap: prepare a fresh machine for further configuration
 ## 🧩 Setup
 ## ---------------------------
 setup: ## Run the full Manjaro bootstrap flow via yay
-	@$(MAKE) -s -f $(THIS_MAKEFILE) zsh
-	@$(MAKE) -s -f $(THIS_MAKEFILE) xprofile
+	@$(MAKE) -s -f $(ZSH_MAKEFILE) setup
+#	was: @$(MAKE) -s -f $(THIS_MAKEFILE) xprofile   # xprofile target lived in session.mk; moved out
+	@$(MAKE) -s -f $(XPROFILE_MAKEFILE) install
 	@$(MAKE) -s -f $(THIS_MAKEFILE) mimeapps
 	@$(MAKE) -s -f $(THIS_MAKEFILE) audio
 	@$(MAKE) -s -f $(GTK_MAKEFILE) install

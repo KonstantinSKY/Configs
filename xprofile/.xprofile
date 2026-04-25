@@ -1,0 +1,13 @@
+#!/bin/bash
+
+# Theme settings for Qt and GTK
+export QT_QPA_PLATFORMTHEME=qt6ct
+export QT_STYLE_OVERRIDE="kvantum"
+# was: export GTK_THEME="Matcha-dark-sea"   # Manjaro-era palette
+export GTK_THEME="Arc-Dark"
+export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
+
+# Browser configuration
+if command -v firefox >/dev/null 2>&1; then
+    export BROWSER="$(command -v firefox)"
+fi

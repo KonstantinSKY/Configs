@@ -1,14 +1,10 @@
-.PHONY: xprofile xp mimeapps ma zsh picom
+# was: .PHONY: xprofile xp mimeapps ma picom         # xprofile/xp moved out to xprofile/Makefile
+.PHONY: mimeapps ma picom
 
-TARGET_XPROFILE_FILE = $(HOME)/.xprofile
-XPROFILE_SOURCE_FILE = $(THIS_DIR)/xprofile/.xprofile
+# was: TARGET_XPROFILE_FILE = $(HOME)/.xprofile      # moved to xprofile/Makefile
+# was: XPROFILE_SOURCE_FILE = $(THIS_DIR)/xprofile/.xprofile  # moved
 TARGET_MIMEAPPS_FILE = $(HOME)/.config/mimeapps.list
 MIMEAPPS_SOURCE_FILE = $(THIS_DIR)/mimeapps.list
-ZSH_TARGET_RC = $(HOME)/.zshrc
-ZSH_CUSTOM_RC = $(CONFIGS_DIR)/zsh/rc
-ZSH_INCLUDE_START = \# >>> custom shell config >>>
-ZSH_INCLUDE_END = \# <<< custom shell config <<<
-ZSH_INCLUDE_LINE = [ -r "$(ZSH_CUSTOM_RC)" ] && source "$(ZSH_CUSTOM_RC)"
 
 PICOM_MAKEFILE := $(CONFIGS_DIR)/picom/Makefile
 
@@ -18,47 +14,8 @@ PICOM_MAKEFILE := $(CONFIGS_DIR)/picom/Makefile
 picom: ## Install picom compositor and link config
 	@$(MAKE) -s -f $(PICOM_MAKEFILE) install
 
-xprofile xp: ## Link .xprofile via a direct symlink
-	@$(call link,$(XPROFILE_SOURCE_FILE),$(TARGET_XPROFILE_FILE))
+# was: xprofile xp: ## Link .xprofile via a direct symlink   # moved to xprofile/Makefile (link target)
+# was: 	@$(call link,$(XPROFILE_SOURCE_FILE),$(TARGET_XPROFILE_FILE))
 
 mimeapps ma: ## Link managed XDG default applications file
 	@$(call link,$(MIMEAPPS_SOURCE_FILE),$(TARGET_MIMEAPPS_FILE))
-
-zsh: ## Install zsh if needed and switch current user to it
-	@$(require_yay)
-	@echo "🔍 Checking zsh installation..."
-	@if command -v zsh >/dev/null 2>&1; then \
-		ZSH_PATH="$$(command -v zsh)"; \
-		echo "✅ zsh is installed: $$ZSH_PATH"; \
-	else \
-		echo "📦 Installing zsh..."; \
-		yay -S --needed --noconfirm zsh; \
-		ZSH_PATH="$$(command -v zsh)"; \
-	fi; \
-	CURRENT_SHELL="$$(getent passwd "$$USER" | cut -d: -f7)"; \
-	echo "👤 Current login shell: $$CURRENT_SHELL"; \
-	if [ "$$CURRENT_SHELL" = "$$ZSH_PATH" ]; then \
-		echo "✅ Login shell is already set to $$ZSH_PATH"; \
-	else \
-		echo "🔄 Switching login shell to $$ZSH_PATH"; \
-		chsh -s "$$ZSH_PATH"; \
-		echo "✅ Login shell updated. Open a new session to use zsh by default."; \
-	fi
-	@$(call require_exists,$(ZSH_CUSTOM_RC),Custom zsh rc not found)
-	@echo "🧩 Ensuring $(ZSH_TARGET_RC) loads $(ZSH_CUSTOM_RC)..."
-	@tmp="$$(mktemp)"; \
-	if [ -e "$(ZSH_TARGET_RC)" ]; then \
-		awk -v start='$(ZSH_INCLUDE_START)' -v end='$(ZSH_INCLUDE_END)' '\
-			$$0 == start { skip=1; next } \
-			skip && $$0 == end { skip=0; next } \
-			!skip { print }' "$(ZSH_TARGET_RC)" > "$$tmp"; \
-		echo "✅ Normalized custom zsh include block in $(ZSH_TARGET_RC)"; \
-	else \
-		echo "📄 Creating new $(ZSH_TARGET_RC)"; \
-		: > "$$tmp"; \
-	fi; \
-	if [ -s "$$tmp" ]; then \
-		printf '\n' >> "$$tmp"; \
-	fi; \
-	printf '%s\n%s\n%s\n' '$(ZSH_INCLUDE_START)' '$(ZSH_INCLUDE_LINE)' '$(ZSH_INCLUDE_END)' >> "$$tmp"; \
-	mv "$$tmp" "$(ZSH_TARGET_RC)"
