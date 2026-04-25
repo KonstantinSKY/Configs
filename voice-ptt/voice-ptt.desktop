@@ -1,0 +1,6 @@
+[Desktop Entry]
+Type=Application
+Name=Voice PTT
+Exec=/home/sky/Work/Configs/voice-ptt/restart_voice_ptt.sh
+Hidden=false
+Terminal=false
