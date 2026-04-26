@@ -7,8 +7,12 @@ THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 
-ifeq ($(filter $(CONFIGS_DIR)/make/link.mk,$(MAKEFILE_LIST)),)
-include $(CONFIGS_DIR)/make/link.mk
+# was: only link.mk pulled in; help/fs missing when run standalone (no `make help`, no $(require_yay))
+# was: ifeq ($(filter $(CONFIGS_DIR)/make/link.mk,$(MAKEFILE_LIST)),)
+# was: include $(CONFIGS_DIR)/make/link.mk
+# was: endif
+ifeq ($(filter $(CONFIGS_DIR)/make/all.mk,$(abspath $(MAKEFILE_LIST))),)
+include $(CONFIGS_DIR)/make/all.mk
 endif
 
 XPROFILE ?= $(HOME)/.xprofile
