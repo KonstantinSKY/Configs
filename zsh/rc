@@ -123,13 +123,27 @@ alias upd='make -C "$HOME/Work/Configs/manjaro" update'
 
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon dir vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time background_jobs direnv asdf virtualenv anaconda pyenv goenv nodenv nvm nodeenv rbenv rvm fvm luaenv jenv plenv phpenv scalaenv haskell_stack kubecontext terraform aws aws_eb_env azure gcloud google_app_cred toolbox ranger nnn xplr vim_shell midnight_commander nix_shell vi_mode todo timewarrior taskwarrior)
-POWERLEVEL9K_OS_ICON_BACKGROUND='#d8d8d8'
-POWERLEVEL9K_OS_ICON_FOREGROUND='#0d7a63'
-POWERLEVEL9K_DIR_BACKGROUND='#0d7a63'
-POWERLEVEL9K_DIR_FOREGROUND='#d8d8d8'
+POWERLEVEL9K_OS_ICON_BACKGROUND='#2B2E37'
+POWERLEVEL9K_OS_ICON_FOREGROUND='#3f7fbd'
+POWERLEVEL9K_LINUX_ENDEAVOUROS_ICON=$'\uF17C'
+POWERLEVEL9K_DIR_BACKGROUND='#3f7fbd'
+POWERLEVEL9K_DIR_FOREGROUND='#d8dee9'
 POWERLEVEL9K_CONTEXT_TEMPLATE='%n@%m'
 unset POWERLEVEL9K_CONTEXT_DEFAULT_CONTENT_EXPANSION
 unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
+
+for _p10k_theme in \
+  /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme \
+  /usr/share/powerlevel10k/powerlevel10k.zsh-theme \
+  /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme \
+  /usr/local/share/powerlevel10k/powerlevel10k.zsh-theme \
+  "$HOME/.powerlevel10k/powerlevel10k.zsh-theme"; do
+  if [[ -r "$_p10k_theme" ]]; then
+    source "$_p10k_theme"
+    break
+  fi
+done
+unset _p10k_theme
 (( $+functions[p10k] )) && p10k reload
 
 # tmux session aliases: t1/t2/t3 attach to (or create) numbered sessions

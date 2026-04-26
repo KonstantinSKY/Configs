@@ -9,33 +9,33 @@ args = ["-l"]
 live_config_reload = true
 
 [font]
-size = 10.0
+size = 9.0
 
 [font.normal]
 family = "JetBrainsMono Nerd Font"
-style = "Medium"
+style = "Regular"
 
 [font.bold]
 family = "JetBrainsMono Nerd Font"
-style = "ExtraBold"
+style = "Bold"
 
 [font.bold_italic]
 family = "JetBrainsMono Nerd Font"
-style = "ExtraBold Italic"
+style = "Bold Italic"
 
 [font.italic]
 family = "JetBrainsMono Nerd Font"
-style = "Medium Italic"
+style = "Italic"
 
 # Default colors
 [colors.primary]
-background = '#222D31'
-foreground = '#d8d8d8'
+background = '#1D1F26'
+foreground = '#d3dae3'
 
 # Cursor colors
 [colors.cursor]
-cursor = '#1ABB9B'
-text = '#ffffff'
+cursor = '#6fa8d6'
+text = '#d8dee9'
 
 # Normal colors
 [colors.normal]
@@ -65,10 +65,11 @@ background = '#4e5a65'
 text = '#d8dee9'
 
 [window]
+title = "Terminal"
 padding = { x = 5, y = 5 }
 dynamic_padding = true
-opacity = 0.9
-dynamic_title = true
+opacity = 0.92
+dynamic_title = false
 
 [scrolling]
 history = 50000
