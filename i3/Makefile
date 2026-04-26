@@ -16,7 +16,7 @@ endif
 
 I3_PROFILE ?= auto
 
-I3_CONF_DIR := $(HOME)/.i3
+I3_CONF_DIR := $(HOME)/.config/i3
 I3_SOURCE_DIR := $(THIS_DIR)
 I3_SOURCE_CONFIG := $(I3_SOURCE_DIR)/config
 I3_SOURCE_MONITOR_VM := $(I3_SOURCE_DIR)/vm
@@ -26,8 +26,8 @@ I3_SOURCE_MONITOR_DESKTOP := $(I3_SOURCE_DIR)/desktop
 I3_TARGET_CONFIG := $(I3_CONF_DIR)/config
 I3_TARGET_MONITOR := $(I3_CONF_DIR)/host
 I3_MONITOR_CONFIG_NAME := monitor.conf
-I3_STATUS_CONFIG_NAME := i3status.conf
-I3_TARGET_INCLUDE_LINE := include ~/.i3/host/$(I3_MONITOR_CONFIG_NAME)
+I3_BLOCKS_CONFIG_NAME := i3blocks.conf
+I3_TARGET_INCLUDE_LINE := include ~/.config/i3/host/$(I3_MONITOR_CONFIG_NAME)
 
 define require_path
 	if [ ! -e "$(1)" ]; then \
@@ -90,7 +90,7 @@ check: ## Validate i3 config and detect host profile (vm/laptop/desktop)
 	echo "📁 Monitor : $$monitor_dir"; \
 	$(call require_path,$(I3_SOURCE_CONFIG),Main config file not found); \
 	$(call require_path,$$monitor_dir/$(I3_MONITOR_CONFIG_NAME),Monitor config file not found); \
-	$(call require_path,$$monitor_dir/$(I3_STATUS_CONFIG_NAME),i3status config file not found); \
+	$(call require_path,$$monitor_dir/$(I3_BLOCKS_CONFIG_NAME),i3blocks config file not found); \
 	if ! grep -Fqx '$(I3_TARGET_INCLUDE_LINE)' "$(I3_SOURCE_CONFIG)"; then \
 		echo "❌ Expected monitor include not found in $(I3_SOURCE_CONFIG)"; \
 		exit 1; \

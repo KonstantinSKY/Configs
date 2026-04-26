@@ -332,16 +332,16 @@ bindsym $mod+Shift+p exec --no-startup-id ~/.config/i3/scripts/power-profiles
 
 # Define names for default workspaces for which we configure key bindings later on.
 # We use variables to avoid repeating the names in multiple places.
-set $ws1 "1:"
-set $ws2 "2:"
-set $ws3 "3:"
-set $ws4 "4:"
-set $ws5 "5:"
-set $ws6 "6"
-set $ws7 "7"
-set $ws8 "8"
-set $ws9 "9"
-set $ws10 "10"
+set $ws1 "1:&lt; 1 &gt;"
+set $ws2 "2:&lt; 2 &gt;"
+set $ws3 "3:&lt; 3 &gt;"
+set $ws4 "4:&lt; 4 &gt;"
+set $ws5 "5:&lt; 5 &gt;"
+set $ws6 "6:&lt; 6 &gt;"
+set $ws7 "7:&lt; 7 &gt;"
+set $ws8 "8:&lt; 8 &gt;"
+set $ws9 "9:&lt; 9 &gt;"
+set $ws10 "10:&lt; 10 &gt;"
 
 # use workspaces on different displays:
 # where you have to replace VGA-0/HDMI-0 with the names for your displays
@@ -371,15 +371,15 @@ set $ws10 "10"
 ##################
 
 # set floating (nontiling) for apps needing it
+for_window [title="alsamixer"] floating enable border pixel 1
 for_window [class="Yad" instance="yad"] floating enable
-for_window [class="Galculator" instance="galculator"] floating enable
+for_window [class="Galculator"] floating enable border pixel 1
 for_window [class="Blueberry.py" instance="blueberry.py"] floating enable
 
 # set floating (nontiling) for special apps
 for_window [class="Xsane" instance="xsane"] floating enable
-for_window [class="Pavucontrol" instance="pavucontrol"] floating enable
-for_window [class="qt5ct" instance="qt5ct"] floating enable
-for_window [class="Blueberry.py" instance="blueberry.py"] floating enable
+for_window [class="Pavucontrol"] floating enable
+for_window [class="qt5ct"] floating enable
 for_window [class="Bluetooth-sendto" instance="bluetooth-sendto"] floating enable
 for_window [class="Pamac-manager"] floating enable
 for_window [window_role="About"] floating enable
@@ -448,9 +448,8 @@ exec --no-startup-id dex --autostart --environment i3
 # start conky:
 #exec_always --no-startup-id conky
 
-# start a script to setup displays
-# uncomment the next line, use arandr to setup displays and save the file as monitor:
-exec --no-startup-id ~/.screenlayout/monitor.sh
+# Host-specific monitor and bar configuration.
+include ~/.config/i3/host/monitor.conf
 
 # set wallpaper
 # exec --no-startup-id sleep 2 && nitrogen --restore
@@ -540,12 +539,12 @@ client.urgent               $urgentred  $urgentred  $white      $yellowbrown    
 # (plus the system information i3status finds out, if available)
 bar {
         font pango:FontAwesome, JetBrainsMono Nerd Font Mono, Noto Sans Symbols 12
-        status_command i3blocks -c ~/.config/i3/i3blocks.conf
+        status_command i3blocks -c ~/.config/i3/host/i3blocks.conf
             position bottom
 #           i3bar_command i3bar --transparency
 # it could be that you have no primary display set: set one (xrandr --output <output> --primary)
 # reference: https://i3wm.org/docs/userguide.html#_tray_output
-            #tray_output primary
+            tray_output primary
             tray_padding 0
 
 # When strip_workspace_numbers is set to yes,
@@ -557,11 +556,11 @@ strip_workspace_numbers yes
             colors {
             separator          $purple
             background         $darkgrey
-            statusline         $white
+            statusline         $grey
 #                           border              bg          txt         indicator
         focused_workspace   $mediumgrey         $grey       $darkgrey   $purple
         active_workspace    $lightblue          $mediumgrey $darkgrey   $purple
-        inactive_workspace  $darkgrey           $darkgrey   $grey       $purple
+        inactive_workspace  $grey               $darkgrey   $grey       $purple
         urgent_workspace    $urgentred          $urgentred  $white      $purple
     }
 }
