@@ -1,0 +1,303 @@
+# i3 config file (v4)
+#
+# Hybrid config for the current Arch/Endeavour-style system.
+# Based on the local ~/.config/i3/config, with the useful parts from the old
+# Manjaro config kept where they fit this machine better.
+
+# ---------------------------
+# Core settings
+# ---------------------------
+
+set $mod Mod4
+set $cfg ~/.config/i3
+
+font pango:Noto Sans Regular 10
+
+workspace_layout default
+default_border pixel 1
+default_floating_border normal
+hide_edge_borders none
+new_window pixel 1
+floating_modifier $mod
+tiling_drag modifier titlebar
+
+gaps inner 7
+gaps outer -2
+smart_gaps on
+smart_borders on
+
+# ---------------------------
+# Base session helpers
+# ---------------------------
+
+exec --no-startup-id dex --autostart --environment i3
+exec --no-startup-id xss-lock --transfer-sleep-lock -- i3lock --nofork
+exec --no-startup-id /usr/lib/polkit-gnome/polkit-gnome-authentication-agent-1
+exec --no-startup-id nm-applet
+exec --no-startup-id xset b off
+exec --no-startup-id xset s 480 dpms 600 600 600
+exec --no-startup-id sh -c 'command -v dunst >/dev/null 2>&1 && exec dunst'
+exec --no-startup-id sh -c 'command -v feh >/dev/null 2>&1 && feh --bg-fill /usr/share/endeavouros/backgrounds/endeavouros-wallpaper.png'
+exec_always --no-startup-id sh -c 'test -x "$HOME/Work/Configs/voice-ptt/restart_voice_ptt.sh" && exec "$HOME/Work/Configs/voice-ptt/restart_voice_ptt.sh"'
+
+# Host-specific monitor and bar configuration.
+include ~/.config/i3/host/monitor.conf
+
+# ---------------------------
+# Launchers and applications
+# ---------------------------
+
+bindsym $mod+Return exec --no-startup-id sh -c 'command -v alacritty >/dev/null 2>&1 && exec alacritty || exec xfce4-terminal'
+bindsym $mod+d exec --no-startup-id rofi -modi drun,run -show drun
+bindsym $mod+t exec --no-startup-id rofi -show window
+
+bindsym $mod+F2 exec --no-startup-id firefox
+bindsym $mod+F3 exec --no-startup-id thunar
+bindsym $mod+F4 exec --no-startup-id sh -c 'command -v ranger >/dev/null 2>&1 && exec xfce4-terminal -e ranger || exec thunar'
+bindsym $mod+F5 exec --no-startup-id sh -c 'command -v zeditor >/dev/null 2>&1 && exec zeditor || exec xed'
+bindsym $mod+Ctrl+x --release exec --no-startup-id xkill
+
+bindsym F1 exec --no-startup-id sh -c 'test -x "$HOME/.config/i3/scripts/keyhint-2" && exec "$HOME/.config/i3/scripts/keyhint-2"'
+bindsym $mod+Shift+e exec --no-startup-id sh -c 'test -x "$HOME/.config/i3/scripts/powermenu" && exec "$HOME/.config/i3/scripts/powermenu" || i3-nagbar -t warning -m "Exit i3?" -B "Yes, exit i3" "i3-msg exit"'
+
+# ---------------------------
+# Hardware keys
+# ---------------------------
+
+bindsym XF86AudioRaiseVolume exec --no-startup-id sh -c 'pactl set-sink-volume @DEFAULT_SINK@ +5%; pkill -RTMIN+1 i3blocks 2>/dev/null || true'
+bindsym XF86AudioLowerVolume exec --no-startup-id sh -c 'pactl set-sink-volume @DEFAULT_SINK@ -5%; pkill -RTMIN+1 i3blocks 2>/dev/null || true'
+bindsym XF86AudioMute exec --no-startup-id sh -c 'pactl set-sink-mute @DEFAULT_SINK@ toggle; pkill -RTMIN+1 i3blocks 2>/dev/null || true'
+bindsym XF86AudioMicMute exec --no-startup-id pactl set-source-mute @DEFAULT_SOURCE@ toggle
+
+bindsym XF86AudioPlay exec --no-startup-id playerctl play-pause
+bindsym XF86AudioNext exec --no-startup-id playerctl next
+bindsym XF86AudioPrev exec --no-startup-id playerctl previous
+
+bindsym XF86MonBrightnessUp exec --no-startup-id brightnessctl set +10%
+bindsym XF86MonBrightnessDown exec --no-startup-id brightnessctl set 10%-
+
+bindsym Print --release exec --no-startup-id sh -c 'command -v flameshot >/dev/null 2>&1 && exec flameshot gui || exec scrot "$HOME/%Y-%m-%d-%T-screenshot.png"'
+bindsym $mod+Print --release exec --no-startup-id scrot -u "$HOME/%Y-%m-%d-%T-screenshot.png"
+bindsym $mod+Shift+Print --release exec --no-startup-id scrot -s "$HOME/%Y-%m-%d-%T-screenshot.png"
+
+# ---------------------------
+# Navigation and layout
+# ---------------------------
+
+bindsym $mod+h focus left
+bindsym $mod+j focus down
+bindsym $mod+k focus up
+bindsym $mod+l focus right
+
+bindsym $mod+Left focus left
+bindsym $mod+Down focus down
+bindsym $mod+Up focus up
+bindsym $mod+Right focus right
+
+bindsym $mod+Shift+h move left
+bindsym $mod+Shift+j move down
+bindsym $mod+Shift+k move up
+bindsym $mod+Shift+l move right
+
+bindsym $mod+Shift+Left move left
+bindsym $mod+Shift+Down move down
+bindsym $mod+Shift+Up move up
+bindsym $mod+Shift+Right move right
+
+workspace_auto_back_and_forth yes
+bindsym $mod+b workspace back_and_forth
+bindsym $mod+Shift+b move container to workspace back_and_forth; workspace back_and_forth
+bindsym $mod+Tab workspace next
+bindsym $mod+Shift+Tab workspace prev
+
+bindsym $mod+semicolon split h
+bindsym $mod+apostrophe split v
+bindsym $mod+q split toggle
+bindsym $mod+f fullscreen toggle
+
+bindsym $mod+s layout stacking
+bindsym $mod+w layout tabbed
+bindsym $mod+e layout toggle split
+
+bindsym $mod+Shift+space floating toggle
+bindsym $mod+space focus mode_toggle
+bindsym $mod+Shift+s sticky toggle
+bindsym $mod+a focus parent
+
+bindsym $mod+Shift+minus move scratchpad
+bindsym $mod+minus scratchpad show
+
+bindsym $mod+Shift+q kill
+bindsym $mod+Shift+c reload
+bindsym $mod+Shift+r restart
+bindsym $mod+m bar mode toggle
+
+# ---------------------------
+# Workspaces
+# ---------------------------
+
+set $ws1 "1:term"
+set $ws2 "2:web"
+set $ws3 "3:files"
+set $ws4 "4:comm"
+set $ws5 "5:chat"
+set $ws6 "6"
+set $ws7 "7"
+set $ws8 "8"
+set $ws9 "9"
+set $ws10 "10"
+
+bindsym $mod+1 workspace number $ws1
+bindsym $mod+2 workspace number $ws2
+bindsym $mod+3 workspace number $ws3
+bindsym $mod+4 workspace number $ws4
+bindsym $mod+5 workspace number $ws5
+bindsym $mod+6 workspace number $ws6
+bindsym $mod+7 workspace number $ws7
+bindsym $mod+8 workspace number $ws8
+bindsym $mod+9 workspace number $ws9
+bindsym $mod+0 workspace number $ws10
+
+bindsym $mod+Ctrl+1 move container to workspace number $ws1
+bindsym $mod+Ctrl+2 move container to workspace number $ws2
+bindsym $mod+Ctrl+3 move container to workspace number $ws3
+bindsym $mod+Ctrl+4 move container to workspace number $ws4
+bindsym $mod+Ctrl+5 move container to workspace number $ws5
+bindsym $mod+Ctrl+6 move container to workspace number $ws6
+bindsym $mod+Ctrl+7 move container to workspace number $ws7
+bindsym $mod+Ctrl+8 move container to workspace number $ws8
+bindsym $mod+Ctrl+9 move container to workspace number $ws9
+bindsym $mod+Ctrl+0 move container to workspace number $ws10
+
+bindsym $mod+Shift+1 move container to workspace number $ws1; workspace number $ws1
+bindsym $mod+Shift+2 move container to workspace number $ws2; workspace number $ws2
+bindsym $mod+Shift+3 move container to workspace number $ws3; workspace number $ws3
+bindsym $mod+Shift+4 move container to workspace number $ws4; workspace number $ws4
+bindsym $mod+Shift+5 move container to workspace number $ws5; workspace number $ws5
+bindsym $mod+Shift+6 move container to workspace number $ws6; workspace number $ws6
+bindsym $mod+Shift+7 move container to workspace number $ws7; workspace number $ws7
+bindsym $mod+Shift+8 move container to workspace number $ws8; workspace number $ws8
+bindsym $mod+Shift+9 move container to workspace number $ws9; workspace number $ws9
+bindsym $mod+Shift+0 move container to workspace number $ws10; workspace number $ws10
+
+assign [class="Xfce4-terminal"] $ws1
+assign [class="(?i)firefox"] $ws2
+assign [class="Thunar"] $ws3
+assign [class="TelegramDesktop"] $ws5
+
+for_window [class="Xfce4-terminal"] focus
+for_window [class="(?i)firefox"] focus
+for_window [class="Thunar"] focus
+for_window [class="TelegramDesktop"] focus
+for_window [urgent=latest] focus
+
+# ---------------------------
+# Window rules
+# ---------------------------
+
+for_window [title="alsamixer"] floating enable border pixel 1
+for_window [class="Galculator"] floating enable border pixel 1
+for_window [class="GParted"] floating enable border normal
+for_window [class="Lxappearance"] floating enable sticky enable border normal
+for_window [class="Nitrogen"] floating enable sticky enable border normal
+for_window [class="Pavucontrol"] floating enable
+for_window [class="qt5ct"] floating enable sticky enable border normal
+for_window [class="Simple-scan"] floating enable border normal
+for_window [class="Yad" instance="yad"] floating enable
+for_window [class="Blueberry.py" instance="blueberry.py"] floating enable
+for_window [class="Bluetooth-sendto" instance="bluetooth-sendto"] floating enable
+for_window [class="Pamac-manager"] floating enable
+for_window [window_role="About"] floating enable
+for_window [class="VirtualBox" instance="VirtualBox Manager"] floating disable
+for_window [class="VirtualBox" instance="VirtualBox Machine"] floating enable border normal
+
+# ---------------------------
+# Session controls
+# ---------------------------
+
+bindsym $mod+Delete exec --no-startup-id i3lock --nofork
+
+bindsym $mod+Home mode "$mode_system"
+set $mode_system (l)ock, (e)xit, switch_(u)ser, (s)uspend, (r)eboot, (Shift+s)hutdown
+mode "$mode_system" {
+    bindsym l exec --no-startup-id i3lock --nofork, mode "default"
+    bindsym e exec --no-startup-id i3-msg exit, mode "default"
+    bindsym u exec --no-startup-id dm-tool switch-to-greeter, mode "default"
+    bindsym s exec --no-startup-id systemctl suspend, mode "default"
+    bindsym r exec --no-startup-id systemctl reboot, mode "default"
+    bindsym Shift+s exec --no-startup-id systemctl poweroff, mode "default"
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+bindsym $mod+r mode "resize"
+mode "resize" {
+    bindsym h resize shrink width 5 px or 5 ppt
+    bindsym j resize grow height 5 px or 5 ppt
+    bindsym k resize shrink height 5 px or 5 ppt
+    bindsym l resize grow width 5 px or 5 ppt
+
+    bindsym Left resize shrink width 10 px or 10 ppt
+    bindsym Down resize grow height 10 px or 10 ppt
+    bindsym Up resize shrink height 10 px or 10 ppt
+    bindsym Right resize grow width 10 px or 10 ppt
+
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+set $mode_gaps Gaps: (o) outer, (i) inner
+set $mode_gaps_outer Outer Gaps: +|-|0 local, Shift + +|-|0 global
+set $mode_gaps_inner Inner Gaps: +|-|0 local, Shift + +|-|0 global
+bindsym $mod+Shift+g mode "$mode_gaps"
+
+mode "$mode_gaps" {
+    bindsym o mode "$mode_gaps_outer"
+    bindsym i mode "$mode_gaps_inner"
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+mode "$mode_gaps_inner" {
+    bindsym plus gaps inner current plus 5
+    bindsym minus gaps inner current minus 5
+    bindsym 0 gaps inner current set 0
+    bindsym Shift+plus gaps inner all plus 5
+    bindsym Shift+minus gaps inner all minus 5
+    bindsym Shift+0 gaps inner all set 0
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+mode "$mode_gaps_outer" {
+    bindsym plus gaps outer current plus 5
+    bindsym minus gaps outer current minus 5
+    bindsym 0 gaps outer current set 0
+    bindsym Shift+plus gaps outer all plus 5
+    bindsym Shift+minus gaps outer all minus 5
+    bindsym Shift+0 gaps outer all set 0
+    bindsym Return mode "default"
+    bindsym Escape mode "default"
+}
+
+# ---------------------------
+# Colors
+# ---------------------------
+
+set $darkblue #08052b
+set $lightblue #5294e2
+set $urgentred #e53935
+set $white #ffffff
+set $black #000000
+set $darkgrey #383c4a
+set $grey #b0b5bd
+set $mediumgrey #8b8b8b
+set $yellowbrown #e1b700
+
+client.focused          $lightblue $darkblue  $white $mediumgrey  $mediumgrey
+client.unfocused        $darkblue  $darkblue  $grey  $darkgrey    $darkgrey
+client.focused_inactive $darkblue  $darkblue  $grey  $black       $black
+client.urgent           $urgentred $urgentred $white $yellowbrown $yellowbrown
+client.placeholder      $black     $darkgrey  $white $black       $darkgrey
+client.background       $darkgrey
