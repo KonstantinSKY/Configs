@@ -115,11 +115,9 @@ export PASSWORD_STORE_DIR="$HOME/Work/.password-store"
 export EDITOR=nvim
 export VISUAL=zeditor
 alias ge=gemini
-alias codex-mvs='cp ~/.codex/auth_mvs.json ~/.codex/auth.json'
-alias codex-sasha='cp ~/.codex/auth_sasha.json ~/.codex/auth.json'
-alias codex-save-mvs='cp -f ~/.codex/auth.json ~/.codex/auth_mvs.json && echo "auth_mvs saved"'
-alias codex-save-sasha='cp -f ~/.codex/auth.json ~/.codex/auth_sasha.json && echo "auth_sasha saved"'
-alias upd='make -C "$HOME/Work/Configs/manjaro" update'
+alias codexs='CODEX_HOME=$HOME/.codex-sasha codex'
+alias upd='make -C "$CONFIGS_PATH/eos" update'
+alias updf='make -C "$CONFIGS_PATH/eos" updf'
 
 POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon dir vcs)
 POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time background_jobs direnv asdf virtualenv anaconda pyenv goenv nodenv nvm nodeenv rbenv rvm fvm luaenv jenv plenv phpenv scalaenv haskell_stack kubecontext terraform aws aws_eb_env azure gcloud google_app_cred toolbox ranger nnn xplr vim_shell midnight_commander nix_shell vi_mode todo timewarrior taskwarrior)
