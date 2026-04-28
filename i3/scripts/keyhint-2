@@ -1,0 +1,117 @@
+#!/usr/bin/env bash
+#
+# keyhint-2 — show i3 keybindings via rofi
+#
+# Parses ~/.config/i3/config and renders a searchable list of bindings
+# with section headers and human-readable descriptions taken from comments.
+#
+# Conventions inside the i3 config:
+#   # === Section Name ===          → section header, rendered as ── Section Name ──
+#   # Description text              → description for the *next* `bindsym` line
+#   bindsym KEY ...                 → the binding itself
+#   #bindsym ...                    → ignored (commented-out binding)
+#
+# If a `bindsym` has no description comment above it, the script falls back to
+# showing the cleaned-up command (same behaviour as the original keyhint-2).
+#
+# Key normalization for display:
+#   $mod / Mod4 → Super       Mod1 → Alt
+#   bracketright → ]          bracketleft → [
+#   backslash → \             Return → Enter        space → Space
+
+set -eu
+
+I3_CONFIG="${HOME}/.config/i3/config"
+ROFI_THEME="${HOME}/.config/rofi/rofikeyhint.rasi"
+
+awk '
+    function clean_keys(s,    name) {
+        # Expand any $var references using values collected from `set $var value`
+        for (name in vars) gsub("\\$" name, vars[name], s)
+        gsub(/Mod4/,         "Super", s)
+        gsub(/Mod1/,         "Alt",   s)
+        gsub(/bracketright/, "]",     s)
+        gsub(/bracketleft/,  "[",     s)
+        gsub(/backslash/,    "\\",    s)
+        gsub(/Return/,       "Enter", s)
+        gsub(/space/,        "Space", s)
+        # Multimedia keys → human-readable labels
+        gsub(/XF86AudioRaiseVolume/,  "Vol+",    s)
+        gsub(/XF86AudioLowerVolume/,  "Vol−",    s)
+        gsub(/XF86AudioMute/,         "Mute",    s)
+        gsub(/XF86AudioMicMute/,      "MicMute", s)
+        gsub(/XF86AudioPlay/,         "Play",    s)
+        gsub(/XF86AudioPause/,        "Pause",   s)
+        gsub(/XF86AudioNext/,         "Next",    s)
+        gsub(/XF86AudioPrev/,         "Prev",    s)
+        gsub(/XF86MonBrightnessUp/,   "Bri+",    s)
+        gsub(/XF86MonBrightnessDown/, "Bri−",    s)
+        return s
+    }
+    function clean_cmd(s) {
+        sub(/^bindsym +/, "", s)
+        # drop flag tokens (--release etc.) and the key, until the command starts
+        while (s ~ /^--[^ ]+ /) sub(/^--[^ ]+ +/, "", s)
+        sub(/^[^ ]+ +/, "", s)
+        sub(/^exec +--no-startup-id +/, "", s)
+        sub(/^exec +/, "", s)
+        return s
+    }
+    function extract_key(line,    n, parts, i) {
+        n = split(line, parts, " ")
+        for (i = 2; i <= n; i++) {
+            if (parts[i] !~ /^--/) return parts[i]
+        }
+        return ""
+    }
+
+    /^set +\$[A-Za-z_][A-Za-z0-9_]* +/ {
+        name = $2
+        sub(/^\$/, "", name)
+        value = $0
+        sub(/^set +\$[A-Za-z_][A-Za-z0-9_]* +/, "", value)
+        gsub(/^"|"$/, "", value)
+        vars[name] = value
+        next
+    }
+
+    /^# === .* ===[[:space:]]*$/ {
+        title = $0
+        sub(/^# === /, "", title)
+        sub(/ ===[[:space:]]*$/, "", title)
+        printf "── %s ──\n", title
+        desc = ""
+        next
+    }
+
+    /^#[[:space:]]*bindsym/ {
+        desc = ""
+        next
+    }
+
+    /^#/ {
+        line = $0
+        sub(/^#[[:space:]]*/, "", line)
+        desc = line
+        next
+    }
+
+    /^[[:space:]]*$/ {
+        desc = ""
+        next
+    }
+
+    /^bindsym / {
+        keys = extract_key($0)
+        text = (desc != "") ? desc : clean_cmd($0)
+        # Render the row in the same monospace font as the i3 bar so spaces line
+        # up and the look matches the rest of the desktop.
+        printf "<span font=\"JetBrainsMono Nerd Font Mono 12\">%-50s  %s</span>\n", text, clean_keys(keys)
+        desc = ""
+        next
+    }
+
+    {
+        desc = ""
+    }
+' "$I3_CONFIG" | rofi -dmenu -markup-rows -theme "$ROFI_THEME" -p "Keybindings"

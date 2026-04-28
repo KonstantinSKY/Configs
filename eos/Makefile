@@ -9,6 +9,11 @@ ifeq ($(filter $(CONFIGS_DIR)/make/all.mk,$(abspath $(MAKEFILE_LIST))),)
 include $(CONFIGS_DIR)/make/all.mk
 endif
 
+include $(THIS_DIR)/packages/ai-tools.mk
+include $(THIS_DIR)/packages/base-tools.mk
+include $(THIS_DIR)/packages/browsers.mk
+include $(THIS_DIR)/packages/ssh.mk
+
 check: ## Inspect current EndeavourOS state without changing anything
 	@echo "EndeavourOS check: read-only"
 	@echo "-------------------------------------------------------------------------------"
@@ -21,11 +26,29 @@ check: ## Inspect current EndeavourOS state without changing anything
 	@echo "Keyrings:"
 	@pacman -Q archlinux-keyring endeavouros-keyring 2>/dev/null || true
 	@echo ""
+	@echo "AUR helper:"
+	@command -v yay || true
+	@command -v paru || true
+	@echo ""
 	@echo "Notification provider:"
 	@pacman -Q dunst libnotify 2>/dev/null || true
 	@echo ""
 	@echo "Audio stack:"
 	@pacman -Q pipewire pipewire-pulse pipewire-alsa pipewire-jack wireplumber pavucontrol 2>/dev/null || true
+	@echo ""
+	@echo "AI tools:"
+	@pacman -Q $(AI_TOOLS) 2>/dev/null || true
+	@echo ""
+	@echo "Base tools:"
+	@pacman -Q $(BASE_TOOLS) 2>/dev/null || true
+	@echo ""
+	@echo "Browsers:"
+	@pacman -Q $(BROWSERS) 2>/dev/null || true
+	@echo ""
+	@echo "SSH:"
+	@pacman -Q openssh 2>/dev/null || true
+	@systemctl is-enabled sshd 2>/dev/null || true
+	@systemctl is-active sshd 2>/dev/null || true
 
 update u: ## Update system and AUR packages via yay
 	@yay -Syu --noconfirm --answerclean None --answerdiff None
