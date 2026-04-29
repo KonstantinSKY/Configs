@@ -15,6 +15,7 @@ ifeq ($(filter $(CONFIGS_DIR)/make/all.mk,$(abspath $(MAKEFILE_LIST))),)
 include $(CONFIGS_DIR)/make/all.mk
 endif
 
+XPROFILE_MAKEFILE := $(CONFIGS_DIR)/xprofile/Makefile
 XPROFILE ?= $(HOME)/.xprofile
 KVANTUM_THEME ?= KvArcDark
 QT_PACKAGES = qt5ct qt6ct kvantum kvantum-qt5 kvantum-theme-arc
@@ -37,6 +38,7 @@ install i: ## Install Qt/Kvantum packages and link managed configs
 	@echo "📦 Installing Qt packages: $(QT_PACKAGES)..."
 	@yay -S --needed --noconfirm $(QT_PACKAGES)
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" link
+	@$(MAKE) -s -f "$(XPROFILE_MAKEFILE)" install
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
 	@echo "✅ Qt installed and configured."
 
