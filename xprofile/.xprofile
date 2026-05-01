@@ -4,8 +4,13 @@
 export QT_QPA_PLATFORMTHEME=qt6ct
 export QT_STYLE_OVERRIDE="kvantum"
 # was: export GTK_THEME="Matcha-dark-sea"   # Manjaro-era palette
-export GTK_THEME="Arc-Dark"
+# was: export GTK_THEME="Arc-Dark"   # broke libadwaita apps (pamac-manager: black/distorted UI). GTK3 picks up the theme via xsettingsd + gtk-3.0/settings.ini; GTK4/libadwaita uses gsettings color-scheme.
 export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
+
+# Cursor (libXcursor reads these first — covers root X cursor, GLX, Chromium, etc.)
+# Keep in sync with CURSOR_THEME in gtk/Makefile.
+export XCURSOR_THEME="capitaine-cursors"
+export XCURSOR_SIZE=24
 
 # Browser configuration
 if command -v firefox >/dev/null 2>&1; then
