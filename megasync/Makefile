@@ -1,7 +1,7 @@
 # IMPORTANT FOR AI AGENTS:
 # Do not modify this file without explicit user confirmation.
 
-.PHONY: help h install setup autostart check sync s
+.PHONY: help h install setup install-service autostart linger check sync s
 .DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
@@ -21,6 +21,15 @@ SEPARATOR := -------------------------------------------------------------------
 MEGA_PKGS := megacmd megasync
 MEGA_SYNC_COMMANDS := mega-whoami mega-ls mega-mkdir mega-sync
 
+## ---------------------------
+## 🧩 systemd user service
+## ---------------------------
+SERVICE_NAME := mega-cmd-server.service
+SERVICE_SRC := $(THIS_DIR)/$(SERVICE_NAME)
+SERVICE_USER_DIR := $(HOME)/.config/systemd/user
+SERVICE_DST := $(SERVICE_USER_DIR)/$(SERVICE_NAME)
+LINGER_USER := $(USER)
+
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
 endif
@@ -28,13 +37,15 @@ endif
 ## ---------------------------
 ## 📦 Installation
 ## ---------------------------
-install: ## Install MegaCMD and MEGAsync desktop app, enable autostart
+install: ## Install MegaCMD and MEGAsync desktop app, install service unit, enable autostart with linger
 	@echo "📦 Installing MegaCMD and MEGAsync..."
 	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install PKGS="$(MEGA_PKGS)"
 	@echo "$(SEPARATOR)"
-	@echo "🔧 Enabling mega-cmd-server autostart..."
-	@systemctl --user enable --now mega-cmd-server.service || \
-		echo "⚠️  Could not enable mega-cmd-server.service (may need to start a user session first)"
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" install-service
+	@echo "$(SEPARATOR)"
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" autostart
+	@echo "$(SEPARATOR)"
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" linger
 	@echo "$(SEPARATOR)"
 	@echo "✅ MegaCMD package installation finished."
 	@echo "   Next step: make -f $(THIS_MAKEFILE) auth"
@@ -46,10 +57,29 @@ setup: ## Install MegaCMD and verify access (login manually: mega-login email pa
 	@echo "$(SEPARATOR)"
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" check
 
+install-service: ## Install mega-cmd-server.service into ~/.config/systemd/user/
+	@test -f "$(SERVICE_SRC)" || { echo "❌ Missing service source: $(SERVICE_SRC)"; exit 1; }
+	@mkdir -p "$(SERVICE_USER_DIR)"
+	@install -m 644 "$(SERVICE_SRC)" "$(SERVICE_DST)"
+	@echo "✅ Installed service unit: $(SERVICE_DST)"
+	@systemctl --user daemon-reload
+	@echo "✅ systemd user daemon reloaded."
+
 autostart: ## Enable mega-cmd-server systemd user service (autostart on login)
 	@echo "🔧 Enabling mega-cmd-server autostart..."
-	@systemctl --user enable --now mega-cmd-server.service
-	@echo "✅ mega-cmd-server.service enabled and started."
+	@test -f "$(SERVICE_DST)" || { echo "❌ Service unit not installed. Run: make -f $(THIS_MAKEFILE) install-service"; exit 1; }
+	@systemctl --user enable --now $(SERVICE_NAME)
+	@echo "✅ $(SERVICE_NAME) enabled and started."
+
+linger: ## Enable user lingering so mega-cmd-server keeps running without an active session
+	@echo "🔧 Enabling lingering for $(LINGER_USER)..."
+	@if loginctl show-user "$(LINGER_USER)" 2>/dev/null | grep -q '^Linger=yes$$'; then \
+		echo "✅ Linger already enabled for $(LINGER_USER)."; \
+	else \
+		sudo loginctl enable-linger "$(LINGER_USER)" || { echo "❌ Failed to enable linger (sudo error)."; exit 1; }; \
+		loginctl show-user "$(LINGER_USER)" 2>/dev/null | grep -q '^Linger=yes$$' || { echo "❌ Linger flag not set."; exit 1; }; \
+		echo "✅ Linger enabled for $(LINGER_USER)."; \
+	fi
 
 check: ## Verify MegaCMD commands exist and that the current session is authenticated
 	@echo "🔍 Verifying MegaCMD tools..."
@@ -119,7 +149,7 @@ sync s: ## Create or verify a MegaCMD sync between a local and remote path
 	echo "$(SEPARATOR)"; \
 	\
 	echo "📋 Checking for an existing sync..."; \
-	if mega-sync | grep -F "$$LOCAL_PATH" | grep -F "$$REMOTE_PATH" >/dev/null; then \
+	if mega-sync --path-display-size=400 | grep -F "$$LOCAL_PATH" | grep -F "$$REMOTE_PATH" >/dev/null; then \
 		echo "✅ Sync already exists."; \
 		exit 0; \
 	fi; \
@@ -131,7 +161,7 @@ sync s: ## Create or verify a MegaCMD sync between a local and remote path
 	echo "$(SEPARATOR)"; \
 	\
 	echo "📋 Verifying sync is active..."; \
-	if mega-sync | grep -F "$$LOCAL_PATH" | grep -F "$$REMOTE_PATH" >/dev/null; then \
+	if mega-sync --path-display-size=400 | grep -F "$$LOCAL_PATH" | grep -F "$$REMOTE_PATH" >/dev/null; then \
 		echo "✅ Sync established."; \
 	else \
 		echo "⚠️  Sync not listed. Please verify manually."; \
