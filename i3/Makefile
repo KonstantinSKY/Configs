@@ -1,4 +1,4 @@
-.PHONY: help setup check
+.PHONY: help setup check link-scripts
 .DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
@@ -23,8 +23,11 @@ I3_SOURCE_MONITOR_VM := $(I3_SOURCE_DIR)/vm
 I3_SOURCE_MONITOR_LAPTOP := $(I3_SOURCE_DIR)/laptop
 I3_SOURCE_MONITOR_DESKTOP := $(I3_SOURCE_DIR)/desktop
 
+I3_SOURCE_SCRIPTS := $(I3_SOURCE_DIR)/scripts
+
 I3_TARGET_CONFIG := $(I3_CONF_DIR)/config
 I3_TARGET_MONITOR := $(I3_CONF_DIR)/host
+I3_TARGET_SCRIPTS := $(I3_CONF_DIR)/scripts
 I3_MONITOR_CONFIG_NAME := monitor.conf
 I3_BLOCKS_CONFIG_NAME := i3blocks.conf
 I3_TARGET_INCLUDE_LINE := include ~/.config/i3/host/$(I3_MONITOR_CONFIG_NAME)
@@ -106,6 +109,11 @@ check: ## Validate i3 config and detect host profile (vm/laptop/desktop)
 	fi; \
 	echo "✅ i3 config is valid for $$profile profile."
 
+link-scripts: ## Link only ~/.config/i3/scripts → Configs (backs up existing dir)
+	@set -euo pipefail; \
+	mkdir -p "$(I3_CONF_DIR)"; \
+	$(call link,$(I3_SOURCE_SCRIPTS),$(I3_TARGET_SCRIPTS))
+
 setup: ## Link i3 config and host profile (auto-detects vm/laptop/desktop)
 	@$(MAKE) -f "$(THIS_MAKEFILE)" check I3_PROFILE="$(I3_PROFILE)"
 	@set -euo pipefail; \
@@ -118,6 +126,8 @@ setup: ## Link i3 config and host profile (auto-detects vm/laptop/desktop)
 	echo "------------------------------------------------------------"; \
 	echo "🖥️  Selected profile: $$profile"; \
 	$(call link,$$monitor_dir,$(I3_TARGET_MONITOR)); \
+	echo "------------------------------------------------------------"; \
+	$(call link,$(I3_SOURCE_SCRIPTS),$(I3_TARGET_SCRIPTS)); \
 	echo "------------------------------------------------------------"; \
 	echo "🔍 Final validation of installed i3 config..."; \
 	if ! i3 -C -c "$(I3_TARGET_CONFIG)" >/dev/null 2>&1; then \

@@ -51,8 +51,11 @@ workspace_layout default
 #border indicator on windows:
 new_window pixel 1
 
-# manual border control for the focused window
+# === Borders ===
+
+# 🚫 Border off (focused window)
 bindsym $mod+u border none
+# ▫ Border 1px (focused window)
 bindsym $mod+y border pixel 1
 
 # thin borders
@@ -71,8 +74,14 @@ gaps outer 0
 # Use Mouse+$mod to drag floating windows to their wanted position
 floating_modifier $mod
 
-# switch/iterate between workspaces
+# === Workspaces ===
+
+# @hint: Switch to workspace 1–10 | Super+1…0
+# @hint: Move focused window to workspace 1–10 | Super+Shift+1…0
+
+# ▶ Next workspace
 bindsym $mod+Tab workspace next
+# ◀ Previous workspace
 bindsym $mod+Shift+Tab workspace prev
 
 # switch to workspace
@@ -176,19 +185,21 @@ bindcode $mod+Shift+90   move container to workspace  $ws10
 # keybindings for different actions: #
 ######################################
 
-# start a terminal
+# === Session ===
+
+# 🖥 Open terminal (Alacritty / xfce4-terminal fallback)
 bindsym $mod+Return exec --no-startup-id sh -c 'command -v alacritty >/dev/null 2>&1 && exec alacritty || exec xfce4-terminal'
 
-# kill focused window
+# ✖ Kill focused window
 bindsym $mod+Shift+q kill
 
-# exit-menu
+# ⏻ Power menu (logout / reboot / shutdown)
 bindsym $mod+Shift+e exec --no-startup-id ~/.config/i3/scripts/powermenu
 
 # Lock the system
 # lock with a picture:
 #bindsym $mod+l exec --no-startup-id i3lock -i  ~/.config/i3/i3-lock-screen.png -p default|win -t
-# lock by blurring the screen:
+# 🔒 Lock screen (blur)
 bindsym $mod+Delete exec --no-startup-id ~/.config/i3/scripts/blur-lock
 # lock in case after sleep
 exec --no-startup-id xss-lock -l ~/.config/i3/scripts/blur-lock
@@ -196,13 +207,13 @@ exec --no-startup-id xss-lock -l ~/.config/i3/scripts/blur-lock
 # Broadcast GTK theme/icons via XSETTINGS so XDG-autostarted GTK apps (pamac-tray, etc.) pick up Arc-Dark instead of falling back to Adwaita.
 exec_always --no-startup-id pidof xsettingsd >/dev/null || xsettingsd &
 
-# reload the configuration file
+# 🔄 Reload i3 config
 bindsym $mod+Shift+c reload
 
-# restart i3 inplace (preserves your layout/session, can be used to update i3)
+# ♻ Restart i3 in place (preserves layout / session)
 bindsym $mod+Shift+r restart
 
-# keybinding in fancy rofi (automated):
+# ❓ This help — keybindings (rofi)
 bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint-2
 # alternative
 # keybinding list in editor:
@@ -211,8 +222,11 @@ bindsym F1 exec --no-startup-id ~/.config/i3/scripts/keyhint-2
 # Backlight control
 #bindsym XF86MonBrightnessUp exec --no-startup-id xbacklight +10 && notify-send "Brightness - $(xbacklight -get | cut -d '.' -f 1)%"
 #bindsym XF86MonBrightnessDown exec --no-startup-id xbacklight -10 && notify-send "Brightness - $(xbacklight -get | cut -d '.' -f 1)%"
-# Backlight setting using dunst osc
+# === Brightness ===
+
+# ☀ Brightness up
 bindsym XF86MonBrightnessUp exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh brightness_up
+# 🌙 Brightness down
 bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/volume_brightness.sh brightness_down
 
 # alternative screen & keyboard brightness setting with brightnessctl using dunst osc
@@ -225,55 +239,75 @@ bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/volume_b
 #bindsym XF86MonBrightnessUp   exec --no-startup-id ~/.config/i3/scripts/volume_brightness2.sh screen_brightness_up
 #bindsym XF86MonBrightnessDown exec --no-startup-id ~/.config/i3/scripts/volume_brightness2.sh screen_brightness_down
 
-# change focus
+# === Window focus ===
+
+# ◀ Focus left (Vim)
 bindsym $mod+h focus left
+# ▼ Focus down (Vim)
 bindsym $mod+j focus down
+# ▲ Focus up (Vim)
 bindsym $mod+k focus up
+# ▶ Focus right (Vim)
 bindsym $mod+l focus right
 
-# alternatively, you can use the cursor keys:
+# ◀ Focus left (arrow)
 bindsym $mod+Left focus left
+# ▼ Focus down (arrow)
 bindsym $mod+Down focus down
+# ▲ Focus up (arrow)
 bindsym $mod+Up focus up
+# ▶ Focus right (arrow)
 bindsym $mod+Right focus right
 
-# move focused window
+# === Window move ===
+
+# ◀ Move window left (Vim)
 bindsym $mod+Shift+h move left
+# ▼ Move window down (Vim)
 bindsym $mod+Shift+j move down
+# ▲ Move window up (Vim)
 bindsym $mod+Shift+k move up
+# ▶ Move window right (Vim)
 bindsym $mod+Shift+l move right
 
-# alternatively, you can use the cursor keys:
+# ◀ Move window left (arrow)
 bindsym $mod+Shift+Left move left
+# ▼ Move window down (arrow)
 bindsym $mod+Shift+Down move down
+# ▲ Move window up (arrow)
 bindsym $mod+Shift+Up move up
+# ▶ Move window right (arrow)
 bindsym $mod+Shift+Right move right
 
-# split in horizontal orientation
-bindsym $mod+$alt+h split h
+# === Layout ===
 
-# split in vertical orientation
+# ▬ Split horizontal
+bindsym $mod+$alt+h split h
+# ▮ Split vertical
 bindsym $mod+$alt+v split v
+# ⇆ Toggle split orientation
 bindsym $mod+q split toggle
 
-# enter fullscreen mode for the focused container
+# ⛶ Toggle fullscreen
 bindsym $mod+f fullscreen toggle
 
-# change container layout (stacked, tabbed, toggle split)
+# ▤ Layout: stacking
 bindsym $mod+s layout stacking
+# ▦ Layout: tabbed
 bindsym $mod+w layout tabbed
+# ▥ Layout: toggle split
 bindsym $mod+e layout toggle split
 
-# toggle tiling / floating
+# 🪟 Toggle tiling / floating
 bindsym $mod+Shift+space floating toggle
 
-# change focus between tiling / floating windows
+# ↔ Focus toggle: tiling ↔ floating
 bindsym $mod+space focus mode_toggle
 
-# focus the parent container
+# ⤴ Focus parent container
 bindsym $mod+a focus parent
 
-# open new empty workspace
+# ➕ New empty workspace
 bindsym $mod+Shift+n exec --no-startup-id ~/.config/i3/scripts/empty_workspace
 
 ## Multimedia Keys
@@ -318,25 +352,32 @@ bindsym XF86AudioNext exec --no-startup-id playerctl next
 # ⏮ Previous track
 bindsym XF86AudioPrev exec --no-startup-id playerctl previous
 
-# toggle between audio devices for output
+# 🔀 Toggle audio output device
 bindsym $mod+$alt+p exec --no-startup-id ~/.config/i3/scripts/audio-device-switch
 
-## App shortcuts
+# === Apps ===
+
+# 🦊 Firefox
 bindsym $mod+F2 exec --no-startup-id /usr/bin/firefox
+# 📁 File manager (Thunar)
 bindsym $mod+F3 exec --no-startup-id /usr/bin/thunar
+# ✏ Editor (Zed / xed fallback)
 bindsym $mod+F4 exec --no-startup-id sh -c 'command -v zeditor >/dev/null 2>&1 && exec zeditor || exec xed'
 
-# Screenshot
-# complete screen
+# === Screenshots ===
+
+# 📸 Screenshot — full screen (flameshot / scrot)
 bindsym Print --release exec --no-startup-id sh -c 'command -v flameshot >/dev/null 2>&1 && exec flameshot gui || exec scrot "$HOME/%Y-%m-%d-%T-screenshot.png"'
-# the currently focused window
+# 📸 Screenshot — focused window
 bindsym $mod+Print --release exec --no-startup-id scrot -u -b "$HOME/%Y-%m-%d-%T-window.png"
-# select a window or rectangle with the mouse
+# 📸 Screenshot — select region
 bindsym $mod+Shift+Print --release exec --no-startup-id scrot -f -s "$HOME/%Y-%m-%d-%T-selection.png"
-# delayed screenshot, useful for menus and popups
+# 📸 Screenshot — delayed (5s, for menus)
 bindsym $mod+$alt+Print --release exec --no-startup-id scrot -d 5 -c "$HOME/%Y-%m-%d-%T-delayed.png"
 
-# Power Profiles menu switcher (rofi)
+# === Power ===
+
+# ⚡ Power profile switcher (rofi)
 bindsym $mod+Shift+p exec --no-startup-id ~/.config/i3/scripts/power-profiles
 
 ##########################################
@@ -613,13 +654,13 @@ strip_workspace_numbers yes
 # Application menu handled by rofi: #
 #####################################
 
-## rofi bindings fancy application menu
+# === Menus ===
 
+# 🚀 App launcher (rofi drun)
 bindsym $mod+d exec --no-startup-id rofi -modi drun -show drun \
         -config ~/.config/rofi/rofidmenu.rasi
 
-## rofi bindings for window menu
-
+# 🪟 Window switcher (rofi)
 bindsym $mod+t exec --no-startup-id rofi -show window \
         -config ~/.config/rofi/rofidmenu.rasi
 

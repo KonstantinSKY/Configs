@@ -79,7 +79,20 @@ awk '
         title = $0
         sub(/^# === /, "", title)
         sub(/ ===[[:space:]]*$/, "", title)
-        printf "── %s ──\n", title
+        printf "── %s ──\n", toupper(title)
+        desc = ""
+        next
+    }
+
+    # Synthetic entry: `# @hint: Description | Keys` renders one row
+    # without needing a real bindsym (used for bindcode groups, etc.).
+    /^#[[:space:]]*@hint:/ {
+        line = $0
+        sub(/^#[[:space:]]*@hint:[[:space:]]*/, "", line)
+        n = split(line, parts, /[[:space:]]*\|[[:space:]]*/)
+        if (n >= 2) {
+            printf "%-22s  %s\n", clean_keys(parts[2]), parts[1]
+        }
         desc = ""
         next
     }
@@ -104,9 +117,7 @@ awk '
     /^bindsym / {
         keys = extract_key($0)
         text = (desc != "") ? desc : clean_cmd($0)
-        # Render the row in the same monospace font as the i3 bar so spaces line
-        # up and the look matches the rest of the desktop.
-        printf "<span font=\"JetBrainsMono Nerd Font Mono 12\">%-50s  %s</span>\n", text, clean_keys(keys)
+        printf "%-22s  %s\n", clean_keys(keys), text
         desc = ""
         next
     }
@@ -114,4 +125,4 @@ awk '
     {
         desc = ""
     }
-' "$I3_CONFIG" | rofi -dmenu -markup-rows -theme "$ROFI_THEME" -p "Keybindings"
+' "$I3_CONFIG" | rofi -dmenu -i -theme "$ROFI_THEME" -p "Keybindings"
