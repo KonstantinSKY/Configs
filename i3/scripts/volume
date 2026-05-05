@@ -7,8 +7,9 @@ STEP=${1:-5%}
 SINK=$(pactl info | awk '/Default Sink/ {print $3}')
 [[ -z "$SINK" ]] && { echo "No audio"; exit 0; }
 
-# Handle scroll/middle-click
+# Handle clicks
 case "$BLOCK_BUTTON" in
+    1) command -v pavucontrol >/dev/null 2>&1 && setsid -f pavucontrol >/dev/null 2>&1 ;; # left click = pavucontrol
     3) pactl set-sink-mute "$SINK" toggle ;;   # right click = mute/unmute
     4) pactl set-sink-volume "$SINK" +$STEP ;; # scroll up
     5) pactl set-sink-volume "$SINK" -$STEP ;; # scroll down

@@ -6,8 +6,13 @@
 # A battery indicator blocklet script for i3blocks
 
 from subprocess import check_output
+import glob
 import os
 import re
+
+# Hide the block entirely on machines without a battery (desktop / VM).
+if not glob.glob('/sys/class/power_supply/BAT*'):
+    raise SystemExit
 
 config = dict(os.environ)
 status = check_output(['acpi'], universal_newlines=True)
@@ -100,7 +105,10 @@ else:
     fulltext += form.format(color(percentleft), percentleft)
     #fulltext += timeleft
 
-print(fulltext)
-print(fulltext)
+# Leading separator is part of the battery output so that when the block is
+# hidden (no BAT*), no orphan │ is left over on the bar.
+LEADING_SEP = "<span color='#5e646f'>│</span> "
+print(LEADING_SEP + fulltext)
+print(LEADING_SEP + fulltext)
 if percentleft < 10:
     exit(33)

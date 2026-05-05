@@ -15,11 +15,23 @@ tags=(
   [power-saver]="Power saver"
 )
 
-# Get current profile 
+# Left click opens the rofi profile switcher (replaces a separate ppd_menu block).
+if [ "$BLOCK_BUTTON" = "1" ]; then
+    setsid -f "$(dirname "$0")/power-profiles" >/dev/null 2>&1
+fi
+
+# Get current profile
 current_profile=$(/usr/bin/powerprofilesctl get)
 
 # Get tag from the array
 profile_tag=${tags[$current_profile]}
 
-# Show tag on i3block
-echo "${profile_tag:-$current_profile}"
+# Show tag on i3block. The leaf glyph (green for saver/balanced, orange bolt for
+# performance) replaces the separate static [ppd_menu] block from the old layout.
+case "$current_profile" in
+    performance) ICON="<span color='#e67e22' font='FontAwesome'></span>" ;;
+    power-saver) ICON="<span color='#2da146' font='FontAwesome'></span>" ;;
+    *)           ICON="<span color='#407437' font='FontAwesome'></span>" ;;
+esac
+
+echo "${ICON} ${profile_tag:-$current_profile}"
