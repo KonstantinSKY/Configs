@@ -1,4 +1,4 @@
-.PHONY: help all install i link l verify v status st clean
+.PHONY: help all install i deps link l verify v status st keyring-info clean
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -15,41 +15,54 @@ include $(CONFIGS_DIR)/make/link.mk
 endif
 
 SEPARATOR := ---------------------------------------------------------------------
-ZED_EXTENSIONS := material-icon-theme gruvbox lua dockerfile sql bash toml make
 
-ZED_SOURCE_CONFIG := $(THIS_DIR)
-ZED_TARGET_CONFIG := $(HOME)/.config/zed
+# - zed: the editor
+# - gnome-keyring + libsecret: persistent credential storage so Zed's auth
+#   token survives restarts (without these, Zed prompts for login every launch
+#   because libsecret has no Secret Service backend).
+# - hunspell + en_US/ru dictionaries: power Zed's spell_check_languages.
+ZED_DEPS := zed gnome-keyring libsecret hunspell hunspell-en_US hunspell-ru
+
+ZED_TARGET_DIR := $(HOME)/.config/zed
+ZED_SETTINGS_NAME := settings.json
+ZED_SOURCE_SETTINGS := $(THIS_DIR)/$(ZED_SETTINGS_NAME)
+ZED_TARGET_SETTINGS := $(ZED_TARGET_DIR)/$(ZED_SETTINGS_NAME)
 
 all: install
 
-install i: ## Install Zed and link configuration
-	@echo "📥 Installing Zed via yay..."
+install i: ## Install Zed and dependencies via yay, then link settings.json
+	@echo "📥 Installing Zed and credential / spell-check deps via yay..."
 	@$(call ensure_system_updated)
-	@yay -S --needed --noconfirm zed
+	@yay -S --needed --noconfirm $(ZED_DEPS)
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" link
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" keyring-info
 	@echo "✅ Zed installed and configured."
 
-link l: ## Link Zed config directory into ~/.config
-	@$(call link,$(ZED_SOURCE_CONFIG),$(ZED_TARGET_CONFIG))
+deps: ## Install dependencies only (no link)
+	@$(call ensure_system_updated)
+	@yay -S --needed --noconfirm $(ZED_DEPS)
 
-verify v:
-	@echo "🔎 Verifying Zed config..."
-	@if [ ! -r "$(ZED_SOURCE_CONFIG)/settings.json" ]; then \
-		echo "❌ Zed settings.json not found: $(ZED_SOURCE_CONFIG)/settings.json"; \
+link l: ## Symlink settings.json into ~/.config/zed (leaves the dir for Zed)
+	@mkdir -p "$(ZED_TARGET_DIR)"
+	@$(call link,$(ZED_SOURCE_SETTINGS),$(ZED_TARGET_SETTINGS))
+
+verify v: ## Verify the settings.json symlink resolves correctly
+	@if [ ! -r "$(ZED_SOURCE_SETTINGS)" ]; then \
+		echo "❌ Source settings.json not found: $(ZED_SOURCE_SETTINGS)"; \
 		exit 1; \
 	fi
-	@if [ -L "$(ZED_TARGET_CONFIG)" ]; then \
-		echo "✅ $(ZED_TARGET_CONFIG) -> $$(readlink -f "$(ZED_TARGET_CONFIG)")"; \
-	elif [ -e "$(ZED_TARGET_CONFIG)" ]; then \
-		echo "⚠️  $(ZED_TARGET_CONFIG) exists but is not a symlink"; \
+	@if [ -L "$(ZED_TARGET_SETTINGS)" ]; then \
+		echo "✅ $(ZED_TARGET_SETTINGS) -> $$(readlink -f "$(ZED_TARGET_SETTINGS)")"; \
+	elif [ -e "$(ZED_TARGET_SETTINGS)" ]; then \
+		echo "⚠️  $(ZED_TARGET_SETTINGS) exists but is not a symlink"; \
 		exit 1; \
 	else \
-		echo "❌ Target config is missing: $(ZED_TARGET_CONFIG)"; \
+		echo "❌ Symlink missing: $(ZED_TARGET_SETTINGS)"; \
 		exit 1; \
 	fi
 
-status st: ## Show Zed installation, config link, and configured extensions
+status st: ## Show Zed install state and config link
 	@echo "Zed status"
 	@echo "$(SEPARATOR)"
 	@if command -v zeditor >/dev/null 2>&1; then \
@@ -58,19 +71,37 @@ status st: ## Show Zed installation, config link, and configured extensions
 		echo "❌ zed not installed"; \
 	fi
 	@echo "$(SEPARATOR)"
-	@if [ -L "$(ZED_TARGET_CONFIG)" ]; then \
-		echo "✅ config linked: $(ZED_TARGET_CONFIG) -> $$(readlink -f "$(ZED_TARGET_CONFIG)")"; \
-	elif [ -e "$(ZED_TARGET_CONFIG)" ]; then \
-		echo "⚠️  config exists but is not a symlink: $(ZED_TARGET_CONFIG)"; \
+	@if [ -L "$(ZED_TARGET_SETTINGS)" ]; then \
+		echo "✅ settings linked: $(ZED_TARGET_SETTINGS) -> $$(readlink -f "$(ZED_TARGET_SETTINGS)")"; \
+	elif [ -e "$(ZED_TARGET_SETTINGS)" ]; then \
+		echo "⚠️  settings exists but is not a symlink"; \
 	else \
-		echo "❌ config not linked: $(ZED_TARGET_CONFIG)"; \
+		echo "❌ settings not linked"; \
 	fi
 	@echo "$(SEPARATOR)"
-	@echo "Auto-install extensions:"
-	@for ext in $(ZED_EXTENSIONS); do \
-		echo "  - $$ext"; \
-	done
+	@if pgrep -x gnome-keyring-d >/dev/null 2>&1 || \
+	   dbus-send --session --dest=org.freedesktop.DBus --type=method_call --print-reply \
+	             /org/freedesktop/DBus org.freedesktop.DBus.ListNames 2>/dev/null \
+	     | grep -q org.freedesktop.secrets; then \
+		echo "✅ Secret Service available — Zed login will persist."; \
+	else \
+		echo "⚠️  No Secret Service running — see 'make keyring-info'"; \
+	fi
 
-clean: ## Cleanup placeholder target for Zed
-	@echo "Cleaning zed..."
-	@echo "✅ Zed cleaned."
+keyring-info: ## Print one-time setup notes for gnome-keyring autostart in i3
+	@echo "$(SEPARATOR)"
+	@echo "Secret Service / login persistence"
+	@echo "$(SEPARATOR)"
+	@echo "Zed stores its auth token via libsecret. For it to survive across"
+	@echo "launches you need a Secret Service running in the i3 session."
+	@echo ""
+	@echo "1. The i3 config in ~/Work/Configs/i3/config already autostarts"
+	@echo "   gnome-keyring-daemon. After installing the package, reload i3"
+	@echo "   with Super+Shift+r."
+	@echo ""
+	@echo "2. On first launch Zed will prompt to create a keyring password."
+	@echo "   Use the same as your login password if you want pam_gnome_keyring"
+	@echo "   to auto-unlock it on login (already shipped with the package)."
+
+clean: ## No-op (Zed manages its own runtime state in ~/.local/share/zed)
+	@echo "Nothing to clean — Zed runtime data lives in ~/.local/share/zed/"

@@ -207,6 +207,11 @@ exec --no-startup-id xss-lock -l ~/.config/i3/scripts/blur-lock
 # Broadcast GTK theme/icons via XSETTINGS so XDG-autostarted GTK apps (pamac-tray, etc.) pick up Arc-Dark instead of falling back to Adwaita.
 exec_always --no-startup-id pidof xsettingsd >/dev/null || xsettingsd &
 
+# Provide a Secret Service so libsecret-using apps (Zed, Chromium, Telegram
+# Desktop, etc.) can persist auth tokens across restarts. Wrapped so a missing
+# binary on a fresh machine doesn't spew errors before `make install` runs.
+exec --no-startup-id sh -c 'command -v gnome-keyring-daemon >/dev/null && exec gnome-keyring-daemon --start --components=secrets,ssh'
+
 # 🔄 Reload i3 config
 bindsym $mod+Shift+c reload
 

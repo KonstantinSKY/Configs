@@ -12,18 +12,18 @@
     "toml": true,
     "make": true,
   },
-  "context_servers": {},
   "agent": {
-    "default_model": {
-      "provider": "zed.dev",
-      "model": "claude-sonnet-4",
-    },
     "always_allow_tool_actions": true,
     "play_sound_when_agent_done": true,
     "default_profile": "ask",
   },
   "vim_mode": true,
-  "restore_on_startup": "last_workspace",
+  "vim": {
+    "use_system_clipboard": "always",       // y / p go to + register by default
+    "use_smartcase_find": true,             // f / t case-insensitive when pattern is lowercase
+    "toggle_relative_line_numbers": true,   // relative in normal, absolute in insert
+  },
+  "restore_on_startup": "last_session",
   "confirm_quit": true,
   "buffer_line_height": "comfortable",
   "project_panel": {
@@ -58,6 +58,25 @@
   "format_on_save": "on",
   "remove_trailing_whitespace_on_save": true,
   "ensure_final_newline_on_save": true,
+
+  // ==========================================
+  // EDITOR EXPERIENCE
+  // ==========================================
+  "current_line_highlight": "all",
+  "indent_guides": {
+    "enabled": true,
+    "coloring": "indent_aware",
+  },
+  "show_edit_predictions": true,
+  "edit_predictions": {
+    "mode": "subtle",
+    "disabled_globs": ["**/.env*", "**/*.pem", "**/*.key", "**/secrets*"],
+  },
+  "scrollbar": {
+    "show": "always",
+    "diagnostics": "all",
+    "git_diff": true,
+  },
 
   // ==========================================
   // THEMES
@@ -204,9 +223,6 @@
   // TERMINAL
   // ==========================================
   "terminal": {
-    "shell": {
-      "program": "/bin/zsh",
-    },
     "font_family": "JetBrains Mono",
     "font_size": 14,
     "font_weight": 200,
@@ -225,9 +241,6 @@
   // GIT
   // ==========================================
   "git": {
-    "inline_blame": {
-      "enabled": false, // to show when commited line
-    },
     "git_gutter": "tracked_files",
     "gutter_debounce": 3000,
   },
@@ -242,10 +255,10 @@
     "show_type_hints": true,
     "show_parameter_hints": true,
     "show_other_hints": true,
+    "toggle_on_modifier_press": "alt",
   },
   "spell_check": true,
   "spell_check_languages": ["en_US", "ru_RU"],
-  "language_servers": [],
   "file_types": {
     "C++": ["mq4", "mq5", "mqh", "c"],
   },
@@ -255,7 +268,6 @@
       "hard_tabs": false,
       // "formatter": ["rustfmt"],
       "format_on_save": "on",
-      "show_edit_predictions": true,
       "language_servers": ["rust-analyzer"],
     },
     "Python": {
@@ -263,7 +275,6 @@
       "hard_tabs": false,
       "formatter": "auto",
       "format_on_save": "on",
-      "show_edit_predictions": true,
       "language_servers": ["pyright"],
     },
     "JavaScript": {
@@ -271,8 +282,12 @@
       "hard_tabs": false,
       "formatter": "prettier",
       "format_on_save": "on",
-      "show_edit_predictions": true,
       "language_servers": ["typescript"],
+    },
+    "Markdown": {
+      "soft_wrap": "editor_width",
+      "format_on_save": "off",
+      "remove_trailing_whitespace_on_save": false,
     },
     "C++": {
       "format_on_save": "on",
@@ -290,9 +305,22 @@
       "formatter": "language_server",
       "format_on_save": "on",
       "show_edit_predictions": false,
-      "spell_check": true,
-  "spell_check_languages": ["en_US", "ru_RU"],
-  "language_servers": [],
+    },
+  },
+
+  // ==========================================
+  // LSP
+  // ==========================================
+  "lsp": {
+    "rust-analyzer": {
+      "initialization_options": {
+        "cargo": {
+          "allFeatures": true,
+          "loadOutDirsFromCheck": true,
+        },
+        "procMacro": { "enable": true },
+        "checkOnSave": { "command": "clippy" },
+      },
     },
   },
 }
