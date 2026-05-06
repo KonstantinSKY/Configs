@@ -3,7 +3,6 @@
  * Maintainer: joekamprad <joekamprad@endeavouros.com>
  *******************************************************/
 configuration {
-    font:                           "Noto Sans Regular 10";
     show-icons:                     false;
     icon-theme:                     "Qogir-dark";
     scroll-method:                  0;
@@ -132,7 +131,6 @@ mainbox {
 }
 message {
     expand: false;
-    font: "Noto Sans Regular 10";
     text-color: @normal-foreground;
     margin: 0 0 10px 0;
 }

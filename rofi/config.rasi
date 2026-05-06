@@ -1,1 +1,5 @@
- @theme "~/.local/share/rofi/themes/arc_dark_transparent_colors.rasi"
+configuration {
+    font: "JetBrainsMono Nerd Font Mono 12";
+}
+
+@theme "~/.local/share/rofi/themes/arc_dark_transparent_colors.rasi"
