@@ -2,6 +2,9 @@
   // ==========================================
   // COMMON MODES
   // ==========================================
+  "session": {
+    "trust_all_worktrees": true
+  },
   "auto_install_extensions": {
     "material-icon-theme": true,
     "gruvbox": true,
@@ -13,8 +16,10 @@
     "make": true,
   },
   "agent": {
-    "always_allow_tool_actions": true,
-    "play_sound_when_agent_done": true,
+    "tool_permissions": {
+      "default": "allow"
+    },
+    "play_sound_when_agent_done": "always",
     "default_profile": "ask",
   },
   "vim_mode": true,
@@ -96,10 +101,10 @@
   //  FONTS
   // ==========================================
   // "ui_font_family": "JetBrains Mono",
-  "ui_font_size": 18,
+  "ui_font_size": 14,
   // Editor
   "buffer_font_family": "JetBrains Mono",
-  "buffer_font_size": 16,
+  "buffer_font_size": 15,
   "buffer_font_weight": 200,
   "buffer_font_fallbacks": ["Noto Color Emoji"],
   "cursor_blink": true,
