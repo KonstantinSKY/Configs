@@ -21,6 +21,7 @@ return {
         { "<leader>d", group = "diagnostics" },
         { "<leader>f", group = "find" },
         { "<leader>g", group = "git" },
+        { "<leader>x", group = "trouble" },
       },
     },
   },
@@ -34,7 +35,7 @@ return {
       require("mini.comment").setup()
       require("mini.files").setup()
       require("mini.indentscope").setup({
-        symbol = "|",
+        symbol = "│",
       })
       require("mini.pairs").setup()
       require("mini.pick").setup()

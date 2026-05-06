@@ -1,5 +1,10 @@
-.PHONY: help all install i packages p link l sync s parsers ts verify v
+.PHONY: help all install i packages p check-version link l sync s parsers ts verify v
 .DEFAULT_GOAL := help
+
+# Minimum Neovim version required for the config (vim.lsp.config / vim.lsp.enable
+# native API, vim.diagnostic.jump, default LspAttach keymaps).
+MIN_NVIM_MAJOR := 0
+MIN_NVIM_MINOR := 11
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
@@ -23,11 +28,28 @@ all: install
 
 install i: ## Install Neovim, restore locked plugins, install parsers, and verify
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" packages
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" check-version
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" link
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" sync
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" parsers
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
 	@echo "✅ Neovim installed and configured."
+
+check-version: ## Verify the installed Neovim is at least 0.11
+	@if ! command -v nvim >/dev/null 2>&1; then \
+		echo "❌ nvim is not installed. Run 'make -f $(THIS_MAKEFILE) packages' first."; \
+		exit 1; \
+	fi
+	@ver="$$(nvim --version | head -1 | awk '{print $$2}' | sed 's/^v//')"; \
+	major="$$(printf '%s' "$$ver" | cut -d. -f1)"; \
+	minor="$$(printf '%s' "$$ver" | cut -d. -f2)"; \
+	if [ "$$major" -lt $(MIN_NVIM_MAJOR) ] || \
+	   { [ "$$major" -eq $(MIN_NVIM_MAJOR) ] && [ "$$minor" -lt $(MIN_NVIM_MINOR) ]; }; then \
+		echo "❌ Neovim $(MIN_NVIM_MAJOR).$(MIN_NVIM_MINOR)+ required (found $$ver)."; \
+		echo "   This config uses APIs introduced in 0.11 (vim.lsp.config, vim.diagnostic.jump, default LspAttach keymaps)."; \
+		exit 1; \
+	fi; \
+	echo "✅ Neovim $$ver (>= $(MIN_NVIM_MAJOR).$(MIN_NVIM_MINOR))"
 
 packages p: ## Install Neovim and tree-sitter CLI from official repositories
 	@if ! command -v pacman >/dev/null 2>&1; then \

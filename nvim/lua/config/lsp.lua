@@ -30,11 +30,10 @@ function M.setup()
         })
       end
 
-      map("gd", vim.lsp.buf.definition, "LSP definition")
-      map("gD", vim.lsp.buf.declaration, "LSP declaration")
-      map("gi", vim.lsp.buf.implementation, "LSP implementation")
-      map("gr", vim.lsp.buf.references, "LSP references")
-      map("K", vim.lsp.buf.hover, "LSP hover")
+      -- Neovim 0.11+ provides defaults for K (hover), grn (rename), gra
+      -- (code action), grr (references), gri (implementation), gO
+      -- (document symbol), CTRL-S (signature help). We only add aliases
+      -- that pre-date or override those defaults.
       map("<leader>ca", vim.lsp.buf.code_action, "Code action")
       map("<leader>cr", vim.lsp.buf.rename, "Rename symbol")
       map("<leader>cf", function()
