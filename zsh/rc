@@ -9,6 +9,7 @@ esac
 export CONFIGS_PATH="$WORK/Configs"
 export PROJECTS_PATH="$WORK/Projects"
 export BACKUPS_PATH="$WORK/BackUps"
+export PATH="$HOME/.local/bin:$PATH"
 export PATH="$HOME/.cargo/bin:$PATH"
 
 alias Configs='cd $CONFIGS_PATH; ls -ls'
