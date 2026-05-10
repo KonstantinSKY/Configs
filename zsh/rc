@@ -201,3 +201,7 @@ for _t in 1 2 3 4 5; do
 done
 unset _t
 alias tl="tmux list-sessions"
+
+# >>> aix >>>
+[ -r "/home/sky/Work/AIX/env" ] && . "/home/sky/Work/AIX/env"
+# <<< aix <<<
