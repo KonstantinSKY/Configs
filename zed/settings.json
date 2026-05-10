@@ -3,7 +3,7 @@
   // COMMON MODES
   // ==========================================
   "session": {
-    "trust_all_worktrees": true
+    "trust_all_worktrees": true,
   },
   "auto_install_extensions": {
     "material-icon-theme": true,
@@ -14,24 +14,37 @@
     "bash": true,
     "toml": true,
     "make": true,
+    "html": true,
+    "xml": true,
+    "swift": true,
+    "ini": true,
+    "solidity": true,
+    "json5": true,
+    "github-theme": true,
+    "csv": true,
+    "docker-compose": true,
+    "pylsp": true,
+    "env": true,
+    "javascript-snippets": true,
   },
   "agent": {
     "tool_permissions": {
-      "default": "allow"
+      "default": "allow",
     },
     "play_sound_when_agent_done": "always",
     "default_profile": "ask",
   },
   "vim_mode": true,
   "vim": {
-    "use_system_clipboard": "always",       // y / p go to + register by default
-    "use_smartcase_find": true,             // f / t case-insensitive when pattern is lowercase
-    "toggle_relative_line_numbers": true,   // relative in normal, absolute in insert
+    "use_system_clipboard": "always", // y / p go to + register by default
+    "use_smartcase_find": true, // f / t case-insensitive when pattern is lowercase
+    "toggle_relative_line_numbers": true, // relative in normal, absolute in insert
   },
   "restore_on_startup": "last_session",
   "confirm_quit": true,
   "buffer_line_height": "comfortable",
   "project_panel": {
+    "dock": "left",
     "file_scan_exclusions": [
       "**/.git",
       "**/target",
@@ -104,7 +117,7 @@
   "ui_font_size": 14,
   // Editor
   "buffer_font_family": "JetBrains Mono",
-  "buffer_font_size": 15,
+  "buffer_font_size": 13,
   "buffer_font_weight": 200,
   "buffer_font_fallbacks": ["Noto Color Emoji"],
   "cursor_blink": true,
@@ -229,7 +242,7 @@
   // ==========================================
   "terminal": {
     "font_family": "JetBrains Mono",
-    "font_size": 14,
+    "font_size": 12,
     "font_weight": 200,
     "blinking": "on",
     "cursor_shape": "bar",
@@ -318,6 +331,10 @@
   // ==========================================
   "lsp": {
     "rust-analyzer": {
+      "binary": {
+        "path": "/usr/lib/rustup/bin/rust-analyzer",
+        "arguments": [],
+      },
       "initialization_options": {
         "cargo": {
           "allFeatures": true,
