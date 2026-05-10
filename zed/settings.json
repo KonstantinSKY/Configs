@@ -278,7 +278,8 @@
   "spell_check": true,
   "spell_check_languages": ["en_US", "ru_RU"],
   "file_types": {
-    "C++": ["mq4", "mq5", "mqh", "c"],
+    // "C++": ["mq4", "mq5", "mqh", "c"], // .c is plain C, not C++
+    "C++": ["mq4", "mq5", "mqh"],
   },
   "languages": {
     "Rust": {
@@ -300,7 +301,8 @@
       "hard_tabs": false,
       "formatter": "prettier",
       "format_on_save": "on",
-      "language_servers": ["typescript"],
+      // "language_servers": ["typescript"], // wrong id; real LSP is typescript-language-server
+      "language_servers": ["typescript-language-server"],
     },
     "Markdown": {
       "soft_wrap": "editor_width",
@@ -317,7 +319,8 @@
       "format_on_save": "off",
       "formatter": null,
     },
-    "ini": {
+    // "ini": { ... }, // wrong case — Zed registers the language as "INI"
+    "INI": {
       "tab_size": 4,
       "hard_tabs": false,
       "formatter": "language_server",
@@ -333,15 +336,18 @@
     "rust-analyzer": {
       "binary": {
         "path": "/usr/lib/rustup/bin/rust-analyzer",
-        "arguments": [],
+        // "arguments": [], // empty array duplicates default; safe to drop
       },
       "initialization_options": {
         "cargo": {
           "allFeatures": true,
-          "loadOutDirsFromCheck": true,
+          // "loadOutDirsFromCheck": true, // deprecated in ra >=2024; replaced by buildScripts.enable
+          "buildScripts": { "enable": true },
         },
         "procMacro": { "enable": true },
-        "checkOnSave": { "command": "clippy" },
+        // "checkOnSave": { "command": "clippy" }, // ra now expects boolean; command moved to "check"
+        "checkOnSave": true,
+        "check": { "command": "clippy" },
       },
     },
   },
