@@ -261,6 +261,9 @@
   "git": {
     "git_gutter": "tracked_files",
     "gutter_debounce": 3000,
+    "inline_blame": {
+      "enabled": false,
+    },
   },
 
   "tabs": {
