@@ -136,19 +136,21 @@ create c: ## Create a new Rust project: make create <name>
 	echo "$(SEPARATOR)"; \
 	echo "✅ Done → $$project"
 
-rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (root package + workspace): make rust
+rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (virtual root + first bin crate): make rust
 	@set -e; \
 	project="$(notdir $(CURDIR))"; \
 	if [ -f Cargo.toml ]; then echo "❌ Cargo.toml already exists here — refusing to overwrite."; exit 1; fi; \
 	$(MAKE) -f "$(THIS_MAKEFILE)" preflight; \
 	echo "$(SEPARATOR)"; \
-	echo "🦀 Scaffolding workspace — root package: $$project (bin)"; \
-	printf '%s\n' '[package]' "name = \"$$project\"" 'version.workspace = true' 'edition.workspace = true' '' '[dependencies]' '' '[workspace]' 'resolver = "3"' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
-	mkdir -p src; \
-	printf '%s\n' 'fn main() {' "    println!(\"hello from $$project\");" '}' > src/main.rs; \
+	echo "🦀 Scaffolding virtual workspace: $$project"; \
+	printf '%s\n' '[workspace]' 'resolver = "3"' 'members = ["crates/*"]' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
 	cp -f "$(TOOLCHAIN_TEMPLATE)" rust-toolchain.toml 2>/dev/null || printf '%s\n' '[toolchain]' 'channel = "stable"' > rust-toolchain.toml; \
 	cp -f "$(RUSTFMT_TEMPLATE)" rustfmt.toml 2>/dev/null || printf 'edition = "2024"\n' > rustfmt.toml; \
 	if ! grep -qF '# >>> rust >>>' .gitignore 2>/dev/null; then { printf '\n# >>> rust >>>\n'; cat "$(GITIGNORE_TEMPLATE)" 2>/dev/null || printf '/target\n'; printf '# <<< rust <<<\n'; } >> .gitignore; fi; \
+	echo "$(SEPARATOR)"; \
+	echo "📦 First crate: crates/$$project (bin)"; \
+	cargo new --vcs none "crates/$$project"; \
+	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$project/Cargo.toml"; \
 	echo "$(SEPARATOR)"; \
 	echo "✅ Workspace ready → cargo build | cargo run | add modules: make crate <name>"
 
@@ -174,7 +176,6 @@ crate cr: ## Add a crate to crates/: make crate <name>   (binary: make crate <na
 	if [ -z "$${name//[[:space:]]/}" ]; then echo "❌ Crate name is required."; exit 1; fi; \
 	if [ ! -f Cargo.toml ]; then echo "❌ No workspace here — run 'make rust' first."; exit 1; fi; \
 	if [ -e "crates/$$name" ]; then echo "❌ crates/$$name already exists."; exit 1; fi; \
-	if ! grep -q '^members' Cargo.toml; then sed -i 's#^\[workspace\]$$#[workspace]\nmembers = ["crates/*"]#' Cargo.toml; fi; \
 	echo "📦 Adding crate: crates/$$name $(if $(BIN),(bin),(lib))"; \
 	cargo new --vcs none $(if $(BIN),,--lib) "crates/$$name"; \
 	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$name/Cargo.toml"; \

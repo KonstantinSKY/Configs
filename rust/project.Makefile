@@ -43,7 +43,6 @@ crate cr: ## Add a crate: make crate <name>   (binary: make crate <name> BIN=1)
 	name="$(word 2,$(MAKECMDGOALS))"; \
 	if [ -z "$${name//[[:space:]]/}" ]; then echo "❌ Crate name required: make crate <name>"; exit 1; fi; \
 	if [ -e "crates/$$name" ]; then echo "❌ crates/$$name already exists."; exit 1; fi; \
-	if ! grep -q '^members' Cargo.toml; then sed -i 's#^\[workspace\]$$#[workspace]\nmembers = ["crates/*"]#' Cargo.toml; fi; \
 	cargo new --vcs none $(if $(BIN),,--lib) "crates/$$name"; \
 	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$name/Cargo.toml"; \
 	echo "✅ Added → crates/$$name"
