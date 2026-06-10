@@ -48,6 +48,7 @@ crate cr: ## Add a crate: make crate <name>   (binary: make crate <name> BIN=1)
 	echo "✅ Added → crates/$$name"
 
 ifneq ($(filter $(firstword $(MAKECMDGOALS)),$(ARG_GOALS)),)
+.PHONY: $(EXTRA_GOALS)
 $(EXTRA_GOALS):
 	@:
 endif

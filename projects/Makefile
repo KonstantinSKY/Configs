@@ -47,6 +47,7 @@ new n: ## Create a private GitHub repo and clone it here: make new <name>
 	echo "   (make can't move your shell — run the cd yourself)"
 
 ifneq ($(filter $(firstword $(MAKECMDGOALS)),$(ARG_GOALS)),)
+.PHONY: $(EXTRA_GOALS)
 $(EXTRA_GOALS):
 	@:
 endif

@@ -218,6 +218,7 @@ read rd: ## Show Cargo.toml and git status for current project
 	@git status -sb 2>/dev/null || echo "⚠️  Not a git repo"
 
 ifneq ($(filter $(firstword $(MAKECMDGOALS)),$(ARG_GOALS)),)
+.PHONY: $(EXTRA_GOALS)
 $(EXTRA_GOALS):
 	@:
 endif
