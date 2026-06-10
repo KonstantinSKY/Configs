@@ -1,7 +1,7 @@
 # IMPORTANT FOR AI AGENTS:
 # Do not modify this file without explicit user confirmation.
 
-.PHONY: help install i update u status st doctor d macos_targets macos-targets mt macos_cross_deps macos-cross-deps mcd create c repo rp delete_repo dr copy_gitignore gi read rd rust rs crate cr
+.PHONY: help install i update u status st doctor d macos_targets macos-targets mt macos_cross_deps macos-cross-deps mcd create c repo rp delete_repo dr copy_gitignore gi read rd rust rs crate cr preflight pf
 .DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
@@ -11,6 +11,8 @@ THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
 GIT_MAKEFILE := $(CONFIGS_DIR)/make/all.mk
 GITIGNORE_TEMPLATE := $(THIS_DIR)/gitignore
+RUSTFMT_TEMPLATE := $(THIS_DIR)/rustfmt.toml
+TOOLCHAIN_TEMPLATE := $(THIS_DIR)/rust-toolchain.toml
 MACOS_TARGETS := aarch64-apple-darwin x86_64-apple-darwin
 MACOS_CROSS_DEPS := clang llvm lld cmake patch python openssl xz bzip2 cpio libxml2
 ARG_GOALS := create c repo rp crate cr
@@ -134,21 +136,36 @@ create c: ## Create a new Rust project: make create <name>
 	echo "$(SEPARATOR)"; \
 	echo "✅ Done → $$project"
 
-rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (root + first crate): make rust
+rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (root package + workspace): make rust
 	@set -e; \
 	project="$(notdir $(CURDIR))"; \
 	if [ -f Cargo.toml ]; then echo "❌ Cargo.toml already exists here — refusing to overwrite."; exit 1; fi; \
-	echo "🦀 Scaffolding Cargo workspace: $$project"; \
-	printf '%s\n' '[workspace]' 'resolver = "3"' 'members = ["crates/*"]' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
-	printf '%s\n' '[toolchain]' 'channel = "stable"' > rust-toolchain.toml; \
-	printf '%s\n' 'edition = "2024"' > rustfmt.toml; \
+	$(MAKE) -f "$(THIS_MAKEFILE)" preflight; \
+	echo "$(SEPARATOR)"; \
+	echo "🦀 Scaffolding workspace — root package: $$project (bin)"; \
+	printf '%s\n' '[package]' "name = \"$$project\"" 'version.workspace = true' 'edition.workspace = true' '' '[dependencies]' '' '[workspace]' 'resolver = "3"' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
+	mkdir -p src; \
+	printf '%s\n' 'fn main() {' "    println!(\"hello from $$project\");" '}' > src/main.rs; \
+	cp -f "$(TOOLCHAIN_TEMPLATE)" rust-toolchain.toml 2>/dev/null || printf '%s\n' '[toolchain]' 'channel = "stable"' > rust-toolchain.toml; \
+	cp -f "$(RUSTFMT_TEMPLATE)" rustfmt.toml 2>/dev/null || printf 'edition = "2024"\n' > rustfmt.toml; \
 	if ! grep -qF '# >>> rust >>>' .gitignore 2>/dev/null; then { printf '\n# >>> rust >>>\n'; cat "$(GITIGNORE_TEMPLATE)" 2>/dev/null || printf '/target\n'; printf '# <<< rust <<<\n'; } >> .gitignore; fi; \
 	echo "$(SEPARATOR)"; \
-	echo "📦 First crate: crates/$$project (lib)"; \
-	cargo new --vcs none --lib "crates/$$project"; \
-	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$project/Cargo.toml"; \
-	echo "$(SEPARATOR)"; \
-	echo "✅ Workspace ready → cargo build   |   add crates: make crate <name>"
+	echo "✅ Workspace ready → cargo build | cargo run | add modules: make crate <name>"
+
+preflight pf: ## Ensure toolchain bits: stable components + nightly rustfmt (idempotent)
+	@set -e; \
+	if ! command -v cargo >/dev/null 2>&1; then \
+		echo "❌ cargo/rustup not found. Run: make -f \"$(THIS_MAKEFILE)\" install"; exit 1; \
+	fi; \
+	echo "🔧 Ensuring stable components (clippy, rustfmt, rust-src)..."; \
+	rustup component add clippy rustfmt rust-src >/dev/null; \
+	if ! rustup toolchain list 2>/dev/null | grep -q '^nightly'; then \
+		echo "🌙 Installing nightly toolchain (needed for cargo +nightly fmt)..."; \
+		rustup toolchain install nightly --profile minimal; \
+	fi; \
+	echo "🌙 Ensuring nightly rustfmt..."; \
+	rustup component add --toolchain nightly rustfmt >/dev/null; \
+	echo "✅ Toolchain ready ($$(rustc --version))"
 
 crate cr: ## Add a crate to crates/: make crate <name>   (binary: make crate <name> BIN=1)
 	@set -e; \
@@ -157,6 +174,7 @@ crate cr: ## Add a crate to crates/: make crate <name>   (binary: make crate <na
 	if [ -z "$${name//[[:space:]]/}" ]; then echo "❌ Crate name is required."; exit 1; fi; \
 	if [ ! -f Cargo.toml ]; then echo "❌ No workspace here — run 'make rust' first."; exit 1; fi; \
 	if [ -e "crates/$$name" ]; then echo "❌ crates/$$name already exists."; exit 1; fi; \
+	if ! grep -q '^members' Cargo.toml; then sed -i 's#^\[workspace\]$$#[workspace]\nmembers = ["crates/*"]#' Cargo.toml; fi; \
 	echo "📦 Adding crate: crates/$$name $(if $(BIN),(bin),(lib))"; \
 	cargo new --vcs none $(if $(BIN),,--lib) "crates/$$name"; \
 	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$name/Cargo.toml"; \

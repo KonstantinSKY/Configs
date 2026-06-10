@@ -3,7 +3,7 @@
 # Add project-specific targets freely below.
 
 .DEFAULT_GOAL := help
-.PHONY: help h build b test t run r fmt clippy check crate cr
+.PHONY: help h build b test t run r fmt clippy check crate cr setup s
 
 MAKEFLAGS += --no-print-directory
 
@@ -23,20 +23,27 @@ test t: ## cargo test (whole workspace)
 run r: ## cargo run
 	cargo run
 
-fmt: ## cargo fmt
-	cargo fmt
+fmt: ## cargo +nightly fmt (applies nightly-only options in rustfmt.toml)
+	cargo +nightly fmt
 
 clippy: ## cargo clippy (all targets, warnings as errors)
 	cargo clippy --all-targets -- -D warnings
 
 check: ## fmt --check + clippy + test
-	cargo fmt --check && cargo clippy --all-targets -- -D warnings && cargo test
+	cargo +nightly fmt --check && cargo clippy --all-targets -- -D warnings && cargo test
+
+setup s: ## Ensure toolchain: stable components + nightly rustfmt (idempotent)
+	@command -v cargo >/dev/null 2>&1 || { echo "❌ Install rustup first"; exit 1; }
+	rustup component add clippy rustfmt rust-src
+	rustup toolchain list | grep -q '^nightly' || rustup toolchain install nightly --profile minimal
+	rustup component add --toolchain nightly rustfmt
 
 crate cr: ## Add a crate: make crate <name>   (binary: make crate <name> BIN=1)
 	@set -e; \
 	name="$(word 2,$(MAKECMDGOALS))"; \
 	if [ -z "$${name//[[:space:]]/}" ]; then echo "❌ Crate name required: make crate <name>"; exit 1; fi; \
 	if [ -e "crates/$$name" ]; then echo "❌ crates/$$name already exists."; exit 1; fi; \
+	if ! grep -q '^members' Cargo.toml; then sed -i 's#^\[workspace\]$$#[workspace]\nmembers = ["crates/*"]#' Cargo.toml; fi; \
 	cargo new --vcs none $(if $(BIN),,--lib) "crates/$$name"; \
 	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$name/Cargo.toml"; \
 	echo "✅ Added → crates/$$name"
