@@ -1,7 +1,7 @@
 # IMPORTANT FOR AI AGENTS:
 # Do not modify this file without explicit user confirmation.
 
-.PHONY: help install i update u status st doctor d macos_targets macos-targets mt macos_cross_deps macos-cross-deps mcd create c repo rp delete_repo dr copy_gitignore gi read rd
+.PHONY: help install i update u status st doctor d macos_targets macos-targets mt macos_cross_deps macos-cross-deps mcd create c repo rp delete_repo dr copy_gitignore gi read rd rust rs crate cr
 .DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
@@ -13,7 +13,7 @@ GIT_MAKEFILE := $(CONFIGS_DIR)/make/all.mk
 GITIGNORE_TEMPLATE := $(THIS_DIR)/gitignore
 MACOS_TARGETS := aarch64-apple-darwin x86_64-apple-darwin
 MACOS_CROSS_DEPS := clang llvm lld cmake patch python openssl xz bzip2 cpio libxml2
-ARG_GOALS := create c repo rp
+ARG_GOALS := create c repo rp crate cr
 EXTRA_GOALS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
@@ -133,6 +133,34 @@ create c: ## Create a new Rust project: make create <name>
 	ln -sfn "$(THIS_MAKEFILE)" "$$project/Makefile"; \
 	echo "$(SEPARATOR)"; \
 	echo "✅ Done → $$project"
+
+rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (root + first crate): make rust
+	@set -e; \
+	project="$(notdir $(CURDIR))"; \
+	if [ -f Cargo.toml ]; then echo "❌ Cargo.toml already exists here — refusing to overwrite."; exit 1; fi; \
+	echo "🦀 Scaffolding Cargo workspace: $$project"; \
+	printf '%s\n' '[workspace]' 'resolver = "3"' 'members = ["crates/*"]' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
+	printf '%s\n' '[toolchain]' 'channel = "stable"' > rust-toolchain.toml; \
+	printf '%s\n' 'edition = "2024"' > rustfmt.toml; \
+	if [ -f "$(GITIGNORE_TEMPLATE)" ]; then cp -f "$(GITIGNORE_TEMPLATE)" .gitignore; else printf '%s\n' '/target' > .gitignore; fi; \
+	echo "$(SEPARATOR)"; \
+	echo "📦 First crate: crates/$$project (lib)"; \
+	cargo new --lib "crates/$$project"; \
+	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$project/Cargo.toml"; \
+	echo "$(SEPARATOR)"; \
+	echo "✅ Workspace ready → cargo build   |   add crates: make crate <name>"
+
+crate cr: ## Add a crate to crates/: make crate <name>   (binary: make crate <name> BIN=1)
+	@set -e; \
+	name="$(word 2,$(MAKECMDGOALS))"; \
+	if [ -z "$${name//[[:space:]]/}" ]; then read -p "📦 Crate name: " name; fi; \
+	if [ -z "$${name//[[:space:]]/}" ]; then echo "❌ Crate name is required."; exit 1; fi; \
+	if [ ! -f Cargo.toml ]; then echo "❌ No workspace here — run 'make rust' first."; exit 1; fi; \
+	if [ -e "crates/$$name" ]; then echo "❌ crates/$$name already exists."; exit 1; fi; \
+	echo "📦 Adding crate: crates/$$name $(if $(BIN),(bin),(lib))"; \
+	cargo new $(if $(BIN),,--lib) "crates/$$name"; \
+	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$name/Cargo.toml"; \
+	echo "✅ Added → crates/$$name"
 
 repo rp: ## Init git, create GitHub repo, copy .gitignore: make repo [name]
 	@echo "📦 Project: $(PROJECT)"
