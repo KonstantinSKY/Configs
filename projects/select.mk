@@ -26,18 +26,30 @@ rust rs: ## Use Rust: scaffold a Cargo workspace + install the project Makefile
 	$(MAKE) -f "$(CONFIGS_DIR)/rust/Makefile" rust; \
 	cp -f "$(CONFIGS_DIR)/rust/project.Makefile" Makefile; \
 	echo "$(SEPARATOR)"; \
-	echo "✅ Rust ready. 'make' now shows build/test/run/crate — commit Makefile + Cargo.toml."
+	echo "📂 Project now contains:"; ls -la; \
+	echo "$(SEPARATOR)"; \
+	echo "🛠  Project commands (make help):"; $(MAKE) help; \
+	echo "$(SEPARATOR)"; \
+	echo "✅ Rust ready — commit Makefile + Cargo.toml."
 
 node nd: ## Use Node (toolkit TBD): scaffold + install the project Makefile
 	@set -e; \
 	if [ ! -f "$(CONFIGS_DIR)/node/Makefile" ]; then echo "❌ No Node toolkit yet. Add $(CONFIGS_DIR)/node/ (Makefile + project.Makefile), same shape as rust/."; exit 1; fi; \
 	echo "🟢 Stack → node"; \
 	$(MAKE) -f "$(CONFIGS_DIR)/node/Makefile" node; \
-	cp -f "$(CONFIGS_DIR)/node/project.Makefile" Makefile
+	cp -f "$(CONFIGS_DIR)/node/project.Makefile" Makefile; \
+	echo "$(SEPARATOR)"; \
+	echo "📂 Project now contains:"; ls -la; \
+	echo "$(SEPARATOR)"; \
+	echo "🛠  Project commands (make help):"; $(MAKE) help
 
 python py: ## Use Python (toolkit TBD): scaffold + install the project Makefile
 	@set -e; \
 	if [ ! -f "$(CONFIGS_DIR)/python/Makefile" ]; then echo "❌ No Python toolkit yet. Add $(CONFIGS_DIR)/python/ (Makefile + project.Makefile), same shape as rust/."; exit 1; fi; \
 	echo "🐍 Stack → python"; \
 	$(MAKE) -f "$(CONFIGS_DIR)/python/Makefile" python; \
-	cp -f "$(CONFIGS_DIR)/python/project.Makefile" Makefile
+	cp -f "$(CONFIGS_DIR)/python/project.Makefile" Makefile; \
+	echo "$(SEPARATOR)"; \
+	echo "📂 Project now contains:"; ls -la; \
+	echo "$(SEPARATOR)"; \
+	echo "🛠  Project commands (make help):"; $(MAKE) help
