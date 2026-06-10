@@ -142,7 +142,7 @@ rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (root + first crate): 
 	printf '%s\n' '[workspace]' 'resolver = "3"' 'members = ["crates/*"]' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
 	printf '%s\n' '[toolchain]' 'channel = "stable"' > rust-toolchain.toml; \
 	printf '%s\n' 'edition = "2024"' > rustfmt.toml; \
-	if [ -f "$(GITIGNORE_TEMPLATE)" ]; then cp -f "$(GITIGNORE_TEMPLATE)" .gitignore; else printf '%s\n' '/target' > .gitignore; fi; \
+	if ! grep -qF '# >>> rust >>>' .gitignore 2>/dev/null; then { printf '\n# >>> rust >>>\n'; cat "$(GITIGNORE_TEMPLATE)" 2>/dev/null || printf '/target\n'; printf '# <<< rust <<<\n'; } >> .gitignore; fi; \
 	echo "$(SEPARATOR)"; \
 	echo "📦 First crate: crates/$$project (lib)"; \
 	cargo new --lib "crates/$$project"; \
