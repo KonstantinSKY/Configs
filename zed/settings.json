@@ -2,12 +2,14 @@
   // ==========================================
   // COMMON MODES
   // ==========================================
+  "cli_default_open_behavior": "new_window",
   "session": {
     "trust_all_worktrees": true,
   },
   "auto_install_extensions": {
     "material-icon-theme": true,
     "gruvbox": true,
+    "glsl": true,
     "lua": true,
     "dockerfile": true,
     "sql": true,
@@ -38,7 +40,7 @@
   "vim": {
     "use_system_clipboard": "always", // y / p go to + register by default
     "use_smartcase_find": true, // f / t case-insensitive when pattern is lowercase
-    "toggle_relative_line_numbers": true, // relative in normal, absolute in insert
+    "toggle_relative_line_numbers": false, // keep absolute line numbers in vim mode
   },
   "restore_on_startup": "last_session",
   "confirm_quit": true,
@@ -283,6 +285,7 @@
   "file_types": {
     // "C++": ["mq4", "mq5", "mqh", "c"], // .c is plain C, not C++
     "C++": ["mq4", "mq5", "mqh"],
+    "GLSL": ["comp"],
   },
   "languages": {
     "Rust": {
