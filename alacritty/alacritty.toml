@@ -104,3 +104,11 @@ save_to_clipboard = true
 
 [terminal]
 osc52 = "CopyPaste"
+
+# Audible bell: ring a local sound on BEL (0x07). Claude Code on the remote box
+# emits BEL over SSH when it needs attention, so the sound plays here, locally.
+# Cross-platform with fallbacks; never errors the terminal.
+[bell]
+duration = 120
+animation = "EaseOutExpo"
+command = { program = "sh", args = ["-c", "paplay /usr/share/sounds/freedesktop/stereo/message.oga 2>/dev/null || pw-play /usr/share/sounds/freedesktop/stereo/message.oga 2>/dev/null || canberra-gtk-play -i message 2>/dev/null || afplay /System/Library/Sounds/Ping.aiff 2>/dev/null || true"] }
