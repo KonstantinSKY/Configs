@@ -145,7 +145,7 @@ rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (root + first crate): 
 	if ! grep -qF '# >>> rust >>>' .gitignore 2>/dev/null; then { printf '\n# >>> rust >>>\n'; cat "$(GITIGNORE_TEMPLATE)" 2>/dev/null || printf '/target\n'; printf '# <<< rust <<<\n'; } >> .gitignore; fi; \
 	echo "$(SEPARATOR)"; \
 	echo "📦 First crate: crates/$$project (lib)"; \
-	cargo new --lib "crates/$$project"; \
+	cargo new --vcs none --lib "crates/$$project"; \
 	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$project/Cargo.toml"; \
 	echo "$(SEPARATOR)"; \
 	echo "✅ Workspace ready → cargo build   |   add crates: make crate <name>"
@@ -158,7 +158,7 @@ crate cr: ## Add a crate to crates/: make crate <name>   (binary: make crate <na
 	if [ ! -f Cargo.toml ]; then echo "❌ No workspace here — run 'make rust' first."; exit 1; fi; \
 	if [ -e "crates/$$name" ]; then echo "❌ crates/$$name already exists."; exit 1; fi; \
 	echo "📦 Adding crate: crates/$$name $(if $(BIN),(bin),(lib))"; \
-	cargo new $(if $(BIN),,--lib) "crates/$$name"; \
+	cargo new --vcs none $(if $(BIN),,--lib) "crates/$$name"; \
 	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$name/Cargo.toml"; \
 	echo "✅ Added → crates/$$name"
 

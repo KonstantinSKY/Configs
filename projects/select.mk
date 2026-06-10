@@ -30,7 +30,12 @@ rust rs: ## Use Rust: scaffold a Cargo workspace + install the project Makefile
 	echo "$(SEPARATOR)"; \
 	echo "🛠  Project commands (make help):"; $(MAKE) help; \
 	echo "$(SEPARATOR)"; \
-	echo "✅ Rust ready — commit Makefile + Cargo.toml."
+	echo "📦 Committing & pushing scaffold..."; \
+	git add -A; \
+	git commit -q -m "Scaffold Rust workspace"; \
+	git push -q -u origin HEAD || echo "⚠️  push failed (commit is local) — run: git push -u origin HEAD"; \
+	echo "$(SEPARATOR)"; \
+	echo "✅ Rust ready — scaffold committed & pushed."
 
 node nd: ## Use Node (toolkit TBD): scaffold + install the project Makefile
 	@set -e; \
@@ -41,7 +46,14 @@ node nd: ## Use Node (toolkit TBD): scaffold + install the project Makefile
 	echo "$(SEPARATOR)"; \
 	echo "📂 Project now contains:"; ls -la; \
 	echo "$(SEPARATOR)"; \
-	echo "🛠  Project commands (make help):"; $(MAKE) help
+	echo "🛠  Project commands (make help):"; $(MAKE) help; \
+	echo "$(SEPARATOR)"; \
+	echo "📦 Committing & pushing scaffold..."; \
+	git add -A; \
+	git commit -q -m "Scaffold Node project"; \
+	git push -q -u origin HEAD || echo "⚠️  push failed (commit is local) — run: git push -u origin HEAD"; \
+	echo "$(SEPARATOR)"; \
+	echo "✅ Node ready — scaffold committed & pushed."
 
 python py: ## Use Python (toolkit TBD): scaffold + install the project Makefile
 	@set -e; \
@@ -52,4 +64,11 @@ python py: ## Use Python (toolkit TBD): scaffold + install the project Makefile
 	echo "$(SEPARATOR)"; \
 	echo "📂 Project now contains:"; ls -la; \
 	echo "$(SEPARATOR)"; \
-	echo "🛠  Project commands (make help):"; $(MAKE) help
+	echo "🛠  Project commands (make help):"; $(MAKE) help; \
+	echo "$(SEPARATOR)"; \
+	echo "📦 Committing & pushing scaffold..."; \
+	git add -A; \
+	git commit -q -m "Scaffold Python project"; \
+	git push -q -u origin HEAD || echo "⚠️  push failed (commit is local) — run: git push -u origin HEAD"; \
+	echo "$(SEPARATOR)"; \
+	echo "✅ Python ready — scaffold committed & pushed."
