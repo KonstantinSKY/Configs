@@ -111,4 +111,4 @@ osc52 = "CopyPaste"
 [bell]
 duration = 120
 animation = "EaseOutExpo"
-command = { program = "sh", args = ["-c", "paplay /usr/share/sounds/freedesktop/stereo/message.oga 2>/dev/null || pw-play /usr/share/sounds/freedesktop/stereo/message.oga 2>/dev/null || canberra-gtk-play -i message 2>/dev/null || afplay /System/Library/Sounds/Ping.aiff 2>/dev/null || true"] }
+command = { program = "sh", args = ["-c", "paplay --volume=65536 /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || pw-play --volume=1.0 /usr/share/sounds/freedesktop/stereo/bell.oga 2>/dev/null || canberra-gtk-play -i bell 2>/dev/null || afplay /System/Library/Sounds/Ping.aiff 2>/dev/null || true"] }
