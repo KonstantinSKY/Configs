@@ -22,3 +22,6 @@ logs/
 
 # macOS Finder files
 .DS_Store
+
+# Local dev Makefile (symlink into ~/Work/Configs) — machine-local, not source
+/Makefile

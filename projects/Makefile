@@ -38,6 +38,7 @@ new n: ## Create a private GitHub repo and clone it here: make new <name>
 	echo "🛰  Creating private GitHub repo and cloning: $$project"; \
 	gh repo create "$$project" --private --clone; \
 	ln -sfn "$(SELECTOR)" "$$project/Makefile"; \
+	printf '%s\n' '# Local dev Makefile (symlink into ~/Work/Configs) — machine-local, not source' '/Makefile' > "$$project/.gitignore"; \
 	echo "$(SEPARATOR)"; \
 	echo "✅ Done → $$project (git repo + origin, stack selector linked — no language yet)"; \
 	echo "👉 Next: cd $$project && make rust   (or: make node / python — pick the stack)"
