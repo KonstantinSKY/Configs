@@ -116,7 +116,16 @@ export PASSWORD_STORE_DIR="$HOME/Work/.password-store"
 export EDITOR=nvim
 export VISUAL=zeditor
 alias ge=gemini
+alias claudem='CLAUDE_CONFIG_DIR=$HOME/.claude-m claude'
 alias codexs='CODEX_HOME=$HOME/.codex-sasha codex'
+alias codexm='CODEX_HOME=$HOME/.codex-m codex'
+alias codexk='CODEX_HOME=$HOME/.codex-k codex'
+# AIX dev variants: same accounts, but run freshly-built aix-mcp (AIX_DEV_HOME)
+alias codex-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev codex'
+alias codexs-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-sasha codex'
+alias codexm-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-m codex'
+alias codexk-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-k codex'
+alias claudem-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-m claude'
 alias upd='make -C "$CONFIGS_PATH/eos" update'
 alias updf='make -C "$CONFIGS_PATH/eos" updf'
 
