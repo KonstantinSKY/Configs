@@ -4,6 +4,14 @@ case $- in
   *) return ;;
 esac
 
+# Stop zsh from emitting BEL (0x07) on line-editing errors. The Alacritty
+# [bell] config rings a sound + flashes the screen on any BEL, which is meant
+# for codex/claude notifications over SSH — not for empty-Backspace or ambiguous
+# completion. Silencing zsh keeps the bell reserved for real notifications.
+unsetopt beep        # no BEL on ZLE errors (e.g. Backspace at start of line)
+unsetopt hist_beep   # no BEL on missing history match
+unsetopt list_beep   # no BEL on ambiguous completion
+
 [[ -d "$HOME/Work" ]] && WORK="$HOME/Work" || WORK="$HOME"
 
 export CONFIGS_PATH="$WORK/Configs"
