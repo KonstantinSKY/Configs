@@ -1,4 +1,4 @@
-.PHONY: all install i sync-rules sync-gemini-rules sync-codex-rules verify v
+.PHONY: all install i sync-rules sync-gemini-rules sync-codex-rules backup-codex-configs restore-codex-configs verify-codex-configs verify v
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -17,6 +17,8 @@ GEMINI_RULES_SRC := $(THIS_DIR)/gemini/shell-rules.toml
 GEMINI_RULES_DEST := $(GEMINI_RULES_DIR)/shell-rules.toml
 CODEX_RULES_DIR := $(HOME)/.codex/rules
 CODEX_RULES_SRC_DIR := $(THIS_DIR)/codex
+CODEX_CONFIG_SRC_DIR := $(THIS_DIR)/codex/profiles
+CODEX_PROFILE_MAP := default:.codex k:.codex-k m:.codex-m sasha:.codex-sasha
 
 all: install ## Install AI packages, sync rules, and verify
 
@@ -62,6 +64,56 @@ sync-codex-rules: ## Copy Codex .rules files into ~/.codex/rules
 		echo "❌ No Codex .rules files found in $(CODEX_RULES_SRC_DIR)"; \
 		exit 1; \
 	fi
+
+backup-codex-configs: ## Copy live Codex config.toml files into this repo
+	@echo "Saving live Codex configs..."
+	@set -eu; \
+	for pair in $(CODEX_PROFILE_MAP); do \
+		profile="$${pair%%:*}"; \
+		home_dir="$${pair#*:}"; \
+		src="$(HOME)/$$home_dir/config.toml"; \
+		dest="$(CODEX_CONFIG_SRC_DIR)/$$profile/config.toml"; \
+		if [ ! -r "$$src" ]; then \
+			echo "missing live config: $$src"; \
+			exit 1; \
+		fi; \
+		mkdir -p "$$(dirname "$$dest")"; \
+		cp -f "$$src" "$$dest"; \
+		echo "saved: $$src -> $$dest"; \
+	done
+
+restore-codex-configs: ## Copy tracked Codex config.toml files into live profile dirs
+	@echo "Restoring Codex configs..."
+	@set -eu; \
+	for pair in $(CODEX_PROFILE_MAP); do \
+		profile="$${pair%%:*}"; \
+		home_dir="$${pair#*:}"; \
+		src="$(CODEX_CONFIG_SRC_DIR)/$$profile/config.toml"; \
+		dest="$(HOME)/$$home_dir/config.toml"; \
+		if [ ! -r "$$src" ]; then \
+			echo "missing tracked config: $$src"; \
+			exit 1; \
+		fi; \
+		mkdir -p "$(HOME)/$$home_dir"; \
+		cp -f "$$src" "$$dest"; \
+		echo "restored: $$src -> $$dest"; \
+	done
+
+verify-codex-configs: ## Compare tracked Codex config.toml files with live profile dirs
+	@echo "Comparing tracked Codex configs with live files..."
+	@set -eu; \
+	for pair in $(CODEX_PROFILE_MAP); do \
+		profile="$${pair%%:*}"; \
+		home_dir="$${pair#*:}"; \
+		src="$(CODEX_CONFIG_SRC_DIR)/$$profile/config.toml"; \
+		dest="$(HOME)/$$home_dir/config.toml"; \
+		if cmp -s "$$src" "$$dest"; then \
+			echo "same: $$profile"; \
+		else \
+			echo "differs: $$profile ($$src vs $$dest)"; \
+			exit 1; \
+		fi; \
+	done
 
 verify v: ## Verify packages and synced rule files
 	@echo "🔎 Verifying AI tools..."
