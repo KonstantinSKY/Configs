@@ -9,11 +9,11 @@ args = ["-l"]
 live_config_reload = true
 
 [font]
-size = 8.0
+size = 9.0
 
 [font.normal]
 family = "JetBrainsMono Nerd Font"
-style = "Light"
+style = "Regular"
 
 [font.bold]
 family = "JetBrainsMono Nerd Font"
@@ -25,7 +25,7 @@ style = "Bold Italic"
 
 [font.italic]
 family = "JetBrainsMono Nerd Font"
-style = "Light Italic"
+style = "Italic"
 
 # Default colors
 [colors.primary]

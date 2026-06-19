@@ -1,0 +1,28 @@
+#!/bin/sh
+
+required_outputs="HDMI-1 DP-1 DP-2"
+attempt=1
+
+while [ "$attempt" -le 10 ]; do
+    query="$(xrandr --query 2>/dev/null)" || query=""
+    missing=0
+
+    for output in $required_outputs; do
+        if ! printf '%s\n' "$query" | grep -q "^$output connected"; then
+            missing=1
+            break
+        fi
+    done
+
+    if [ "$missing" -eq 0 ] && xrandr \
+        --output HDMI-1 --mode 2560x1440 --pos 0x360 --rotate normal --brightness 0.7 --gamma 1.0:0.95:0.85 \
+        --output DP-1 --primary --mode 3840x2160 --pos 2560x0 --rotate normal \
+        --output DP-2 --mode 3840x2160 --pos 6400x0 --rotate normal; then
+        exit 0
+    fi
+
+    sleep 1
+    attempt=$((attempt + 1))
+done
+
+exit 0
