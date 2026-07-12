@@ -336,6 +336,67 @@
   },
 
   // ==========================================
+  // REMOTE SSH
+  // ==========================================
+  "ssh_connections": [
+    {
+      "host": "dt",
+      "args": [
+        "-F",
+        "/home/sky/.ssh/config"
+      ],
+      "projects": [
+        {
+          "paths": [
+            "/home/sky/Work"
+          ]
+        },
+        {
+          "paths": [
+            "/home/sky/Work/Projects/aixdev"
+          ]
+        },
+        {
+          "paths": [
+            "~/Work"
+          ]
+        }
+      ],
+      "nickname": "dt"
+    },
+    {
+      "host": "mac",
+      "args": [
+        "-F",
+        "/home/sky/.ssh/config"
+      ],
+      "projects": [
+        {
+          "paths": [
+            "~/Work"
+          ]
+        }
+      ],
+      "nickname": "mac local"
+    },
+    {
+      "host": "mac-r",
+      "args": [
+        "-F",
+        "/home/sky/.ssh/config"
+      ],
+      "projects": [
+        {
+          "paths": [
+            "~/Work"
+          ]
+        }
+      ],
+      "nickname": "mac remote"
+    }
+  ],
+
+  // ==========================================
   // LSP
   // ==========================================
   "lsp": {
