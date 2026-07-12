@@ -1,0 +1,41 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+layout_script="${MONITOR_LAYOUT_SCRIPT:-$HOME/.config/i3/scripts/monitor-layout}"
+interval="${MONITOR_HOTPLUG_INTERVAL:-2}"
+lock_file="${XDG_RUNTIME_DIR:-/tmp}/monitor-hotplug-watch.lock"
+
+exec 9>"$lock_file"
+flock -n 9 || exit 0
+
+resolve_status_file() {
+    local candidate
+
+    for candidate in /sys/class/drm/*-HDMI-A-1/status; do
+        if [[ -r "$candidate" ]]; then
+            printf '%s\n' "$candidate"
+            return 0
+        fi
+    done
+
+    return 1
+}
+
+previous_status=""
+
+while true; do
+    status_file="$(resolve_status_file || true)"
+
+    if [[ -n "$status_file" ]]; then
+        current_status="$(<"$status_file")"
+    else
+        current_status="missing"
+    fi
+
+    if [[ "$current_status" != "$previous_status" ]]; then
+        previous_status="$current_status"
+        "$layout_script" >/dev/null 2>&1 || true
+    fi
+
+    sleep "$interval"
+done

@@ -1,0 +1,58 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+# Keep the laptop display usable with or without an external HDMI monitor.
+# Defaults match this machine's X11 output names; override via environment if needed.
+internal_output="${INTERNAL_OUTPUT:-eDP-1}"
+external_output="${EXTERNAL_OUTPUT:-HDMI-1}"
+# Use the monitor's maximum advertised mode by default; override via environment
+# if this particular HDMI link needs a lower-bandwidth fallback.
+external_mode="${EXTERNAL_MODE:-3840x2160}"
+external_rate="${EXTERNAL_RATE:-60}"
+external_position="${EXTERNAL_POSITION:-right-of}"
+
+if ! command -v xrandr >/dev/null 2>&1; then
+    exit 0
+fi
+
+if ! xrandr --query | awk -v output="$internal_output" '$1 == output && $2 == "connected" { found = 1 } END { exit !found }'; then
+    exit 0
+fi
+
+if xrandr --query | awk -v output="$external_output" '$1 == output && $2 == "connected" { found = 1 } END { exit !found }'; then
+    external_args=(--output "$external_output")
+
+    if [[ "$external_mode" == "auto" ]]; then
+        external_args+=(--auto)
+    else
+        external_args+=(--mode "$external_mode")
+        if [[ -n "$external_rate" ]]; then
+            external_args+=(--rate "$external_rate")
+        fi
+    fi
+
+    case "$external_position" in
+        left-of|right-of|above|below|same-as)
+            external_args+=(--"$external_position" "$internal_output")
+            ;;
+        *)
+            external_args+=(--right-of "$internal_output")
+            ;;
+    esac
+
+    xrandr \
+        --output "$internal_output" --primary --dpi 96 --auto \
+        "${external_args[@]}"
+else
+    xrandr \
+        --output "$external_output" --off \
+        --output "$internal_output" --primary --dpi 96 --auto
+fi
+
+# Re-render the root background after changing the X screen size. Without this,
+# a 1920x1080 background can appear tiled 2x2 on the 3840x2160 monitor.
+if [[ -x "$HOME/.fehbg" ]]; then
+    "$HOME/.fehbg" >/dev/null 2>&1 || true
+elif command -v feh >/dev/null 2>&1; then
+    feh --bg-fill /usr/share/endeavouros/backgrounds/endeavouros-wallpaper.png >/dev/null 2>&1 || true
+fi
