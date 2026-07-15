@@ -1,0 +1,39 @@
+.PHONY: help all install i link l verify v
+.DEFAULT_GOAL := help
+
+THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
+THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
+CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
+
+ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/help.mk
+endif
+ifeq ($(filter $(CONFIGS_DIR)/make/link.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/link.mk
+endif
+
+SOURCE_CONFIG := $(THIS_DIR)/.tmux.conf
+TARGET_CONFIG := $(HOME)/.tmux.conf
+
+all: install
+
+install i: link verify ## Link tmux config into ~/.tmux.conf
+
+link l: ## Link ~/.tmux.conf → Configs/tmux/.tmux.conf
+	@$(call link,$(SOURCE_CONFIG),$(TARGET_CONFIG))
+
+verify v: ## Verify tmux config symlink
+	@echo "🔎 Verifying tmux config..."
+	@if [ ! -r "$(SOURCE_CONFIG)" ]; then \
+		echo "❌ Source config not found: $(SOURCE_CONFIG)"; \
+		exit 1; \
+	fi
+	@if [ -L "$(TARGET_CONFIG)" ]; then \
+		echo "✅ $(TARGET_CONFIG) -> $$(readlink -f "$(TARGET_CONFIG)")"; \
+	elif [ -e "$(TARGET_CONFIG)" ]; then \
+		echo "⚠️  $(TARGET_CONFIG) exists but is not a symlink"; \
+		exit 1; \
+	else \
+		echo "❌ Target config is missing: $(TARGET_CONFIG)"; \
+		exit 1; \
+	fi
