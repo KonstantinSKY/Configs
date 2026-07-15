@@ -2,7 +2,7 @@
 # Humans and AI agents must not modify this file without explicit user confirmation.
 #
 # Cross-platform zsh + powerlevel10k bootstrap.
-# Replaces the legacy zsh target that used to live in manjaro/session.mk.
+# Cross-platform zsh and powerlevel10k bootstrap.
 
 .PHONY: help all install i link l chsh setup s verify v
 .DEFAULT_GOAL := help
@@ -57,7 +57,7 @@ ifeq ($(UNAME),Darwin)
 	@brew install romkatv/powerlevel10k/powerlevel10k
 else ifeq ($(UNAME),Linux)
 	@case " $(DISTRO_ID) $(DISTRO_LIKE) " in \
-		*\ arch\ *|*\ manjaro\ *|*\ endeavouros\ *) \
+		*\ arch\ *|*\ endeavouros\ *) \
 			$(require_yay) ; \
 			echo "🐧 Installing zsh and powerlevel10k via yay..." ; \
 			yay -S --needed --noconfirm zsh $(P10K_PACKAGE) ;; \

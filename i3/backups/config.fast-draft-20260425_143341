@@ -2,7 +2,7 @@
 #
 # Hybrid config for the current Arch/Endeavour-style system.
 # Based on the local ~/.config/i3/config, with the useful parts from the old
-# Manjaro config kept where they fit this machine better.
+# Previous i3 settings kept where they fit this machine better.
 
 # ---------------------------
 # Core settings

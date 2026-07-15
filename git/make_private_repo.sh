@@ -263,7 +263,7 @@ main() {
     echo "  - Remote Origin: $(git remote get-url origin)"
     echo "  - Repository Type: Private"
     echo "  - GitHub Username: $GITHUB_USERNAME"
-    echo "  - Operating System: Manjaro Linux i3"
+    echo "  - Operating System: EndeavourOS Linux i3"
     echo "  - Current Working Directory: $(pwd)"
     echo
     echo "Project Structure:"

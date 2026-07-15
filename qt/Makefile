@@ -1,4 +1,4 @@
-# Qt theming bootstrap for Manjaro / i3
+# Qt theming bootstrap for EndeavourOS / i3
 # - Installs qt5ct, qt6ct, Kvantum for Qt5/Qt6
 # - Links repo-managed config files into ~/.config
 # - Expects Qt environment variables to be managed by ~/.xprofile

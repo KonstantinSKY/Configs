@@ -53,7 +53,7 @@ check-version: ## Verify the installed Neovim is at least 0.11
 
 packages p: ## Install Neovim and tree-sitter CLI from official repositories
 	@if ! command -v pacman >/dev/null 2>&1; then \
-		echo "❌ pacman not found. This target currently supports Arch/Manjaro only."; \
+		echo "❌ pacman not found. This target currently supports EndeavourOS/Arch only."; \
 		exit 1; \
 	fi
 	@echo "📦 Installing core Neovim packages from official repositories..."
@@ -61,7 +61,7 @@ packages p: ## Install Neovim and tree-sitter CLI from official repositories
 
 remove-legacy-vim rv: ## Remove legacy Vim packages when you explicitly want Neovim-only
 	@if ! command -v pacman >/dev/null 2>&1; then \
-		echo "❌ pacman not found. This target currently supports Arch/Manjaro only."; \
+		echo "❌ pacman not found. This target currently supports EndeavourOS/Arch only."; \
 		exit 1; \
 	fi
 	@legacy_packages=""; \

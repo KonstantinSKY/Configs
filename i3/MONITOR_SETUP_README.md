@@ -1,6 +1,6 @@
-# Monitor Resolution Setup for Manjaro i3
+# Monitor Resolution Setup for EndeavourOS i3
 
-This guide will help you fix monitor resolution issues in your Manjaro i3 setup.
+This guide will help you fix monitor resolution issues in your EndeavourOS i3 setup.
 
 ## Current Issue
 Your monitors are running at very low resolutions:

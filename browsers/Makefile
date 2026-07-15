@@ -13,8 +13,7 @@ ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
 endif
 
-MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
-FIREFOX_MAKEFILE := $(THIS_DIR)/firefox/Makefile
+EOS_MAKEFILE := $(CONFIGS_DIR)/eos/Makefile
 
 setup all install i: ## Remove legacy Pale Moon and install the managed browser set
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" remove-palemoon
@@ -35,16 +34,16 @@ remove-palemoon: ## Remove legacy Pale Moon packages before a full system update
 		fi; \
 	done
 
-chrome install-chrome: ## Install Google Chrome via the Manjaro package flow
+chrome install-chrome: ## Install Google Chrome via the EndeavourOS package flow
 	@echo "🌐 Installing Google Chrome..."
-	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install PKGS="google-chrome"
+	@$(MAKE) -s -f "$(EOS_MAKEFILE)" install PKGS="google-chrome"
 
-firefox install-firefox: ## Install Firefox and apply the managed Firefox profile overlay
-	@$(MAKE) -s -f "$(FIREFOX_MAKEFILE)" install
+firefox install-firefox: ## Install Firefox
+	@$(MAKE) -s -f "$(EOS_MAKEFILE)" install PKGS="firefox"
 
-tor install-tor: ## Install Tor Browser Launcher via the Manjaro package flow
+tor install-tor: ## Install Tor Browser Launcher via the EndeavourOS package flow
 	@echo "🕵️  Installing Tor Browser..."
-	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install PKGS="torbrowser-launcher"
+	@$(MAKE) -s -f "$(EOS_MAKEFILE)" install PKGS="torbrowser-launcher"
 
 %:
 	@:

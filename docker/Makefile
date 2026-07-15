@@ -9,7 +9,7 @@ MAKEFLAGS += --no-print-directory
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
-MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
+EOS_MAKEFILE := $(CONFIGS_DIR)/eos/Makefile
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
@@ -19,7 +19,7 @@ SEPARATOR := -------------------------------------------------------------------
 
 install i: ## Install Docker, docker-compose, docker-buildx and run setup
 	@echo "🐳 Installing Docker ecosystem..."
-	@$(MAKE) -f "$(MANJARO_MAKEFILE)" install docker docker-compose docker-buildx
+	@$(MAKE) -f "$(EOS_MAKEFILE)" install PKGS="docker docker-compose docker-buildx"
 	@echo "$(SEPARATOR)"
 	@$(MAKE) -f "$(THIS_MAKEFILE)" setup
 

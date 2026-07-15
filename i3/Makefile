@@ -42,7 +42,7 @@ endef
 define resolve_i3_profile
 	case "$(I3_PROFILE)" in \
 		auto) \
-			if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt --quiet; then \
+			if command -v systemd-detect-virt >/dev/null 2>&1 && systemd-detect-virt --vm --quiet; then \
 				profile="vm"; \
 				monitor_dir="$(I3_SOURCE_MONITOR_VM)"; \
 			elif find /sys/class/power_supply -maxdepth 1 -name 'BAT*' -print -quit 2>/dev/null | grep -q .; then \

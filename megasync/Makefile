@@ -12,7 +12,7 @@ MAKEFLAGS += --no-print-directory
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
-MANJARO_MAKEFILE := $(CONFIGS_DIR)/manjaro/Makefile
+EOS_MAKEFILE := $(CONFIGS_DIR)/eos/Makefile
 
 ## ---------------------------
 ## 🧩 MegaCMD configuration
@@ -39,7 +39,7 @@ endif
 ## ---------------------------
 install: ## Install MegaCMD and MEGAsync desktop app, install service unit, enable autostart with linger
 	@echo "📦 Installing MegaCMD and MEGAsync..."
-	@$(MAKE) -s -f "$(MANJARO_MAKEFILE)" install PKGS="$(MEGA_PKGS)"
+	@$(MAKE) -s -f "$(EOS_MAKEFILE)" install PKGS="$(MEGA_PKGS)"
 	@echo "$(SEPARATOR)"
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" install-service
 	@echo "$(SEPARATOR)"

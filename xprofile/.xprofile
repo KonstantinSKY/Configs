@@ -3,7 +3,6 @@
 # Theme settings for Qt and GTK
 export QT_QPA_PLATFORMTHEME=qt6ct
 export QT_STYLE_OVERRIDE="kvantum"
-# was: export GTK_THEME="Matcha-dark-sea"   # Manjaro-era palette
 # was: export GTK_THEME="Arc-Dark"   # broke libadwaita apps (pamac-manager: black/distorted UI). GTK3 picks up the theme via xsettingsd + gtk-3.0/settings.ini; GTK4/libadwaita uses gsettings color-scheme.
 export GTK2_RC_FILES="$HOME/.gtkrc-2.0"
 

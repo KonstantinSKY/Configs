@@ -54,7 +54,7 @@ shell scripting, and troubleshooting.
 
 ## Constraints
 
-- Target system: Manjaro / Arch Linux
+- Target system: EndeavourOS / Arch Linux
 - Target Linux kernel: 6.12
 - Window manager: i3 (X11)
 - Prefer CLI tools over GUI utilities

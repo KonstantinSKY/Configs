@@ -1,7 +1,7 @@
 # Global system-update helpers for GNU Make
 # Included via all.mk or explicit include from leaf Makefiles
 
-SYSTEM_UPDATE_MAKEFILE ?= $(CONFIGS_DIR)/manjaro/Makefile
+SYSTEM_UPDATE_MAKEFILE ?= $(CONFIGS_DIR)/eos/Makefile
 
 ensure_system_updated = \
 	echo "🔄 Ensuring system is up to date before installation..."; \
