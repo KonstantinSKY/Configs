@@ -36,9 +36,21 @@ docker ps
 make -f kvm/Makefile status
 make -f bluetooth/Makefile status
 make -f zed/Makefile status
+ls -l /run/docker.sock /var/run/docker.sock
 ```
 
-Ожидаемо, активная сессия должна видеть группы `docker` и `libvirt`.
+Ожидаемо:
+
+- активная login-сессия должна видеть группы `docker` и `libvirt`;
+- `docker ps` должен выполняться без `sudo`;
+- `/run/docker.sock` и `/var/run/docker.sock` должны быть `root:docker` с mode `srw-rw----`;
+- KVM использует modular libvirt: `virtqemud.socket` и `virtnetworkd.socket` active;
+- legacy `libvirtd.service` может быть `disabled/inactive`, это не ошибка при active modular sockets;
+- Bluetooth service enabled/active, controller powered on.
+
+До reboot текущая shell-сессия может не видеть новые группы даже если `/etc/group`
+уже содержит `sky` в `docker`/`libvirt`. Если после reboot `docker ps` всё ещё
+даёт permission denied, сначала проверить `id -nG` и owner/group Docker socket.
 
 ## Осталось опционально
 
