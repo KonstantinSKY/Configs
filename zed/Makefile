@@ -4,8 +4,7 @@
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
 THIS_DIR := $(patsubst %/,%,$(dir $(THIS_MAKEFILE)))
 CONFIGS_DIR := $(abspath $(THIS_DIR)/..)
-
-include $(CONFIGS_DIR)/make/update.mk
+EOS_MAKEFILE := $(CONFIGS_DIR)/eos/Makefile
 
 ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
@@ -32,16 +31,14 @@ all: install
 
 install i: ## Install Zed and dependencies via yay, then link settings.json
 	@echo "📥 Installing Zed and credential / spell-check deps via yay..."
-	@$(call ensure_system_updated)
-	@yay -S --needed --noconfirm $(ZED_DEPS)
+	@$(MAKE) -s -f "$(EOS_MAKEFILE)" install PKGS="$(ZED_DEPS)"
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" link
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" keyring-info
 	@echo "✅ Zed installed and configured."
 
 deps: ## Install dependencies only (no link)
-	@$(call ensure_system_updated)
-	@yay -S --needed --noconfirm $(ZED_DEPS)
+	@$(MAKE) -s -f "$(EOS_MAKEFILE)" install PKGS="$(ZED_DEPS)"
 
 link l: ## Symlink settings.json into ~/.config/zed (leaves the dir for Zed)
 	@mkdir -p "$(ZED_TARGET_DIR)"
