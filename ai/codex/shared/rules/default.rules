@@ -1,0 +1,2 @@
+prefix_rule(pattern=["dunstctl", "reload"], decision="allow")
+prefix_rule(pattern=["git", "add", "flatpak/Makefile"], decision="allow")
