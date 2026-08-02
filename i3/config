@@ -515,7 +515,7 @@ include ~/.config/i3/host/monitor.conf
 exec --no-startup-id sleep 1 && feh --bg-fill /usr/share/endeavouros/backgrounds/endeavouros-wallpaper.png
 
 # set powersavings for display:
-exec --no-startup-id xset s 480 dpms 600 600 600
+exec --no-startup-id xset s 1200 dpms 1500 1500 1500
 
 # disable power saving (for example if using xscreensaver)
 #exec --no-startup-id xset -dpms
