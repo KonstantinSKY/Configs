@@ -1,7 +1,7 @@
 # IMPORTANT FOR AI AGENTS:
 # Do not modify this file without explicit user confirmation.
 
-.PHONY: help install i update u status st doctor d macos_targets macos-targets mt macos_cross_deps macos-cross-deps mcd create c repo rp delete_repo dr copy_gitignore gi read rd rust rs crate cr preflight pf
+.PHONY: help install i tools tl web-tools wt update u status st doctor d macos_targets macos-targets mt macos_cross_deps macos-cross-deps mcd create c repo rp delete_repo dr copy_gitignore gi read rd rust rs crate cr preflight pf
 .DEFAULT_GOAL := help
 
 MAKEFLAGS += --no-print-directory
@@ -30,7 +30,7 @@ ifeq ($(strip $(PROJECT)),)
 PROJECT := $(notdir $(CURDIR))
 endif
 
-install i: ## Install rustup, stable toolchain, core components, and macOS targets
+install i: ## Install complete Rust workstation tooling
 	@echo "🦀 Installing Rust via rustup..."
 	@if ! command -v rustup >/dev/null 2>&1; then \
 		echo "📦 Installing rustup..."; \
@@ -46,9 +46,30 @@ install i: ## Install rustup, stable toolchain, core components, and macOS targe
 	@echo "📦 Adding core components..."
 	@rustup component add rust-analyzer rust-src clippy rustfmt
 	@echo "$(SEPARATOR)"
+	@echo "🌙 Installing nightly rustfmt..."
+	@rustup toolchain install nightly --profile minimal
+	@rustup component add --toolchain nightly rustfmt
+	@echo "$(SEPARATOR)"
 	@$(MAKE) -f "$(THIS_MAKEFILE)" macos_targets
 	@echo "$(SEPARATOR)"
+	@$(MAKE) -f "$(THIS_MAKEFILE)" tools
+	@echo "$(SEPARATOR)"
+	@$(MAKE) -f "$(THIS_MAKEFILE)" web-tools
+	@echo "$(SEPARATOR)"
 	@$(MAKE) -f "$(THIS_MAKEFILE)" status
+
+tools tl: ## Install global Rust cargo tools: nextest, audit, deny, machete, watch
+	@echo "🧰 Installing global Rust cargo tools..."
+	cargo install cargo-nextest --locked
+	cargo install cargo-audit --locked
+	cargo install cargo-deny --locked
+	cargo install cargo-machete --locked
+	cargo install cargo-watch --locked
+
+web-tools wt: ## Install global Rust web/Leptos tools
+	@echo "🌐 Installing Rust web tooling..."
+	rustup target add wasm32-unknown-unknown
+	cargo install cargo-leptos --version 0.3.7 --locked
 
 update u: ## Update stable toolchain and installed components
 	@echo "🔄 Updating Rust stable toolchain..."
@@ -143,7 +164,7 @@ rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (virtual root + first 
 	$(MAKE) -f "$(THIS_MAKEFILE)" preflight; \
 	echo "$(SEPARATOR)"; \
 	echo "🦀 Scaffolding virtual workspace: $$project"; \
-	printf '%s\n' '[workspace]' 'resolver = "3"' 'members = ["crates/*"]' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
+	printf '%s\n' '[workspace]' 'resolver = "3"' 'members = []' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
 	cp -f "$(TOOLCHAIN_TEMPLATE)" rust-toolchain.toml 2>/dev/null || printf '%s\n' '[toolchain]' 'channel = "stable"' > rust-toolchain.toml; \
 	cp -f "$(RUSTFMT_TEMPLATE)" rustfmt.toml 2>/dev/null || printf 'edition = "2024"\n' > rustfmt.toml; \
 	if ! grep -qF '# >>> rust >>>' .gitignore 2>/dev/null; then { printf '\n# >>> rust >>>\n'; cat "$(GITIGNORE_TEMPLATE)" 2>/dev/null || printf '/target\n'; printf '# <<< rust <<<\n'; } >> .gitignore; fi; \
@@ -151,6 +172,25 @@ rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (virtual root + first 
 	echo "📦 First crate: crates/$$project (bin)"; \
 	cargo new --vcs none "crates/$$project"; \
 	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$project/Cargo.toml"; \
+	echo "$(SEPARATOR)"; \
+	echo "🧪 External tests root: tests/"; \
+	mkdir -p tests; \
+	touch tests/.gitkeep; \
+	mkdir -p tests/fixtures; \
+	touch tests/fixtures/.gitkeep; \
+	echo "$(SEPARATOR)"; \
+	echo "📚 Project support directories"; \
+	mkdir -p docs ops .github/workflows; \
+	touch docs/.gitkeep ops/.gitkeep .github/workflows/.gitkeep; \
+	printf '%s\n' "# $$project" '' 'Rust workspace scaffold.' > README.md; \
+	printf '%s\n' '# Copy to .env for local development settings.' > .env.example; \
+	echo "$(SEPARATOR)"; \
+	echo "🛠  Project automation crate: xtask"; \
+	cargo new --vcs none "xtask"; \
+	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "xtask/Cargo.toml"; \
+	sed -i '/^edition.workspace = true/a publish = false' "xtask/Cargo.toml"; \
+	printf '%s\n' 'use std::env;' '' 'fn main() {' '    let command = env::args().nth(1).unwrap_or_else(|| "help".to_string());' '' '    match command.as_str() {' '        "help" => print_help(),' '        "deploy" => deploy(),' '        other => {' '            eprintln!("unknown xtask command: {other}");' '            eprintln!("run `cargo run -p xtask -- help`");' '            std::process::exit(2);' '        }' '    }' '}' '' 'fn print_help() {' '    println!("xtask commands:");' '    println!("  deploy    run the project deployment workflow");' '}' '' 'fn deploy() {' '    println!("deploy workflow is not implemented yet");' '}' > "xtask/src/main.rs"; \
+	printf '%s\n' '[workspace]' 'resolver = "3"' 'members = ["crates/*", "xtask"]' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
 	echo "$(SEPARATOR)"; \
 	echo "✅ Workspace ready → cargo build | cargo run | add modules: make crate <name>"
 

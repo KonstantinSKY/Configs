@@ -3,11 +3,11 @@
 # Add project-specific targets freely below.
 
 .DEFAULT_GOAL := help
-.PHONY: help h build b test t run r fmt clippy check crate cr setup s
+.PHONY: help h build b test t test-fast run r fmt clippy check audit deny deps-unused watch crate cr setup s xtask x deploy d
 
 MAKEFLAGS += --no-print-directory
 
-ARG_GOALS := crate cr
+ARG_GOALS := crate cr xtask x
 EXTRA_GOALS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
 
 help h: ## Show available commands
@@ -20,6 +20,9 @@ build b: ## cargo build (whole workspace)
 test t: ## cargo test (whole workspace)
 	cargo test
 
+test-fast: ## cargo nextest run (whole workspace)
+	cargo nextest run
+
 run r: ## cargo run
 	cargo run
 
@@ -31,6 +34,24 @@ clippy: ## cargo clippy (all targets, warnings as errors)
 
 check: ## fmt --check + clippy + test
 	cargo +nightly fmt --check && cargo clippy --all-targets -- -D warnings && cargo test
+
+audit: ## cargo audit (RustSec advisories)
+	cargo audit
+
+deny: ## cargo deny check (advisories, licenses, bans, duplicates)
+	cargo deny check
+
+deps-unused: ## cargo machete (unused dependencies)
+	cargo machete
+
+watch: ## cargo watch -x test
+	cargo watch -x test
+
+xtask x: ## Run project automation: make xtask <command>
+	cargo run -p xtask -- $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+
+deploy d: ## Run the xtask deploy workflow
+	cargo run -p xtask -- deploy
 
 setup s: ## Ensure toolchain: stable components + nightly rustfmt (idempotent)
 	@command -v cargo >/dev/null 2>&1 || { echo "❌ Install rustup first"; exit 1; }
