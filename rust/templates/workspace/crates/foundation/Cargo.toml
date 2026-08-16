@@ -1,0 +1,12 @@
+[package]
+name = "foundation"
+version.workspace = true
+edition.workspace = true
+publish = false
+
+[lints]
+workspace = true
+
+[dependencies]
+secrecy.workspace = true
+thiserror.workspace = true

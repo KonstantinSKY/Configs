@@ -7,33 +7,35 @@
 
 MAKEFLAGS += --no-print-directory
 
-ARG_GOALS := crate cr xtask x
+APP_PACKAGE ?= app
+ARG_GOALS := crate cr
 EXTRA_GOALS := $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+XTASK_CMD ?= help
 
 help h: ## Show available commands
 	@grep -hE '^[a-zA-Z][a-zA-Z0-9_ -]*:.*##' $(MAKEFILE_LIST) \
 		| awk 'BEGIN{FS=":.*## "}{printf "  %-12s %s\n", $$1, $$2}' | sort
 
-build b: ## cargo build (whole workspace)
-	cargo build
+build b: ## cargo build --workspace
+	cargo build --workspace
 
-test t: ## cargo test (whole workspace)
-	cargo test
+test t: ## cargo test --workspace
+	cargo test --workspace
 
-test-fast: ## cargo nextest run (whole workspace)
-	cargo nextest run
+test-fast: ## cargo nextest run --workspace
+	cargo nextest run --workspace
 
-run r: ## cargo run
-	cargo run
+run r: ## Run the app crate
+	cargo run -p $(APP_PACKAGE)
 
 fmt: ## cargo +nightly fmt (applies nightly-only options in rustfmt.toml)
 	cargo +nightly fmt
 
-clippy: ## cargo clippy (all targets, warnings as errors)
-	cargo clippy --all-targets -- -D warnings
+clippy: ## cargo clippy --workspace (all targets, warnings as errors)
+	cargo clippy --workspace --all-targets -- -D warnings
 
 check: ## fmt --check + clippy + test
-	cargo +nightly fmt --check && cargo clippy --all-targets -- -D warnings && cargo test
+	cargo +nightly fmt --check && cargo clippy --workspace --all-targets -- -D warnings && cargo test --workspace
 
 audit: ## cargo audit (RustSec advisories)
 	cargo audit
@@ -47,8 +49,8 @@ deps-unused: ## cargo machete (unused dependencies)
 watch: ## cargo watch -x test
 	cargo watch -x test
 
-xtask x: ## Run project automation: make xtask <command>
-	cargo run -p xtask -- $(wordlist 2,$(words $(MAKECMDGOALS)),$(MAKECMDGOALS))
+xtask x: ## Run project automation: make xtask XTASK_CMD=<command>
+	cargo run -p xtask -- $(XTASK_CMD)
 
 deploy d: ## Run the xtask deploy workflow
 	cargo run -p xtask -- deploy

@@ -13,6 +13,8 @@ GIT_MAKEFILE := $(CONFIGS_DIR)/make/all.mk
 GITIGNORE_TEMPLATE := $(THIS_DIR)/gitignore
 RUSTFMT_TEMPLATE := $(THIS_DIR)/rustfmt.toml
 TOOLCHAIN_TEMPLATE := $(THIS_DIR)/rust-toolchain.toml
+PROJECT_MAKEFILE := $(THIS_DIR)/project.Makefile
+WORKSPACE_TEMPLATE := $(THIS_DIR)/templates/workspace
 MACOS_TARGETS := aarch64-apple-darwin x86_64-apple-darwin
 MACOS_CROSS_DEPS := clang llvm lld cmake patch python openssl xz bzip2 cpio libxml2
 ARG_GOALS := create c repo rp crate cr
@@ -138,7 +140,7 @@ macos_cross_deps macos-cross-deps mcd: ## Install Linux packages needed to build
 	@echo "🍎 Installing Linux deps for macOS cross-toolchain..."
 	@sudo pacman -S --needed --noconfirm $(MACOS_CROSS_DEPS)
 
-create c: ## Create a new Rust project: make create <name>
+create c: ## Create a new Rust workspace project: make create <name>
 	@set -e; \
 	project="$(PROJECT)"; \
 	if [ -z "$${project//[[:space:]]/}" ]; then \
@@ -150,47 +152,28 @@ create c: ## Create a new Rust project: make create <name>
 	if [ -e "$$project" ]; then \
 		echo "❌ Path already exists: $$project"; exit 1; \
 	fi; \
-	echo "📦 Creating Rust project: $$project"; \
-	cargo new "$$project" --vcs none; \
-	echo "🔗 Linking shared Makefile into project"; \
-	ln -sfn "$(THIS_MAKEFILE)" "$$project/Makefile"; \
+	echo "📦 Creating Rust workspace project: $$project"; \
+	mkdir -p "$$project"; \
+	$(MAKE) -C "$$project" -f "$(THIS_MAKEFILE)" rust; \
+	echo "📄 Installing portable project Makefile"; \
+	cp -f "$(PROJECT_MAKEFILE)" "$$project/Makefile"; \
 	echo "$(SEPARATOR)"; \
 	echo "✅ Done → $$project"
 
-rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (virtual root + first bin crate): make rust
+rust rs: ## Scaffold a Cargo workspace in the CURRENT dir (foundation + platform + app): make rust
 	@set -e; \
-	project="$(notdir $(CURDIR))"; \
 	if [ -f Cargo.toml ]; then echo "❌ Cargo.toml already exists here — refusing to overwrite."; exit 1; fi; \
+	if [ -e crates ]; then echo "❌ crates already exists here — refusing to overwrite."; exit 1; fi; \
+	if [ -e xtask ]; then echo "❌ xtask already exists here — refusing to overwrite."; exit 1; fi; \
+	if [ ! -d "$(WORKSPACE_TEMPLATE)" ]; then echo "❌ Workspace template not found: $(WORKSPACE_TEMPLATE)"; exit 1; fi; \
 	$(MAKE) -f "$(THIS_MAKEFILE)" preflight; \
 	echo "$(SEPARATOR)"; \
-	echo "🦀 Scaffolding virtual workspace: $$project"; \
-	printf '%s\n' '[workspace]' 'resolver = "3"' 'members = []' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
-	cp -f "$(TOOLCHAIN_TEMPLATE)" rust-toolchain.toml 2>/dev/null || printf '%s\n' '[toolchain]' 'channel = "stable"' > rust-toolchain.toml; \
-	cp -f "$(RUSTFMT_TEMPLATE)" rustfmt.toml 2>/dev/null || printf 'edition = "2024"\n' > rustfmt.toml; \
-	if ! grep -qF '# >>> rust >>>' .gitignore 2>/dev/null; then { printf '\n# >>> rust >>>\n'; cat "$(GITIGNORE_TEMPLATE)" 2>/dev/null || printf '/target\n'; printf '# <<< rust <<<\n'; } >> .gitignore; fi; \
-	echo "$(SEPARATOR)"; \
-	echo "📦 First crate: crates/$$project (bin)"; \
-	cargo new --vcs none "crates/$$project"; \
-	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "crates/$$project/Cargo.toml"; \
-	echo "$(SEPARATOR)"; \
-	echo "🧪 External tests root: tests/"; \
-	mkdir -p tests; \
-	touch tests/.gitkeep; \
-	mkdir -p tests/fixtures; \
-	touch tests/fixtures/.gitkeep; \
-	echo "$(SEPARATOR)"; \
-	echo "📚 Project support directories"; \
-	mkdir -p docs ops .github/workflows; \
-	touch docs/.gitkeep ops/.gitkeep .github/workflows/.gitkeep; \
-	printf '%s\n' "# $$project" '' 'Rust workspace scaffold.' > README.md; \
-	printf '%s\n' '# Copy to .env for local development settings.' > .env.example; \
-	echo "$(SEPARATOR)"; \
-	echo "🛠  Project automation crate: xtask"; \
-	cargo new --vcs none "xtask"; \
-	sed -i 's/^version = .*/version.workspace = true/; s/^edition = .*/edition.workspace = true/' "xtask/Cargo.toml"; \
-	sed -i '/^edition.workspace = true/a publish = false' "xtask/Cargo.toml"; \
-	printf '%s\n' 'use std::env;' '' 'fn main() {' '    let command = env::args().nth(1).unwrap_or_else(|| "help".to_string());' '' '    match command.as_str() {' '        "help" => print_help(),' '        "deploy" => deploy(),' '        other => {' '            eprintln!("unknown xtask command: {other}");' '            eprintln!("run `cargo run -p xtask -- help`");' '            std::process::exit(2);' '        }' '    }' '}' '' 'fn print_help() {' '    println!("xtask commands:");' '    println!("  deploy    run the project deployment workflow");' '}' '' 'fn deploy() {' '    println!("deploy workflow is not implemented yet");' '}' > "xtask/src/main.rs"; \
-	printf '%s\n' '[workspace]' 'resolver = "3"' 'members = ["crates/*", "xtask"]' '' '[workspace.package]' 'version = "0.1.0"' 'edition = "2024"' '' '[workspace.dependencies]' > Cargo.toml; \
+	echo "🦀 Scaffolding modular workspace: foundation + platform + app"; \
+	cp -R "$(WORKSPACE_TEMPLATE)/." .; \
+	cp -f "$(TOOLCHAIN_TEMPLATE)" rust-toolchain.toml; \
+	cp -f "$(RUSTFMT_TEMPLATE)" rustfmt.toml; \
+	touch .gitignore; \
+	if ! grep -qF '# >>> rust >>>' .gitignore; then cat "$(GITIGNORE_TEMPLATE)" >> .gitignore; fi; \
 	echo "$(SEPARATOR)"; \
 	echo "✅ Workspace ready → cargo build | cargo run | add modules: make crate <name>"
 
