@@ -1,0 +1,18 @@
+[Unit]
+Description=Voice PTT
+After=graphical-session.target pipewire.service wireplumber.service
+Wants=pipewire.service wireplumber.service
+
+[Service]
+Type=simple
+WorkingDirectory=/home/sky/Work/Configs/voice-ptt
+Environment=DISPLAY=:0
+Environment=XAUTHORITY=%h/.Xauthority
+ExecStart=/home/sky/Work/Configs/voice-ptt/launch_voice_ptt.sh
+Restart=always
+RestartSec=2
+StartLimitIntervalSec=60
+StartLimitBurst=20
+
+[Install]
+WantedBy=default.target

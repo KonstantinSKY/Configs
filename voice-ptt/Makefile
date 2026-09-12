@@ -7,6 +7,11 @@ DESKTOP_SRC        := $(APP_DIR)/$(DESKTOP_NAME)
 AUTOSTART_DIR      := $(HOME)/.config/autostart
 AUTOSTART_DST      := $(AUTOSTART_DIR)/$(DESKTOP_NAME)
 
+SYSTEMD_SERVICE_NAME := voice-ptt.service
+SYSTEMD_SERVICE_SRC  := $(APP_DIR)/$(SYSTEMD_SERVICE_NAME)
+SYSTEMD_USER_DIR     := $(HOME)/.config/systemd/user
+SYSTEMD_SERVICE_DST  := $(SYSTEMD_USER_DIR)/$(SYSTEMD_SERVICE_NAME)
+
 PLIST_NAME         := com.sky.voice-ptt.plist
 PLIST_SRC          := $(APP_DIR)/$(PLIST_NAME)
 LAUNCH_AGENTS_DIR  := $(HOME)/Library/LaunchAgents
@@ -35,13 +40,15 @@ install: ## Auto-detect OS and install
 
 # ── Linux ──────────────────────────────────────────────────────────────────────
 
-install-linux: ## Install on Linux (autostart symlink), then start if .env is ready
-	@mkdir -p "$(AUTOSTART_DIR)"
-	@ln -sf "$(DESKTOP_SRC)" "$(AUTOSTART_DST)"
-	@echo "Linked autostart entry → $(AUTOSTART_DST)"
+install-linux: ## Install on Linux (systemd user service), then start if .env is ready
+	@mkdir -p "$(SYSTEMD_USER_DIR)"
+	@install -m 644 "$(SYSTEMD_SERVICE_SRC)" "$(SYSTEMD_SERVICE_DST)"
+	@echo "Installed $(SYSTEMD_SERVICE_DST)"
+	@systemctl --user daemon-reload
+	@systemctl --user disable --now 'app-voice\x2dptt@autostart.service' >/dev/null 2>&1 || true
 	@if $(MAKE) --no-print-directory -s check-env 2>/dev/null; then \
 		echo "Starting voice-ptt..."; \
-		bash "$(RESTART_SCRIPT)"; \
+		systemctl --user enable --now "$(SYSTEMD_SERVICE_NAME)"; \
 	else \
 		echo "voice-ptt will not start — fix .env and run: make install-linux"; \
 	fi
