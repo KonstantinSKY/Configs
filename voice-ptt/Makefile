@@ -12,6 +12,10 @@ SYSTEMD_SERVICE_SRC  := $(APP_DIR)/$(SYSTEMD_SERVICE_NAME)
 SYSTEMD_USER_DIR     := $(HOME)/.config/systemd/user
 SYSTEMD_SERVICE_DST  := $(SYSTEMD_USER_DIR)/$(SYSTEMD_SERVICE_NAME)
 
+RESUME_WATCHER_NAME := voice-ptt-resume-watcher.service
+RESUME_WATCHER_SRC  := $(APP_DIR)/$(RESUME_WATCHER_NAME)
+RESUME_WATCHER_DST  := $(SYSTEMD_USER_DIR)/$(RESUME_WATCHER_NAME)
+
 PLIST_NAME         := com.sky.voice-ptt.plist
 PLIST_SRC          := $(APP_DIR)/$(PLIST_NAME)
 LAUNCH_AGENTS_DIR  := $(HOME)/Library/LaunchAgents
@@ -44,11 +48,14 @@ install-linux: ## Install on Linux (systemd user service), then start if .env is
 	@mkdir -p "$(SYSTEMD_USER_DIR)"
 	@install -m 644 "$(SYSTEMD_SERVICE_SRC)" "$(SYSTEMD_SERVICE_DST)"
 	@echo "Installed $(SYSTEMD_SERVICE_DST)"
+	@install -m 644 "$(RESUME_WATCHER_SRC)" "$(RESUME_WATCHER_DST)"
+	@echo "Installed $(RESUME_WATCHER_DST)"
 	@systemctl --user daemon-reload
 	@systemctl --user disable --now 'app-voice\x2dptt@autostart.service' >/dev/null 2>&1 || true
 	@if $(MAKE) --no-print-directory -s check-env 2>/dev/null; then \
 		echo "Starting voice-ptt..."; \
 		systemctl --user enable --now "$(SYSTEMD_SERVICE_NAME)"; \
+		systemctl --user enable --now "$(RESUME_WATCHER_NAME)"; \
 	else \
 		echo "voice-ptt will not start — fix .env and run: make install-linux"; \
 	fi

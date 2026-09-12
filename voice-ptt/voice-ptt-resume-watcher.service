@@ -1,0 +1,12 @@
+[Unit]
+Description=Restart Voice PTT after system resume
+After=default.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env bash /home/sky/Work/Configs/voice-ptt/watch_resume_restart_voice_ptt.sh voice-ptt.service
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
