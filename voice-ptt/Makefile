@@ -16,6 +16,10 @@ RESUME_WATCHER_NAME := voice-ptt-resume-watcher.service
 RESUME_WATCHER_SRC  := $(APP_DIR)/$(RESUME_WATCHER_NAME)
 RESUME_WATCHER_DST  := $(SYSTEMD_USER_DIR)/$(RESUME_WATCHER_NAME)
 
+HEADSET_WATCHER_NAME := bluetooth-headset-watch.service
+HEADSET_WATCHER_SRC  := $(APP_DIR)/$(HEADSET_WATCHER_NAME)
+HEADSET_WATCHER_DST  := $(SYSTEMD_USER_DIR)/$(HEADSET_WATCHER_NAME)
+
 PLIST_NAME         := com.sky.voice-ptt.plist
 PLIST_SRC          := $(APP_DIR)/$(PLIST_NAME)
 LAUNCH_AGENTS_DIR  := $(HOME)/Library/LaunchAgents
@@ -50,12 +54,15 @@ install-linux: ## Install on Linux (systemd user service), then start if .env is
 	@echo "Installed $(SYSTEMD_SERVICE_DST)"
 	@install -m 644 "$(RESUME_WATCHER_SRC)" "$(RESUME_WATCHER_DST)"
 	@echo "Installed $(RESUME_WATCHER_DST)"
+	@install -m 644 "$(HEADSET_WATCHER_SRC)" "$(HEADSET_WATCHER_DST)"
+	@echo "Installed $(HEADSET_WATCHER_DST)"
 	@systemctl --user daemon-reload
 	@systemctl --user disable --now 'app-voice\x2dptt@autostart.service' >/dev/null 2>&1 || true
 	@if $(MAKE) --no-print-directory -s check-env 2>/dev/null; then \
 		echo "Starting voice-ptt..."; \
 		systemctl --user enable --now "$(SYSTEMD_SERVICE_NAME)"; \
 		systemctl --user enable --now "$(RESUME_WATCHER_NAME)"; \
+		systemctl --user enable --now "$(HEADSET_WATCHER_NAME)"; \
 	else \
 		echo "voice-ptt will not start — fix .env and run: make install-linux"; \
 	fi

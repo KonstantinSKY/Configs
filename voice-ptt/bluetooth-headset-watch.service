@@ -1,0 +1,12 @@
+[Unit]
+Description=Reconnect Bluetooth headset if it drops
+After=default.target bluetooth.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env bash /home/sky/Work/Configs/voice-ptt/watch_bluetooth_headset.sh 3C:68:16:4D:BE:89
+Restart=always
+RestartSec=5
+
+[Install]
+WantedBy=default.target
