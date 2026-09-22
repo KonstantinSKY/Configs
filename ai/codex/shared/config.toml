@@ -1,5 +1,5 @@
-model = "gpt-5.5"
-model_reasoning_effort = "high"
+model = "gpt-5.6-sol"
+model_reasoning_effort = "xhigh"
 
 [tui]
 notifications = ["approval-requested", "agent-turn-complete"]
@@ -7,7 +7,8 @@ notification_condition = "always"
 
 [tui.model_availability_nux]
 "gpt-5.5" = 4
-"gpt-5.6-sol" = 1
+"gpt-5.6-sol" = 4
+gpt-6-astra = 4
 
 [projects."/home/sky"]
 trust_level = "trusted"
@@ -57,11 +58,65 @@ trust_level = "trusted"
 [projects."/home/sky/Work/Projects/skymoji"]
 trust_level = "trusted"
 
+[projects."/tmp/aix-release-smoke.KhtNPH"]
+trust_level = "trusted"
+
+[projects."/tmp/claude-1000/-home-sky-Work-Projects-aixdev/8e3f5057-9509-40de-9bcb-e81b694b2640/scratchpad/e2e"]
+trust_level = "trusted"
+
+[projects."/home/sky/Work/Projects/vyni"]
+trust_level = "trusted"
+
+[projects."/home/sky/Work/Projects/numi"]
+trust_level = "trusted"
+
+[projects."/home/sky/Work/Projects/skytp"]
+trust_level = "trusted"
+
+[projects."/home/sky/Work/Projects/trader-sky"]
+trust_level = "trusted"
+
+[projects."/home/sky/Work/Projects/trader-sky-2"]
+trust_level = "trusted"
+
+[projects."/home/sky/Work/Projects/trader-sky-pr"]
+trust_level = "trusted"
+
+[projects."/tmp/claude-1000/-home-sky-Work-Projects-aixdev/ba77c65b-1371-49db-831b-79a9f8a80aac/scratchpad/smoke/work"]
+trust_level = "trusted"
+
 [mcp_servers.aix]
 command = "/home/sky/Work/AIX/bin/aix-mcp"
 
 [mcp_servers.aix.env]
 AIX_HOME = "/home/sky/Work/AIX"
+
+[mcp_servers.aix.tools.agent_account_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.agent_account_usage]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.agent_config_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.agent_config_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.agent_config_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.agent_provider_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.blueprint_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.blueprint_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.blueprint_list]
+approval_mode = "approve"
 
 [mcp_servers.aix.tools.db_status]
 approval_mode = "approve"
@@ -72,46 +127,58 @@ approval_mode = "approve"
 [mcp_servers.aix.tools.doc_list]
 approval_mode = "approve"
 
-[mcp_servers.aix.tools.project_current]
-approval_mode = "approve"
-
-[mcp_servers.aix.tools.project_list]
+[mcp_servers.aix.tools.git_commit]
 approval_mode = "approve"
 
 [mcp_servers.aix.tools.git_push]
 approval_mode = "approve"
 
-[mcp_servers.aix.tools.rust_verify]
+[mcp_servers.aix.tools.lifecycle_bind]
 approval_mode = "approve"
 
-[mcp_servers.aix.tools.project_get]
+[mcp_servers.aix.tools.lifecycle_get]
 approval_mode = "approve"
 
-[mcp_servers.aix.tools.git_commit]
+[mcp_servers.aix.tools.lifecycle_list]
 approval_mode = "approve"
 
-[mcp_servers.aix.tools.agent_config_list]
-approval_mode = "approve"
-
-[mcp_servers.aix.tools.role_rule_list]
-approval_mode = "approve"
-
-[mcp_servers.aix.tools.agent_account_list]
-approval_mode = "approve"
-
-[mcp_servers.aix.tools.rfc_list]
-approval_mode = "approve"
-
-[mcp_servers.aix.tools.blueprint_list]
-approval_mode = "approve"
-
-[mcp_servers.aix.tools.task_list]
+[mcp_servers.aix.tools.lifecycle_status]
 approval_mode = "approve"
 
 [mcp_servers.aix.tools.map_tag_list]
 approval_mode = "approve"
 
+[mcp_servers.aix.tools.project_current]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.project_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.project_init]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.project_list]
+approval_mode = "approve"
+
 [mcp_servers.aix.tools.project_map_profile_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.project_map_profile_refresh]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.report_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.report_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.rfc_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.rfc_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.role_get]
 approval_mode = "approve"
 
 [mcp_servers.aix.tools.role_list]
@@ -120,78 +187,259 @@ approval_mode = "approve"
 [mcp_servers.aix.tools.role_rule_get]
 approval_mode = "approve"
 
-[mcp_servers.aix.tools.project_init]
+[mcp_servers.aix.tools.role_rule_list]
 approval_mode = "approve"
 
-[mcp_servers.aix.tools.project_map_profile_refresh]
+[mcp_servers.aix.tools.run]
 approval_mode = "approve"
 
-[mcp_servers.aix.tools.agent_config_get]
+[mcp_servers.aix.tools.rust_verify]
 approval_mode = "approve"
 
-[mcp_servers.aix.tools.role_get]
+[mcp_servers.aix.tools.session_kill]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_dep_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_launch]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_status]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.tool_policy_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.work_complete]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.work_log]
 approval_mode = "approve"
 
 [mcp_servers.aix.tools.workflow_status]
 approval_mode = "approve"
 
+[mcp_servers.aix.tools.project_config_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.agent_context_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.tool_policy_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.doc_context_parent_set]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.doc_context_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.tool_policy_tool_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.work_status]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_dep_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.doc_context_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.tcp_target_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.blueprint_init]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_init]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.blueprint_status]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.tcp_target_set]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.tcp_server_start]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.http_probe]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.web_page_check]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.tcp_server_stop]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.doc_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.work_stop]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_adhoc]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.rfc_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.task_status_history]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.note_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.rfc_status]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.brief_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.rfc_init]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.rfc_brief_link]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.tool_policy_tool_remove]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.tool_policy_update]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.role_update]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.agent_config_update]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.doc_init]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.doc_context_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.doc_context_ref_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.role_rule_init]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.role_rule_parent_set]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.role_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.role_rule_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.runtime_status]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.note_list]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.brief_init]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.note_dismiss]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.brief_status]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.session_continue_after]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.brief_get]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.brief_add]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.note_link]
+approval_mode = "approve"
+
+[mcp_servers.aix.tools.runtime_backup]
+approval_mode = "approve"
+
 [mcp_servers.context7]
 command = "npx"
 args = ["-y", "@upstash/context7-mcp"]
-startup_timeout_sec = 30
-
-[notice.model_migrations]
-"gpt-5.3-codex" = "gpt-5.5"
+startup_timeout_sec = 30.0
 
 [mcp_servers.mcp-gsheets]
 command = "npx"
 args = ["-y", "mcp-gsheets@latest"]
 
 [mcp_servers.mcp-gsheets.env]
-GOOGLE_PROJECT_ID = "divine-course-498123-s4"
 GOOGLE_APPLICATION_CREDENTIALS = "/home/sky/.config/mcp-gsheets/sa-key.json"
+GOOGLE_PROJECT_ID = "divine-course-498123-s4"
 
-[mcp_servers.mcp-gsheets.tools.sheets_check_access]
-approval_mode = "approve"
-
-[mcp_servers.mcp-gsheets.tools.sheets_get_metadata]
+[mcp_servers.mcp-gsheets.tools.sheets_batch_format_cells]
 approval_mode = "approve"
 
 [mcp_servers.mcp-gsheets.tools.sheets_batch_get_values]
 approval_mode = "approve"
 
-[mcp_servers.mcp-gsheets.tools.sheets_get_full_sheet_snapshot]
-approval_mode = "approve"
-
-[mcp_servers.mcp-gsheets.tools.sheets_insert_sheet]
-approval_mode = "approve"
-
-[mcp_servers.mcp-gsheets.tools.sheets_update_sheet_properties]
-approval_mode = "approve"
-
-[mcp_servers.mcp-gsheets.tools.sheets_merge_cells]
-approval_mode = "approve"
-
 [mcp_servers.mcp-gsheets.tools.sheets_batch_update_values]
 approval_mode = "approve"
 
-[mcp_servers.mcp-gsheets.tools.sheets_get_values]
-approval_mode = "approve"
-
-[mcp_servers.mcp-gsheets.tools.sheets_update_values]
+[mcp_servers.mcp-gsheets.tools.sheets_check_access]
 approval_mode = "approve"
 
 [mcp_servers.mcp-gsheets.tools.sheets_clear_values]
 approval_mode = "approve"
 
-[mcp_servers.mcp-gsheets.tools.sheets_batch_format_cells]
+[mcp_servers.mcp-gsheets.tools.sheets_get_full_sheet_snapshot]
+approval_mode = "approve"
+
+[mcp_servers.mcp-gsheets.tools.sheets_get_merged_cells]
+approval_mode = "approve"
+
+[mcp_servers.mcp-gsheets.tools.sheets_get_metadata]
 approval_mode = "approve"
 
 [mcp_servers.mcp-gsheets.tools.sheets_get_sheet_structure]
 approval_mode = "approve"
 
+[mcp_servers.mcp-gsheets.tools.sheets_get_values]
+approval_mode = "approve"
+
+[mcp_servers.mcp-gsheets.tools.sheets_insert_sheet]
+approval_mode = "approve"
+
+[mcp_servers.mcp-gsheets.tools.sheets_merge_cells]
+approval_mode = "approve"
+
 [mcp_servers.mcp-gsheets.tools.sheets_unmerge_cells]
 approval_mode = "approve"
 
-[mcp_servers.mcp-gsheets.tools.sheets_get_merged_cells]
+[mcp_servers.mcp-gsheets.tools.sheets_update_sheet_properties]
 approval_mode = "approve"
+
+[mcp_servers.mcp-gsheets.tools.sheets_update_values]
+approval_mode = "approve"
+
+[mcp_servers.openaiDeveloperDocs]
+url = "https://developers.openai.com/mcp"
+
+[notice]
+hide_rate_limit_model_nudge = true
+
+[notice.model_migrations]
+"gpt-5.3-codex" = "gpt-5.5"
+"gpt-5.5" = "gpt-5.6-sol"

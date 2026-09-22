@@ -1,0 +1,81 @@
+#!/usr/bin/env bash
+set -euo pipefail
+
+API='https://pve.home.arpa:8006/api2/json'
+NODE='pve'
+VMID='103'
+TOKEN_ID='winmt@pve!spice'
+CONFIG_DIR="${XDG_CONFIG_HOME:-${HOME}/.config}/winmt-spice"
+TOKEN_FILE="${WINDOWS_MT_TOKEN_FILE:-${CONFIG_DIR}/token}"
+umask 077
+
+for command_name in curl jq remote-viewer; do
+  if ! command -v "$command_name" >/dev/null 2>&1; then
+    printf 'Missing required command: %s\n' "$command_name" >&2
+    exit 1
+  fi
+done
+
+if [ ! -r "$TOKEN_FILE" ]; then
+  printf 'Proxmox API token is not readable: %s\n' "$TOKEN_FILE" >&2
+  exit 1
+fi
+
+TOKEN_SECRET="$(cat "$TOKEN_FILE")"
+AUTH_HEADER="Authorization: PVEAPIToken=${TOKEN_ID}=${TOKEN_SECRET}"
+VV_FILE="${XDG_RUNTIME_DIR:-/tmp}/windows-mt-${VMID}.vv"
+
+notify() {
+  if command -v notify-send >/dev/null 2>&1 && [ -n "${DISPLAY:-}" ]; then
+    notify-send 'Windows-MT' "$1" >/dev/null 2>&1 || true
+  fi
+}
+
+api_get() {
+  curl -fsSk -H "$AUTH_HEADER" "$API/$1"
+}
+
+api_post() {
+  curl -fsSk -H "$AUTH_HEADER" -X POST "$API/$1"
+}
+
+status="$(api_get "nodes/${NODE}/qemu/${VMID}/status/current" | jq -r '.data.status')"
+if [ "$status" != 'running' ]; then
+  notify 'Starting Windows...'
+  api_post "nodes/${NODE}/qemu/${VMID}/status/start" >/dev/null
+  for _ in $(seq 1 45); do
+    sleep 2
+    status="$(api_get "nodes/${NODE}/qemu/${VMID}/status/current" | jq -r '.data.status')"
+    [ "$status" = 'running' ] && break
+  done
+fi
+
+if [ "$status" != 'running' ]; then
+  notify 'Windows did not start.'
+  exit 1
+fi
+
+api_post "nodes/${NODE}/qemu/${VMID}/spiceproxy" \
+  | jq -r '
+      .data as $d
+      | [
+          "[virt-viewer]",
+          "type=\($d.type)",
+          "host=\($d.host)",
+          "proxy=\($d.proxy)",
+          "password=\($d.password)",
+          "tls-port=\($d["tls-port"])",
+          "title=\($d.title)",
+          "host-subject=\($d["host-subject"])",
+          "toggle-fullscreen=\($d["toggle-fullscreen"])",
+          "release-cursor=\($d["release-cursor"])",
+          "secure-attention=\($d["secure-attention"])",
+          "delete-this-file=1",
+          "ca=\($d.ca | gsub("\n"; "\\n"))"
+        ]
+      | .[]
+    ' > "$VV_FILE"
+chmod 600 "$VV_FILE"
+
+notify 'Opening Windows...'
+exec remote-viewer "$VV_FILE"

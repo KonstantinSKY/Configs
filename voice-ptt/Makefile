@@ -37,8 +37,8 @@ help: ## Show available targets
 
 install: ## Auto-detect OS and install
 	@case "$$(uname)" in \
-	  Darwin) $(MAKE) install-macos ;; \
-	  Linux)  $(MAKE) install-linux ;; \
+	  Darwin) $(MAKE) --no-print-directory -f "$(lastword $(MAKEFILE_LIST))" install-macos ;; \
+	  Linux)  $(MAKE) --no-print-directory -f "$(lastword $(MAKEFILE_LIST))" install-linux ;; \
 	  *) echo "Unsupported OS: $$(uname)"; exit 1 ;; \
 	esac
 
@@ -53,7 +53,7 @@ install-linux: ## Install on Linux (systemd user service), then start if .env is
 	@systemctl --user daemon-reload
 	@systemctl --user disable --now 'app-voice\x2dptt@autostart.service' >/dev/null 2>&1 || true
 	@systemctl --user disable --now bluetooth-headset-watch.service >/dev/null 2>&1 || true
-	@if $(MAKE) --no-print-directory -s check-env 2>/dev/null; then \
+	@if $(MAKE) --no-print-directory -s -f "$(lastword $(MAKEFILE_LIST))" check-env 2>/dev/null; then \
 		echo "Starting voice-ptt..."; \
 		systemctl --user enable --now "$(SYSTEMD_SERVICE_NAME)"; \
 		systemctl --user enable --now "$(RESUME_WATCHER_NAME)"; \
@@ -72,7 +72,7 @@ install-macos: ## Install on macOS (LaunchAgent), then start if .env is ready
 	launchctl bootstrap "$$DOMAIN" "$(PLIST_DST)"; \
 	launchctl enable "$$DOMAIN/$(LAUNCHD_LABEL)"; \
 	echo "Loaded $$DOMAIN/$(LAUNCHD_LABEL)"; \
-	if $(MAKE) --no-print-directory -s check-env 2>/dev/null; then \
+	if $(MAKE) --no-print-directory -s -f "$(lastword $(MAKEFILE_LIST))" check-env 2>/dev/null; then \
 		echo "Starting voice-ptt..."; \
 		launchctl kickstart -k "$$DOMAIN/$(LAUNCHD_LABEL)"; \
 	else \

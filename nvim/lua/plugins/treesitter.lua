@@ -5,7 +5,11 @@ return {
     build = ":TSUpdate",
     lazy = false,
     main = "nvim-treesitter.configs",
+    init = function()
+      vim.opt.runtimepath:prepend(vim.fn.stdpath("data") .. "/treesitter-parsers")
+    end,
     opts = {
+      parser_install_dir = vim.fn.stdpath("data") .. "/treesitter-parsers",
       ensure_installed = {
         "bash",
         "diff",

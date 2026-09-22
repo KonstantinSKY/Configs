@@ -60,6 +60,27 @@ recommend or run `make voice-ptt` with the user's authorization.
 - Never delete or overwrite an existing `~/Work/Configs` directory.
 - Do not install or modify i3 unless the user explicitly requests it.
 
+## Visible sudo prompts
+
+When a command needs `sudo` and the sudo credential cache is not already active,
+do not leave the user at an invisible PTY password prompt. Prefer opening a
+visible terminal window so the user can review the command and type the password
+outside chat:
+
+```bash
+alacritty -e bash -lc 'sudo <command>; echo; read -rp "Press Enter to close... "'
+```
+
+For a command plus verification, keep both in the same visible terminal:
+
+```bash
+alacritty -e bash -lc 'sudo <command>; <check command>; echo; read -rp "Press Enter to close... "'
+```
+
+Never ask the user to paste sudo passwords, account passwords, passphrases,
+tokens, or recovery codes into chat. If a hidden sudo prompt was started by
+mistake, cancel it before retrying in a visible terminal.
+
 ## Restore workflow
 
 Run from a temporary clone:

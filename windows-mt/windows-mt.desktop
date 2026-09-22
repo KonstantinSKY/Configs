@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=Windows-MT
+Comment=Open Windows VM 103 over SPICE
+Exec=/usr/local/bin/open-windows-mt
+Icon=computer
+Terminal=false
+Categories=System;RemoteAccess;
+StartupNotify=true
