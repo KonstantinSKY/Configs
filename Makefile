@@ -15,6 +15,10 @@ AI_MAKEFILE := $(CONFIGS_DIR)/ai/Makefile
 VOICE_PTT_MAKEFILE := $(CONFIGS_DIR)/voice-ptt/Makefile
 EOS_MAKEFILE := $(CONFIGS_DIR)/eos/Makefile
 VOICE_PTT_ENV := $(CONFIGS_DIR)/voice-ptt/.env
+VOICE_PTT_SYSTEMD_USER_DIR := $(HOME)/.config/systemd/user
+VOICE_PTT_SERVICE_DST := $(VOICE_PTT_SYSTEMD_USER_DIR)/voice-ptt.service
+VOICE_PTT_RESUME_WATCHER_DST := $(VOICE_PTT_SYSTEMD_USER_DIR)/voice-ptt-resume-watcher.service
+VOICE_PTT_AUTOSTART_DST := $(HOME)/.config/autostart/voice-ptt.desktop
 SETUP_STATE_DIR := $(HOME)/.local/state/configs
 SETUP_MARKER := $(SETUP_STATE_DIR)/setup-v1
 RESTORE_STATE_DIR := $(SETUP_STATE_DIR)/restore-core-v1
@@ -139,12 +143,15 @@ status: ## Inspect setup state without sudo or filesystem changes
 		echo "NEXT: create $(VOICE_PTT_ENV), then run make voice-ptt"; \
 		exit 0; \
 	fi; \
-	if [[ ! -L "$(HOME)/.config/autostart/voice-ptt.desktop" ]]; then \
+	if [[ ! -f "$(VOICE_PTT_SERVICE_DST)" && ! -L "$(VOICE_PTT_AUTOSTART_DST)" ]]; then \
 		echo "STATE: VOICE_PTT_NOT_INSTALLED"; \
 		echo "NEXT: make voice-ptt"; \
 		exit 0; \
 	fi; \
-	if pgrep -x voice-ptt >/dev/null 2>&1; then \
+	voice_state="$$(systemctl --user show -p ActiveState --value voice-ptt.service 2>/dev/null || true)"; \
+	if [[ "$$voice_state" == "active" ]]; then \
+		echo "OK: Voice PTT service is active"; \
+	elif pgrep -x voice-ptt >/dev/null 2>&1; then \
 		echo "OK: Voice PTT process is visible"; \
 	else \
 		echo "NOTE: Voice PTT process is not visible in this process namespace."; \
@@ -362,16 +369,31 @@ verify: check-work ## Verify required files, commands, autostart, and process st
 		echo "ERROR: voice-ptt/.env is missing or empty"; \
 		status=1; \
 	fi; \
-	if [[ -L "$(HOME)/.config/autostart/voice-ptt.desktop" ]]; then \
-		echo "OK: Voice PTT autostart is installed"; \
+	if [[ -f "$(VOICE_PTT_SERVICE_DST)" ]]; then \
+		echo "OK: Voice PTT systemd service is installed"; \
+	elif [[ -L "$(VOICE_PTT_AUTOSTART_DST)" ]]; then \
+		echo "OK: Voice PTT legacy autostart is installed"; \
 	else \
-		echo "ERROR: Voice PTT autostart is not installed"; \
+		echo "ERROR: Voice PTT is not installed"; \
 		status=1; \
 	fi; \
-	if pgrep -x voice-ptt >/dev/null 2>&1; then \
-		echo "OK: Voice PTT is running"; \
-	else \
-		echo "ERROR: Voice PTT is not running"; \
+	if [[ -f "$(VOICE_PTT_RESUME_WATCHER_DST)" ]]; then \
+		echo "OK: Voice PTT resume watcher is installed"; \
+	elif [[ -f "$(VOICE_PTT_SERVICE_DST)" ]]; then \
+		echo "ERROR: Voice PTT resume watcher is not installed"; \
 		status=1; \
+	else \
+		echo "NOTE: Voice PTT resume watcher is not installed for legacy autostart"; \
+	fi; \
+	voice_state="$$(systemctl --user show -p ActiveState --value voice-ptt.service 2>/dev/null || true)"; \
+	if [[ "$$voice_state" == "active" ]]; then \
+		echo "OK: Voice PTT service is active"; \
+	elif pgrep -x voice-ptt >/dev/null 2>&1; then \
+		echo "OK: Voice PTT is running"; \
+	elif [[ -n "$$voice_state" ]]; then \
+		echo "ERROR: Voice PTT service state is $$voice_state"; \
+		status=1; \
+	else \
+		echo "NOTE: Voice PTT runtime is not visible from this process namespace"; \
 	fi; \
 	exit $$status
