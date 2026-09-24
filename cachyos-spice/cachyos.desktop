@@ -1,0 +1,9 @@
+[Desktop Entry]
+Type=Application
+Name=CachyOS
+Comment=Open CachyOS VM 104 over SPICE
+Exec=/usr/local/bin/open-cachyos
+Icon=computer
+Terminal=false
+Categories=System;RemoteAccess;
+StartupNotify=true

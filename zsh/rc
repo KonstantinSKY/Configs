@@ -228,3 +228,4 @@ alias tl="tmux list-sessions"
 # <<< aix <<<
 
 alias winmt="ssh root@192.168.1.100 \"pvesh create /nodes/pve/qemu/103/spiceproxy --proxy pve\" | remote-viewer -"
+alias cachyos="open-cachyos"
