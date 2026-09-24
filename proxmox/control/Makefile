@@ -23,6 +23,7 @@ PACKAGES := \
 	openssh-server \
 	pass \
 	qemu-utils \
+	rclone \
 	ripgrep \
 	rsync \
 	sudo \
@@ -67,7 +68,7 @@ status:
 		printf '%-22s missing\n' "Admin user"; \
 	fi; \
 	missing=""; \
-	for command_name in gh git gpg pass make tmux nvim curl wget rg rsync jq tree file unzip zip qemu-img ssh sshd; do \
+	for command_name in gh git gpg pass make tmux nvim curl wget rg rclone rsync jq tree file unzip zip qemu-img ssh sshd; do \
 		if ! command -v "$$command_name" >/dev/null 2>&1 && [[ ! -x "/usr/sbin/$$command_name" && ! -x "/sbin/$$command_name" ]]; then \
 			missing="$$missing $$command_name"; \
 		fi; \
@@ -132,7 +133,7 @@ verify:
 	failed=0; \
 	if getent passwd "$(ADMIN_USER)" >/dev/null; then echo "PRESENT: user $(ADMIN_USER)"; else echo "MISSING: user $(ADMIN_USER)"; failed=1; fi; \
 	if getent passwd "$(ADMIN_USER)" >/dev/null && id -nG "$(ADMIN_USER)" 2>/dev/null | tr ' ' '\n' | grep -qx sudo; then echo "PRESENT: $(ADMIN_USER) in sudo group"; else echo "MISSING: $(ADMIN_USER) in sudo group"; failed=1; fi; \
-	for command_name in gh git gpg pass make tmux nvim curl wget rg rsync jq tree file unzip zip qemu-img ssh sshd; do \
+	for command_name in gh git gpg pass make tmux nvim curl wget rg rclone rsync jq tree file unzip zip qemu-img ssh sshd; do \
 		if command -v "$$command_name" >/dev/null 2>&1 || [[ -x "/usr/sbin/$$command_name" || -x "/sbin/$$command_name" ]]; then \
 			echo "PRESENT: $$command_name"; \
 		else \

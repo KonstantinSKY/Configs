@@ -27,11 +27,14 @@ desktop restore.
 The module keeps the toolset intentionally small:
 
 - admin basics: `gh`, `git`, `gnupg`, `pass`, `make`, `tmux`, `neovim`,
-  `curl`, `wget`, `ripgrep`, `rsync`, `jq`, `tree`, `file`, `unzip`, `zip`
+  `curl`, `wget`, `ripgrep`, `rclone`, `rsync`, `jq`, `tree`, `file`,
+  `unzip`, `zip`
 - access tools: `openssh-client`, `openssh-server`, `sudo`
 - VM utility: `qemu-utils`
 
-It does not install Docker, Node.js, npm, libvirt clients, or desktop packages.
+It does not install Docker, Node.js, npm, libvirt clients, MegaCMD, or desktop
+packages. MegaCMD is installed from the Security module because it uses the
+MEGA account bootstrap path.
 
 ## Status
 
