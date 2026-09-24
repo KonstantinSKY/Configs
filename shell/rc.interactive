@@ -1,0 +1,35 @@
+# Shared interactive shell helpers.
+
+case $- in
+  *i*) ;;
+  *) return 0 2>/dev/null || exit 0 ;;
+esac
+
+alias Configs='cd "$CONFIGS_PATH" && ls -la --color=auto'
+alias Projects='cd "$PROJECTS_PATH" && ls -la --color=auto'
+alias BackUps='cd "$BACKUPS_PATH" && ls -la --color=auto'
+
+alias v=choose_editor
+alias vi=choose_editor
+
+la() {
+  command ls "$@" -la --color=auto
+}
+
+cdl() {
+  cd "$@" && command ls -la --color=auto
+}
+
+chx() {
+  command chmod u+x "$@"
+}
+
+if command -v bat >/dev/null 2>&1; then
+  alias cat='bat --paging=never'
+  alias lcat='/usr/bin/cat'
+fi
+
+if command -v trash >/dev/null 2>&1; then
+  alias rm='trash'
+  alias trashbox='trash --help'
+fi

@@ -1,0 +1,14 @@
+# Production VM role.
+
+export CONFIGS_MACHINE_CLASS=prod
+export CONFIGS_TMUX_AUTO="${CONFIGS_TMUX_AUTO:-ssh}"
+export CONFIGS_TMUX_SESSION="${CONFIGS_TMUX_SESSION:-prod}"
+
+alias gs='git status --short --branch'
+alias svc-failed='systemctl --no-pager --failed'
+alias ports='ss -tulpn'
+alias logs='journalctl -xe --no-pager'
+
+prod-note() {
+  echo "Production role: prefer explicit commands and inspect before changing state."
+}

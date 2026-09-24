@@ -1,0 +1,10 @@
+# Bash entrypoint for Configs shell layers.
+
+[ -r "$HOME/Work/Configs/shell/rc.common" ] && . "$HOME/Work/Configs/shell/rc.common"
+[ -r "$HOME/Work/Configs/shell/rc.interactive" ] && . "$HOME/Work/Configs/shell/rc.interactive"
+[ -r "$HOME/Work/Configs/shell/rc.tmux" ] && . "$HOME/Work/Configs/shell/rc.tmux"
+
+if [ -n "${CONFIGS_SHELL_ROLE:-}" ] &&
+   [ -r "$HOME/Work/Configs/shell/roles/$CONFIGS_SHELL_ROLE.rc" ]; then
+  . "$HOME/Work/Configs/shell/roles/$CONFIGS_SHELL_ROLE.rc"
+fi

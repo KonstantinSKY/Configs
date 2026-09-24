@@ -1,0 +1,19 @@
+# Proxmox control and backup node role.
+
+export CONFIGS_MACHINE_CLASS=proxmox
+export CONFIGS_TMUX_AUTO="${CONFIGS_TMUX_AUTO:-ssh}"
+export CONFIGS_TMUX_SESSION="${CONFIGS_TMUX_SESSION:-main}"
+
+alias pvstat='pveversion && systemctl --no-pager --failed'
+alias qml='qm list'
+alias pctl='pct list'
+alias pvev='pveversion -v'
+
+alias bkp-status='make -C "$HOME/Work/Security/rclone" status'
+alias bkp-run='make -C "$HOME/Work/Security/rclone" backup'
+alias bkp-cron='make -C "$HOME/Work/Security/rclone" status-cron'
+
+alias mega-status='make -C "$HOME/Work/Security/mega" status'
+alias mega-sync-status='make -C "$HOME/Work/Security/mega" sync-status'
+
+alias cfg-status='git -C "$HOME/Work/Configs" status --short --branch'

@@ -1,0 +1,33 @@
+# Zsh entrypoint for Configs shell layers.
+
+[ -r "$HOME/Work/Configs/shell/rc.common" ] && . "$HOME/Work/Configs/shell/rc.common"
+[ -r "$HOME/Work/Configs/shell/rc.interactive" ] && . "$HOME/Work/Configs/shell/rc.interactive"
+[ -r "$HOME/Work/Configs/shell/rc.tmux" ] && . "$HOME/Work/Configs/shell/rc.tmux"
+
+if [ -n "${CONFIGS_SHELL_ROLE:-}" ] &&
+   [ -r "$HOME/Work/Configs/shell/roles/$CONFIGS_SHELL_ROLE.rc" ]; then
+  . "$HOME/Work/Configs/shell/roles/$CONFIGS_SHELL_ROLE.rc"
+fi
+
+unsetopt beep 2>/dev/null || true
+unsetopt hist_beep 2>/dev/null || true
+unsetopt list_beep 2>/dev/null || true
+
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell zsh)"
+fi
+
+for _configs_p10k_theme in \
+  /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme \
+  /usr/share/powerlevel10k/powerlevel10k.zsh-theme \
+  /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme \
+  /usr/local/share/powerlevel10k/powerlevel10k.zsh-theme \
+  "$HOME/.powerlevel10k/powerlevel10k.zsh-theme"; do
+  if [ -r "$_configs_p10k_theme" ]; then
+    . "$_configs_p10k_theme"
+    break
+  fi
+done
+unset _configs_p10k_theme
+
+(( $+functions[p10k] )) && p10k reload

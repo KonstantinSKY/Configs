@@ -1,0 +1,21 @@
+# Development VM role.
+
+export CONFIGS_MACHINE_CLASS=dev
+export CONFIGS_TMUX_AUTO="${CONFIGS_TMUX_AUTO:-ssh}"
+export CONFIGS_TMUX_SESSION="${CONFIGS_TMUX_SESSION:-dev}"
+
+alias g='git'
+alias gs='git status --short --branch'
+alias gp='git pull --rebase --autostash'
+
+if [ -d "$HOME/Work/Projects" ]; then
+  alias work='cd "$HOME/Work/Projects" && ls -la --color=auto'
+fi
+
+if [ -d "$HOME/.local/share/fnm" ]; then
+  case ":$PATH:" in
+    *":$HOME/.local/share/fnm:"*) ;;
+    *) PATH="$HOME/.local/share/fnm:$PATH" ;;
+  esac
+  export PATH
+fi

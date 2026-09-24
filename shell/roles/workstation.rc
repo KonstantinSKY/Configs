@@ -1,0 +1,24 @@
+# Graphical workstation role.
+
+export CONFIGS_MACHINE_CLASS=workstation
+export CONFIGS_TMUX_AUTO="${CONFIGS_TMUX_AUTO:-off}"
+
+if command -v zeditor >/dev/null 2>&1; then
+  export VISUAL=zeditor
+
+  z() {
+    if [ -n "${1:-}" ]; then
+      zeditor "$1"
+    else
+      zeditor .
+    fi
+  }
+fi
+
+alias ge=gemini
+alias claudem='CLAUDE_CONFIG_DIR=$HOME/.claude-m claude'
+alias claudek='CLAUDE_CONFIG_DIR=$HOME/.claude-k claude'
+alias claudes='CLAUDE_CONFIG_DIR=$HOME/.claude-s claude'
+alias codexs='CODEX_HOME=$HOME/.codex-s codex'
+alias codexm='CODEX_HOME=$HOME/.codex-m codex'
+alias codexk='CODEX_HOME=$HOME/.codex-k codex'
