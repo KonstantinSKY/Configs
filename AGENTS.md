@@ -234,6 +234,12 @@ Only configure these roles when the user explicitly selects them:
 - `docker`: enables Docker and adds the user to the privileged `docker` group.
 - `kvm`: changes libvirt/QEMU services, groups, configuration, and networking.
 - `megasync`: installs a user service and may enable user lingering.
+- `proxmox`: the single Proxmox workspace. Its root Makefile delegates to
+  `proxmox/control`, `proxmox/host`, and `proxmox/guest`. Run the read-only
+  `status`, `host-status`, or `guest-status` target first. Installation,
+  service changes, user changes, and Tailscale authentication require explicit
+  authorization. Auth keys must live outside git, for example under a private
+  Security directory on GDATA.
 - SSH targets: enable a network service and may change authentication policy.
 
 `projects`, `rust`, and `metatrader` are project generators or templates, not
