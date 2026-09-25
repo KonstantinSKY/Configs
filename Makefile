@@ -188,7 +188,8 @@ restore-status: check-work ## Inspect full workstation restore progress without 
 	[[ -z "$$missing" ]] || echo "MISSING_COMMANDS:$$missing"; \
 	if [[ "$$restore_supported" != 1 ]]; then \
 		echo "RESTORE_STATE: PROFILE_NOT_SUPPORTED"; \
-		echo "NEXT: use package profile targets for this machine"; \
+		echo "NEXT: make packages-verify-profile"; \
+		echo "ALT: make packages-install-profile"; \
 	elif [[ -n "$$next" ]]; then \
 		echo "RESTORE_STATE: INCOMPLETE"; \
 		echo "NEXT_STAGE: $$next"; \
