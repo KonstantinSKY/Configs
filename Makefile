@@ -2,7 +2,8 @@ SHELL := /bin/bash
 
 .PHONY: help status mount setup upgrade dependencies ai voice-ptt verify check-work \
 	detect restore-status restore-core restore-packages restore-workspace \
-	restore-user restore-desktop restore-verify
+	restore-user restore-desktop restore-verify \
+	packages-status packages-install-base packages-install-tailscale packages-verify
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -11,6 +12,7 @@ WORK_DIR ?= $(HOME)/Work
 CANONICAL_CONFIGS := $(WORK_DIR)/Configs
 
 LINUX_MAKEFILE := $(CONFIGS_DIR)/linux/Makefile
+PACKAGES_MAKEFILE := $(CONFIGS_DIR)/packages/Makefile
 AI_MAKEFILE := $(CONFIGS_DIR)/ai/Makefile
 VOICE_PTT_MAKEFILE := $(CONFIGS_DIR)/voice-ptt/Makefile
 EOS_MAKEFILE := $(CONFIGS_DIR)/eos/Makefile
@@ -97,6 +99,12 @@ help: ## Show the first-run and assistant setup commands
 	@echo "  make ai          Install and configure AI CLI tools"
 	@echo "  make voice-ptt   Install, autostart, and start Voice PTT"
 	@echo "  make verify      Verify the mounted workspace and Voice PTT"
+	@echo ""
+	@echo "Public package bootstrap:"
+	@echo "  make packages-status            Detect distro package family"
+	@echo "  make packages-install-base      Install git/make/SSH base packages"
+	@echo "  make packages-install-tailscale Install and enable Tailscale"
+	@echo "  make packages-verify            Verify base packages and Tailscale"
 	@echo ""
 	@echo "After AI and Voice PTT are ready:"
 	@echo "  make restore-status Inspect full workstation restore progress (read-only)"
@@ -217,6 +225,19 @@ mount: ## Mount Work; this target may be run from a temporary clone
 	@echo "Continue from the repository stored on the Work filesystem:"
 	@echo "  cd $(CANONICAL_CONFIGS)"
 	@echo "  make setup"
+
+packages-status: ## Detect public package bootstrap family
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" status
+
+packages-install-base: ## Install public base packages for this distro family
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-base
+
+packages-install-tailscale: ## Install Tailscale for this distro family
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-tailscale
+
+packages-verify: ## Verify public base packages and Tailscale
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-base
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-tailscale
 
 check-work: ## Refuse setup unless this is the repository on the mounted Work filesystem
 	@if ! mountpoint -q "$(WORK_DIR)"; then \
