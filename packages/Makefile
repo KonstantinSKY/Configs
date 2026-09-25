@@ -3,6 +3,8 @@ SHELL := /bin/bash
 .PHONY: help status detect install-base install-base-arch install-base-debian install-tailscale install-tailscale-arch install-tailscale-debian verify-base verify-tailscale
 .DEFAULT_GOAL := help
 
+SUDO := $(shell if [ "$$(id -u)" -eq 0 ]; then echo ""; else echo "sudo"; fi)
+
 BASE_PACKAGES_ARCH := \
 	ca-certificates \
 	curl \
@@ -60,16 +62,16 @@ install-base: ## Install public base packages for the detected package family
 install-base-arch: ## Install public base packages on Arch-like systems
 	@set -euo pipefail; \
 	command -v pacman >/dev/null 2>&1 || { echo "ERROR: pacman is required"; exit 1; }; \
-	sudo pacman -S --needed --noconfirm $(BASE_PACKAGES_ARCH); \
-	sudo systemctl enable --now sshd.service
+	$(SUDO) pacman -S --needed --noconfirm $(BASE_PACKAGES_ARCH); \
+	$(SUDO) systemctl enable --now sshd.service
 
 install-base-debian: ## Install public base packages on Debian/Ubuntu systems
 	@set -euo pipefail; \
 	command -v apt-get >/dev/null 2>&1 || { echo "ERROR: apt-get is required"; exit 1; }; \
-	sudo apt-get update; \
-	sudo DEBIAN_FRONTEND=noninteractive apt-get install -y $(BASE_PACKAGES_DEBIAN); \
+	$(SUDO) apt-get update; \
+	$(SUDO) DEBIAN_FRONTEND=noninteractive apt-get install -y $(BASE_PACKAGES_DEBIAN); \
 	ssh_service="$$(systemctl list-unit-files ssh.service --no-legend 2>/dev/null | grep -q '^ssh.service' && echo ssh.service || echo sshd.service)"; \
-	sudo systemctl enable --now "$$ssh_service"
+	$(SUDO) systemctl enable --now "$$ssh_service"
 
 install-tailscale: ## Install and enable Tailscale for the detected package family
 	@set -euo pipefail; \
@@ -83,20 +85,20 @@ install-tailscale: ## Install and enable Tailscale for the detected package fami
 install-tailscale-arch: ## Install and enable Tailscale on Arch-like systems
 	@set -euo pipefail; \
 	command -v pacman >/dev/null 2>&1 || { echo "ERROR: pacman is required"; exit 1; }; \
-	sudo pacman -S --needed --noconfirm tailscale; \
-	sudo systemctl enable --now tailscaled.service
+	$(SUDO) pacman -S --needed --noconfirm tailscale; \
+	$(SUDO) systemctl enable --now tailscaled.service
 
 install-tailscale-debian: ## Install and enable Tailscale on Debian/Ubuntu systems
 	@set -euo pipefail; \
 	if command -v tailscale >/dev/null 2>&1; then \
-		sudo systemctl enable --now tailscaled.service; \
+		$(SUDO) systemctl enable --now tailscaled.service; \
 	else \
-		command -v curl >/dev/null 2>&1 || { sudo apt-get update; sudo DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl; }; \
+		command -v curl >/dev/null 2>&1 || { $(SUDO) apt-get update; $(SUDO) DEBIAN_FRONTEND=noninteractive apt-get install -y ca-certificates curl; }; \
 		installer="$$(mktemp)"; \
 		curl -fsSL https://tailscale.com/install.sh -o "$$installer"; \
-		sudo sh "$$installer"; \
+		$(SUDO) sh "$$installer"; \
 		rm -f "$$installer"; \
-		sudo systemctl enable --now tailscaled.service; \
+		$(SUDO) systemctl enable --now tailscaled.service; \
 	fi
 
 verify-base: ## Verify public base commands and SSH service without changes
