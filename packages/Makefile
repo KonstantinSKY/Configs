@@ -1,6 +1,13 @@
 SHELL := /bin/bash
 
-.PHONY: help status detect install-base install-base-arch install-base-debian install-tailscale install-tailscale-arch install-tailscale-debian verify-base verify-tailscale
+.PHONY: help status detect \
+	install-base install-base-arch install-base-debian \
+	install-tailscale install-tailscale-arch install-tailscale-debian \
+	install-workstation-core install-desktop install-fonts \
+	install-workstation-core-arch install-workstation-core-debian \
+	install-desktop-arch install-fonts-arch \
+	unsupported-workstation-family unsupported-desktop-family unsupported-font-family \
+	verify-base verify-tailscale verify-workstation-core verify-desktop verify-fonts
 .DEFAULT_GOAL := help
 
 SUDO := $(shell if [ "$$(id -u)" -eq 0 ]; then echo ""; else echo "sudo"; fi)
@@ -20,6 +27,57 @@ BASE_PACKAGES_DEBIAN := \
 	openssh-client \
 	openssh-server
 
+WORKSTATION_CORE_PACKAGES_ARCH := \
+	zsh \
+	zsh-theme-powerlevel10k \
+	tmux \
+	alacritty \
+	neovim \
+	tree-sitter-cli \
+	zed \
+	gnome-keyring \
+	libsecret \
+	hunspell \
+	hunspell-en_us \
+	hunspell-ru
+
+WORKSTATION_CORE_PACKAGES_DEBIAN := \
+	zsh \
+	tmux \
+	neovim
+
+DESKTOP_PACKAGES_ARCH := \
+	i3-wm \
+	i3blocks \
+	dunst \
+	libnotify \
+	rofi \
+	picom \
+	xss-lock \
+	xsettingsd \
+	qt5ct \
+	qt6ct \
+	kvantum \
+	kvantum-qt5 \
+	kvantum-theme-arc \
+	capitaine-cursors \
+	qogir-icon-theme
+
+FONT_PACKAGES_ARCH := \
+	noto-fonts \
+	noto-fonts-emoji \
+	ttf-jetbrains-mono \
+	ttf-jetbrains-mono-nerd \
+	ttf-hack \
+	ttf-hack-nerd \
+	ttf-ubuntu-font-family \
+	ttf-ubuntu-mono-nerd \
+	ttf-ubuntu-nerd \
+	ttf-fira-code \
+	ttf-firacode-nerd \
+	ttf-sourcecodepro-nerd \
+	ttf-nerd-fonts-symbols-mono
+
 help: ## Show package bootstrap commands
 	@echo "Public package bootstrap"
 	@echo
@@ -27,8 +85,14 @@ help: ## Show package bootstrap commands
 	@echo "  make detect    print OS and package family"
 	@echo "  make install-base"
 	@echo "  make install-tailscale"
+	@echo "  make install-workstation-core"
+	@echo "  make install-desktop"
+	@echo "  make install-fonts"
 	@echo "  make verify-base"
 	@echo "  make verify-tailscale"
+	@echo "  make verify-workstation-core"
+	@echo "  make verify-desktop"
+	@echo "  make verify-fonts"
 
 status: detect ## Detect supported package family
 
@@ -101,6 +165,76 @@ install-tailscale-debian: ## Install and enable Tailscale on Debian/Ubuntu syste
 		$(SUDO) systemctl enable --now tailscaled.service; \
 	fi
 
+install-workstation-core: ## Install workstation core packages for the detected package family
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	case " $${ID:-} $${ID_LIKE:-} " in \
+		*' endeavouros '*|*' arch '*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-workstation-core-arch ;; \
+		*' debian '*|*' ubuntu '*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-workstation-core-debian ;; \
+		*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" unsupported-workstation-family GROUP=workstation-core ;; \
+	esac
+
+install-desktop: ## Install desktop packages for the detected package family
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	case " $${ID:-} $${ID_LIKE:-} " in \
+		*' endeavouros '*|*' arch '*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-desktop-arch ;; \
+		*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" unsupported-desktop-family ;; \
+	esac
+
+install-fonts: ## Install font packages for the detected package family
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	case " $${ID:-} $${ID_LIKE:-} " in \
+		*' endeavouros '*|*' arch '*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-fonts-arch ;; \
+		*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" unsupported-font-family ;; \
+	esac
+
+install-workstation-core-arch: ## Install workstation core packages on Arch-like systems
+	@set -euo pipefail; \
+	command -v yay >/dev/null 2>&1 || { echo "ERROR: yay is required for Arch workstation packages"; exit 1; }; \
+	yay -S --needed --noconfirm $(WORKSTATION_CORE_PACKAGES_ARCH)
+
+install-workstation-core-debian: ## Install CLI-only workstation core packages on Debian/Ubuntu systems
+	@set -euo pipefail; \
+	command -v apt-get >/dev/null 2>&1 || { echo "ERROR: apt-get is required"; exit 1; }; \
+	$(SUDO) apt-get update; \
+	$(SUDO) DEBIAN_FRONTEND=noninteractive apt-get install -y $(WORKSTATION_CORE_PACKAGES_DEBIAN)
+
+install-desktop-arch: ## Install desktop packages on Arch-like systems
+	@set -euo pipefail; \
+	command -v yay >/dev/null 2>&1 || { echo "ERROR: yay is required for Arch desktop packages"; exit 1; }; \
+	yay -S --needed --noconfirm $(DESKTOP_PACKAGES_ARCH)
+
+install-fonts-arch: ## Install font packages on Arch-like systems
+	@set -euo pipefail; \
+	command -v yay >/dev/null 2>&1 || { echo "ERROR: yay is required for Arch font packages"; exit 1; }; \
+	yay -S --needed --noconfirm $(FONT_PACKAGES_ARCH)
+
+unsupported-workstation-family:
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	echo "ERROR: package group '$${GROUP:-unknown}' is currently mapped only for Arch-like systems."; \
+	echo "DISTRO: $${ID:-unknown}"; \
+	echo "DISTRO_LIKE: $${ID_LIKE:-none}"; \
+	exit 1
+
+unsupported-desktop-family:
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	echo "ERROR: desktop packages are intentionally mapped only for Arch/EndeavourOS."; \
+	echo "DISTRO: $${ID:-unknown}"; \
+	echo "DISTRO_LIKE: $${ID_LIKE:-none}"; \
+	exit 1
+
+unsupported-font-family:
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	echo "ERROR: font packages are intentionally mapped only for Arch/EndeavourOS desktop restore."; \
+	echo "DISTRO: $${ID:-unknown}"; \
+	echo "DISTRO_LIKE: $${ID_LIKE:-none}"; \
+	exit 1
+
 verify-base: ## Verify public base commands and SSH service without changes
 	@set -euo pipefail; \
 	failed=0; \
@@ -154,4 +288,62 @@ verify-tailscale: ## Verify Tailscale command, service, and login without change
 				failed=1;; \
 		esac; \
 	fi; \
+	exit "$$failed"
+
+verify-workstation-core: ## Verify workstation core commands without changes
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	failed=0; \
+	case " $${ID:-} $${ID_LIKE:-} " in \
+		*' endeavouros '*|*' arch '*) commands="zsh tmux nvim tree-sitter alacritty zed" ;; \
+		*' debian '*|*' ubuntu '*) commands="zsh tmux nvim" ;; \
+		*) echo "ERROR: unsupported package family: ID=$${ID:-unknown} ID_LIKE=$${ID_LIKE:-none}"; exit 1 ;; \
+	esac; \
+	for command_name in $$commands; do \
+		if command -v "$$command_name" >/dev/null 2>&1; then \
+			echo "OK: $$command_name"; \
+		else \
+			echo "MISSING: $$command_name"; \
+			failed=1; \
+		fi; \
+	done; \
+	exit "$$failed"
+
+verify-desktop: ## Verify desktop commands on Arch/EndeavourOS; skip on Debian/Ubuntu
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	case " $${ID:-} $${ID_LIKE:-} " in \
+		*' endeavouros '*|*' arch '*) ;; \
+		*' debian '*|*' ubuntu '*) echo "SKIPPED: desktop package verification is Arch/EndeavourOS-only"; exit 0 ;; \
+		*) echo "ERROR: unsupported package family: ID=$${ID:-unknown} ID_LIKE=$${ID_LIKE:-none}"; exit 1 ;; \
+	esac; \
+	failed=0; \
+	for command_name in i3 rofi picom dunstify xss-lock; do \
+		if command -v "$$command_name" >/dev/null 2>&1; then \
+			echo "OK: $$command_name"; \
+		else \
+			echo "MISSING: $$command_name"; \
+			failed=1; \
+		fi; \
+	done; \
+	exit "$$failed"
+
+verify-fonts: ## Verify workstation fonts on Arch/EndeavourOS; skip on Debian/Ubuntu
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	case " $${ID:-} $${ID_LIKE:-} " in \
+		*' endeavouros '*|*' arch '*) ;; \
+		*' debian '*|*' ubuntu '*) echo "SKIPPED: font package verification is Arch/EndeavourOS desktop-only"; exit 0 ;; \
+		*) echo "ERROR: unsupported package family: ID=$${ID:-unknown} ID_LIKE=$${ID_LIKE:-none}"; exit 1 ;; \
+	esac; \
+	command -v fc-match >/dev/null 2>&1 || { echo "MISSING: fc-match"; exit 1; }; \
+	failed=0; \
+	for font_name in "JetBrains Mono" "Hack" "Ubuntu Mono" "Fira Code" "Noto Sans"; do \
+		if fc-match "$$font_name" >/dev/null 2>&1; then \
+			echo "OK: $$font_name"; \
+		else \
+			echo "MISSING: $$font_name"; \
+			failed=1; \
+		fi; \
+	done; \
 	exit "$$failed"

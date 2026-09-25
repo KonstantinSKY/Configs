@@ -3,7 +3,9 @@ SHELL := /bin/bash
 .PHONY: help status mount setup upgrade dependencies ai voice-ptt verify check-work \
 	detect restore-status restore-core restore-packages restore-workspace \
 	restore-user restore-desktop restore-verify \
-	packages-status packages-install-base packages-install-tailscale packages-verify
+	packages-status packages-install-base packages-install-tailscale \
+	packages-install-workstation-core packages-install-desktop packages-install-fonts \
+	packages-verify packages-verify-workstation-core packages-verify-desktop packages-verify-fonts
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -104,7 +106,13 @@ help: ## Show the first-run and assistant setup commands
 	@echo "  make packages-status            Detect distro package family"
 	@echo "  make packages-install-base      Install git/make/SSH base packages"
 	@echo "  make packages-install-tailscale Install and enable Tailscale"
+	@echo "  make packages-install-workstation-core Install shell/editor/workstation tools"
+	@echo "  make packages-install-desktop   Install i3 desktop packages"
+	@echo "  make packages-install-fonts     Install workstation fonts"
 	@echo "  make packages-verify            Verify base packages and Tailscale"
+	@echo "  make packages-verify-workstation-core Verify shell/editor/workstation tools"
+	@echo "  make packages-verify-desktop    Verify i3 desktop packages"
+	@echo "  make packages-verify-fonts      Verify workstation fonts"
 	@echo ""
 	@echo "After AI and Voice PTT are ready:"
 	@echo "  make restore-status Inspect full workstation restore progress (read-only)"
@@ -235,9 +243,27 @@ packages-install-base: ## Install public base packages for this distro family
 packages-install-tailscale: ## Install Tailscale for this distro family
 	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-tailscale
 
+packages-install-workstation-core: ## Install workstation shell/editor packages for this distro family
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-workstation-core
+
+packages-install-desktop: ## Install desktop packages for this distro family
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-desktop
+
+packages-install-fonts: ## Install workstation fonts for this distro family
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-fonts
+
 packages-verify: ## Verify public base packages and Tailscale
 	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-base
 	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-tailscale
+
+packages-verify-workstation-core: ## Verify workstation shell/editor packages
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-workstation-core
+
+packages-verify-desktop: ## Verify desktop packages
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-desktop
+
+packages-verify-fonts: ## Verify workstation fonts
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-fonts
 
 check-work: ## Refuse setup unless this is the repository on the mounted Work filesystem
 	@if ! mountpoint -q "$(WORK_DIR)"; then \
