@@ -108,15 +108,16 @@ detect: ## Print OS and package family without changes
 		exit 0; \
 	fi; \
 	. /etc/os-release; \
-	family=unsupported; \
+	family=unsupported; profile=unsupported; \
 	case " $${ID:-} $${ID_LIKE:-} " in \
-		*' endeavouros '*|*' arch '*) family=arch ;; \
-		*' debian '*|*' ubuntu '*) family=debian ;; \
+		*' endeavouros '*|*' arch '*) family=arch; profile=arch-desktop ;; \
+		*' debian '*|*' ubuntu '*) family=debian; profile=debian-server ;; \
 	esac; \
 	echo "OS: Linux"; \
 	echo "DISTRO: $${ID:-unknown}"; \
 	echo "DISTRO_LIKE: $${ID_LIKE:-none}"; \
-	echo "PACKAGE_FAMILY: $$family"
+	echo "PACKAGE_FAMILY: $$family"; \
+	echo "PACKAGE_PROFILE: $$profile"
 
 install-base: ## Install public base packages for the detected package family
 	@set -euo pipefail; \
