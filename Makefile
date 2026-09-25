@@ -39,52 +39,6 @@ SYSTEM_DEPENDENCIES := \
 	xdotool \
 	xsel
 
-RESTORE_PACKAGES := \
-	zsh \
-	zsh-theme-powerlevel10k \
-	tmux \
-	alacritty \
-	neovim \
-	tree-sitter-cli \
-	zed \
-	gnome-keyring \
-	libsecret \
-	hunspell \
-	hunspell-en_us \
-	hunspell-ru
-
-RESTORE_DESKTOP_PACKAGES := \
-	i3-wm \
-	i3blocks \
-	dunst \
-	libnotify \
-	rofi \
-	picom \
-	xss-lock \
-	xsettingsd \
-	qt5ct \
-	qt6ct \
-	kvantum \
-	kvantum-qt5 \
-	kvantum-theme-arc \
-	capitaine-cursors \
-	qogir-icon-theme
-
-RESTORE_FONT_PACKAGES := \
-	noto-fonts \
-	noto-fonts-emoji \
-	ttf-jetbrains-mono \
-	ttf-jetbrains-mono-nerd \
-	ttf-hack \
-	ttf-hack-nerd \
-	ttf-ubuntu-font-family \
-	ttf-ubuntu-mono-nerd \
-	ttf-ubuntu-nerd \
-	ttf-fira-code \
-	ttf-firacode-nerd \
-	ttf-sourcecodepro-nerd \
-	ttf-nerd-fonts-symbols-mono
-
 help: ## Show the first-run and assistant setup commands
 	@echo "Safe first command:"
 	@echo "  make status      Detect the current state and recommend the next action"
@@ -324,9 +278,8 @@ restore-packages: check-work ## Install core workstation packages without anothe
 			*' endeavouros '*|*' arch '*) ;; \
 			*) echo "ERROR: restore-packages currently supports EndeavourOS/Arch only."; exit 1 ;; \
 		esac; \
-		command -v yay >/dev/null 2>&1 || { echo "ERROR: yay is required; run make setup first."; exit 1; }; \
 		echo "Installing core workstation packages (no system upgrade)..."; \
-		yay -S --needed --noconfirm $(RESTORE_PACKAGES) $(RESTORE_DESKTOP_PACKAGES) $(RESTORE_FONT_PACKAGES); \
+		$(MAKE) --no-print-directory packages-install-profile; \
 		mkdir -p "$(RESTORE_STATE_DIR)"; \
 		printf '%s\n' packages > "$(RESTORE_STATE_DIR)/packages"; \
 	fi
