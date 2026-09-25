@@ -4,6 +4,7 @@ SHELL := /bin/bash
 	install-base install-base-arch install-base-debian \
 	install-tailscale install-tailscale-arch install-tailscale-debian \
 	install-workstation-core install-desktop install-fonts \
+	install-profile \
 	install-workstation-core-arch install-workstation-core-debian \
 	install-desktop-arch install-fonts-arch \
 	unsupported-workstation-family unsupported-desktop-family unsupported-font-family \
@@ -89,6 +90,7 @@ help: ## Show package bootstrap commands
 	@echo "  make install-workstation-core"
 	@echo "  make install-desktop"
 	@echo "  make install-fonts"
+	@echo "  make install-profile"
 	@echo "  make verify-base"
 	@echo "  make verify-tailscale"
 	@echo "  make verify-workstation-core"
@@ -190,6 +192,25 @@ install-fonts: ## Install font packages for the detected package family
 	case " $${ID:-} $${ID_LIKE:-} " in \
 		*' endeavouros '*|*' arch '*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-fonts-arch ;; \
 		*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" unsupported-font-family ;; \
+	esac
+
+install-profile: ## Install the package profile selected for this distro family
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	case " $${ID:-} $${ID_LIKE:-} " in \
+		*' endeavouros '*|*' arch '*) \
+			echo "PROFILE: arch-desktop"; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-base; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-tailscale; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-workstation-core; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-desktop; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-fonts ;; \
+		*' debian '*|*' ubuntu '*) \
+			echo "PROFILE: debian-server"; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-base; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-tailscale; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-workstation-core ;; \
+		*) echo "ERROR: unsupported package family: ID=$${ID:-unknown} ID_LIKE=$${ID_LIKE:-none}"; exit 1 ;; \
 	esac
 
 install-workstation-core-arch: ## Install workstation core packages on Arch-like systems

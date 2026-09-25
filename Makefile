@@ -5,8 +5,8 @@ SHELL := /bin/bash
 	restore-user restore-desktop restore-verify \
 	packages-status packages-install-base packages-install-tailscale \
 	packages-install-workstation-core packages-install-desktop packages-install-fonts \
-	packages-verify packages-verify-workstation-core packages-verify-desktop \
-	packages-verify-fonts packages-verify-profile
+	packages-install-profile packages-verify packages-verify-workstation-core \
+	packages-verify-desktop packages-verify-fonts packages-verify-profile
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -110,6 +110,7 @@ help: ## Show the first-run and assistant setup commands
 	@echo "  make packages-install-workstation-core Install shell/editor/workstation tools"
 	@echo "  make packages-install-desktop   Install i3 desktop packages"
 	@echo "  make packages-install-fonts     Install workstation fonts"
+	@echo "  make packages-install-profile   Install selected package profile"
 	@echo "  make packages-verify            Verify base packages and Tailscale"
 	@echo "  make packages-verify-workstation-core Verify shell/editor/workstation tools"
 	@echo "  make packages-verify-desktop    Verify i3 desktop packages"
@@ -253,6 +254,9 @@ packages-install-desktop: ## Install desktop packages for this distro family
 
 packages-install-fonts: ## Install workstation fonts for this distro family
 	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-fonts
+
+packages-install-profile: ## Install the selected package profile
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-profile
 
 packages-verify: ## Verify public base packages and Tailscale
 	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-base
