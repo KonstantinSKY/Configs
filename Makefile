@@ -159,8 +159,19 @@ detect: ## Detect OS, distro family, session type, and host profile without chan
 
 restore-status: check-work ## Inspect full workstation restore progress without changes
 	@$(MAKE) --no-print-directory detect
+	@$(MAKE) --no-print-directory packages-status
 	@echo "Restore checkpoints: $(RESTORE_STATE_DIR)"
 	@set -u; \
+	id="unknown"; like=""; \
+	if [[ -r /etc/os-release ]]; then \
+		. /etc/os-release; \
+		id="$${ID:-unknown}"; like="$${ID_LIKE:-}"; \
+	fi; \
+	case " $$id $$like " in \
+		*' endeavouros '*|*' arch '*) commands="zsh alacritty nvim zeditor i3 rofi picom"; restore_supported=1 ;; \
+		*' debian '*|*' ubuntu '*) commands="zsh tmux nvim"; restore_supported=0 ;; \
+		*) commands=""; restore_supported=0 ;; \
+	esac; \
 	next=""; \
 	for stage in packages workspace user desktop verify; do \
 		if [[ -f "$(RESTORE_STATE_DIR)/$$stage" ]]; then \
@@ -171,11 +182,14 @@ restore-status: check-work ## Inspect full workstation restore progress without 
 		fi; \
 	done; \
 	missing=""; \
-	for command in zsh alacritty nvim zeditor i3 rofi picom; do \
+	for command in $$commands; do \
 		command -v "$$command" >/dev/null 2>&1 || missing="$$missing $$command"; \
 	done; \
 	[[ -z "$$missing" ]] || echo "MISSING_COMMANDS:$$missing"; \
-	if [[ -n "$$next" ]]; then \
+	if [[ "$$restore_supported" != 1 ]]; then \
+		echo "RESTORE_STATE: PROFILE_NOT_SUPPORTED"; \
+		echo "NEXT: use package profile targets for this machine"; \
+	elif [[ -n "$$next" ]]; then \
 		echo "RESTORE_STATE: INCOMPLETE"; \
 		echo "NEXT_STAGE: $$next"; \
 		echo "NEXT: make restore-core"; \
