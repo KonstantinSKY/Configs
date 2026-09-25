@@ -5,7 +5,8 @@ SHELL := /bin/bash
 	restore-user restore-desktop restore-verify \
 	packages-status packages-install-base packages-install-tailscale \
 	packages-install-workstation-core packages-install-desktop packages-install-fonts \
-	packages-verify packages-verify-workstation-core packages-verify-desktop packages-verify-fonts
+	packages-verify packages-verify-workstation-core packages-verify-desktop \
+	packages-verify-fonts packages-verify-profile
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -113,6 +114,7 @@ help: ## Show the first-run and assistant setup commands
 	@echo "  make packages-verify-workstation-core Verify shell/editor/workstation tools"
 	@echo "  make packages-verify-desktop    Verify i3 desktop packages"
 	@echo "  make packages-verify-fonts      Verify workstation fonts"
+	@echo "  make packages-verify-profile    Verify selected package profile"
 	@echo ""
 	@echo "After AI and Voice PTT are ready:"
 	@echo "  make restore-status Inspect full workstation restore progress (read-only)"
@@ -264,6 +266,9 @@ packages-verify-desktop: ## Verify desktop packages
 
 packages-verify-fonts: ## Verify workstation fonts
 	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-fonts
+
+packages-verify-profile: ## Verify the selected package profile
+	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" verify-profile
 
 check-work: ## Refuse setup unless this is the repository on the mounted Work filesystem
 	@if ! mountpoint -q "$(WORK_DIR)"; then \

@@ -7,7 +7,8 @@ SHELL := /bin/bash
 	install-workstation-core-arch install-workstation-core-debian \
 	install-desktop-arch install-fonts-arch \
 	unsupported-workstation-family unsupported-desktop-family unsupported-font-family \
-	verify-base verify-tailscale verify-workstation-core verify-desktop verify-fonts
+	verify-base verify-tailscale verify-workstation-core verify-desktop verify-fonts \
+	verify-profile
 .DEFAULT_GOAL := help
 
 SUDO := $(shell if [ "$$(id -u)" -eq 0 ]; then echo ""; else echo "sudo"; fi)
@@ -93,6 +94,7 @@ help: ## Show package bootstrap commands
 	@echo "  make verify-workstation-core"
 	@echo "  make verify-desktop"
 	@echo "  make verify-fonts"
+	@echo "  make verify-profile"
 
 status: detect ## Detect supported package family
 
@@ -347,3 +349,22 @@ verify-fonts: ## Verify workstation fonts on Arch/EndeavourOS; skip on Debian/Ub
 		fi; \
 	done; \
 	exit "$$failed"
+
+verify-profile: ## Verify the package profile selected for this distro family
+	@set -euo pipefail; \
+	. /etc/os-release; \
+	case " $${ID:-} $${ID_LIKE:-} " in \
+		*' endeavouros '*|*' arch '*) \
+			echo "PROFILE: arch-desktop"; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-base; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-tailscale; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-workstation-core; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-desktop; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-fonts ;; \
+		*' debian '*|*' ubuntu '*) \
+			echo "PROFILE: debian-server"; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-base; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-tailscale; \
+			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-workstation-core ;; \
+		*) echo "ERROR: unsupported package family: ID=$${ID:-unknown} ID_LIKE=$${ID_LIKE:-none}"; exit 1 ;; \
+	esac
