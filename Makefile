@@ -326,10 +326,7 @@ restore-desktop: check-work ## Restore fonts, themes, terminal, editors, rofi, p
 	fi
 
 restore-verify: check-work ## Verify core packages and managed configuration links
-	@set -eu; \
-	for command in git zsh alacritty nvim zeditor i3 rofi picom; do \
-		command -v "$$command" >/dev/null 2>&1 || { echo "ERROR: missing command: $$command"; exit 1; }; \
-	done
+	@$(MAKE) --no-print-directory packages-verify-profile
 	@$(MAKE) --no-print-directory -f "$(CONFIGS_DIR)/git/Makefile" verify
 	@$(MAKE) --no-print-directory -f "$(CONFIGS_DIR)/zsh/Makefile" verify
 	@$(MAKE) --no-print-directory -f "$(CONFIGS_DIR)/xprofile/Makefile" verify
