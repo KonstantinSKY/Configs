@@ -23,14 +23,12 @@ DISTRO_LIKE := $(shell . /etc/os-release 2>/dev/null && echo "$$ID_LIKE")
 endif
 
 # --- Sources & targets ----------------------------------------------------
-RC_SOURCE := $(THIS_DIR)/rc
+# The shell configuration itself lives in shell/ and is shared with bash.
+SHELL_MAKEFILE := $(CONFIGS_DIR)/shell/Makefile
+SHELL_BLOCK_START := \# >>> configs shell >>>
 P10K_SOURCE := $(THIS_DIR)/.p10k.zsh
 ZSHRC_TARGET := $(HOME)/.zshrc
 P10K_TARGET := $(HOME)/.p10k.zsh
-
-ZSH_INCLUDE_START := \# >>> custom shell config >>>
-ZSH_INCLUDE_END := \# <<< custom shell config <<<
-ZSH_INCLUDE_LINE := [ -r "$(RC_SOURCE)" ] && source "$(RC_SOURCE)"
 
 P10K_PACKAGE := zsh-theme-powerlevel10k
 
@@ -79,23 +77,9 @@ endif
 ## ---------------------------
 ## 🔗 Link
 ## ---------------------------
-link l: ## Link rc into ~/.zshrc (via injection block) and .p10k.zsh into ~/.p10k.zsh
-	@$(call require_exists,$(RC_SOURCE),custom zsh rc)
-	@echo "🧩 Ensuring $(ZSHRC_TARGET) loads $(RC_SOURCE)..."
-	@tmp="$$(mktemp)"; \
-	if [ -e "$(ZSHRC_TARGET)" ]; then \
-		awk -v start='$(ZSH_INCLUDE_START)' -v end='$(ZSH_INCLUDE_END)' '\
-			$$0 == start { skip=1; next } \
-			skip && $$0 == end { skip=0; next } \
-			!skip { print }' "$(ZSHRC_TARGET)" > "$$tmp"; \
-		echo "✅ Normalized custom zsh include block in $(ZSHRC_TARGET)"; \
-	else \
-		echo "📄 Creating new $(ZSHRC_TARGET)"; \
-		: > "$$tmp"; \
-	fi; \
-	if [ -s "$$tmp" ]; then printf '\n' >> "$$tmp"; fi; \
-	printf '%s\n%s\n%s\n' '$(ZSH_INCLUDE_START)' '$(ZSH_INCLUDE_LINE)' '$(ZSH_INCLUDE_END)' >> "$$tmp"; \
-	mv "$$tmp" "$(ZSHRC_TARGET)"
+link l: ## Load shell/rc from ~/.zshrc and ~/.bashrc (via shell/Makefile) and link .p10k.zsh
+	@$(call require_exists,$(SHELL_MAKEFILE),shell layer Makefile)
+	@$(MAKE) --no-print-directory -f "$(SHELL_MAKEFILE)" link
 	@if [ -e "$(P10K_SOURCE)" ]; then \
 		echo "🎨 Linking .p10k.zsh..."; \
 		$(call link,$(P10K_SOURCE),$(P10K_TARGET)); \
@@ -149,9 +133,9 @@ else
 	fi
 endif
 	@if [ -e "$(ZSHRC_TARGET)" ]; then \
-		grep -q '$(ZSH_INCLUDE_START)' "$(ZSHRC_TARGET)" \
-			&& echo "✅ $(ZSHRC_TARGET) has custom include block" \
-			|| echo "⚠️  $(ZSHRC_TARGET) missing custom include block"; \
+		grep -qxF '$(SHELL_BLOCK_START)' "$(ZSHRC_TARGET)" \
+			&& echo "✅ $(ZSHRC_TARGET) loads shell/rc" \
+			|| echo "⚠️  $(ZSHRC_TARGET) does not load shell/rc (run 'make link')"; \
 	else \
 		echo "❌ $(ZSHRC_TARGET) does not exist"; \
 	fi
