@@ -6,7 +6,7 @@ SHELL := /bin/bash
 	install-workstation-core install-desktop install-fonts \
 	install-profile \
 	install-workstation-core-arch install-workstation-core-debian \
-	install-desktop-arch install-fonts-arch \
+	install-yay-arch install-desktop-arch install-fonts-arch \
 	unsupported-workstation-family unsupported-desktop-family unsupported-font-family \
 	verify-base verify-tailscale verify-workstation-core verify-desktop verify-fonts \
 	verify-profile
@@ -87,6 +87,7 @@ help: ## Show package bootstrap commands
 	@echo "  make detect    print OS and package family"
 	@echo "  make install-base"
 	@echo "  make install-tailscale"
+	@echo "  make install-yay-arch"
 	@echo "  make install-workstation-core"
 	@echo "  make install-desktop"
 	@echo "  make install-fonts"
@@ -214,9 +215,27 @@ install-profile: ## Install the package profile selected for this distro family
 		*) echo "ERROR: unsupported package family: ID=$${ID:-unknown} ID_LIKE=$${ID_LIKE:-none}"; exit 1 ;; \
 	esac
 
+install-yay-arch: ## Ensure yay on Arch-like systems: distro repository first, AUR yay-bin otherwise
+	@set -euo pipefail; \
+	if command -v yay >/dev/null 2>&1; then echo "OK: yay"; exit 0; fi; \
+	command -v pacman >/dev/null 2>&1 || { echo "ERROR: pacman is required"; exit 1; }; \
+	if pacman -Si yay >/dev/null 2>&1; then \
+		$(SUDO) pacman -S --needed --noconfirm yay; \
+	else \
+		[ "$$(id -u)" -ne 0 ] || { echo "ERROR: build yay-bin as a regular user, not root"; exit 1; }; \
+		echo "yay is not in the configured repositories; building yay-bin from AUR..."; \
+		$(SUDO) pacman -S --needed --noconfirm base-devel git; \
+		build_dir="$$(mktemp -d)"; \
+		trap 'rm -rf "$$build_dir"' EXIT; \
+		git clone --depth 1 https://aur.archlinux.org/yay-bin.git "$$build_dir/yay-bin"; \
+		(cd "$$build_dir/yay-bin" && makepkg -si --noconfirm); \
+	fi; \
+	command -v yay >/dev/null 2>&1 || { echo "ERROR: yay was not installed"; exit 1; }; \
+	echo "OK: yay"
+
 install-workstation-core-arch: ## Install workstation core packages on Arch-like systems
 	@set -euo pipefail; \
-	command -v yay >/dev/null 2>&1 || { echo "ERROR: yay is required for Arch workstation packages"; exit 1; }; \
+	$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-yay-arch; \
 	yay -S --needed --noconfirm $(WORKSTATION_CORE_PACKAGES_ARCH)
 
 install-workstation-core-debian: ## Install CLI-only workstation core packages on Debian/Ubuntu systems
@@ -227,12 +246,12 @@ install-workstation-core-debian: ## Install CLI-only workstation core packages o
 
 install-desktop-arch: ## Install desktop packages on Arch-like systems
 	@set -euo pipefail; \
-	command -v yay >/dev/null 2>&1 || { echo "ERROR: yay is required for Arch desktop packages"; exit 1; }; \
+	$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-yay-arch; \
 	yay -S --needed --noconfirm $(DESKTOP_PACKAGES_ARCH)
 
 install-fonts-arch: ## Install font packages on Arch-like systems
 	@set -euo pipefail; \
-	command -v yay >/dev/null 2>&1 || { echo "ERROR: yay is required for Arch font packages"; exit 1; }; \
+	$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-yay-arch; \
 	yay -S --needed --noconfirm $(FONT_PACKAGES_ARCH)
 
 unsupported-workstation-family:
@@ -319,7 +338,7 @@ verify-workstation-core: ## Verify workstation core commands without changes
 	. /etc/os-release; \
 	failed=0; \
 	case " $${ID:-} $${ID_LIKE:-} " in \
-		*' endeavouros '*|*' arch '*) commands="zsh tmux nvim tree-sitter alacritty zed" ;; \
+		*' endeavouros '*|*' arch '*) commands="zsh tmux nvim tree-sitter alacritty zeditor" ;; \
 		*' debian '*|*' ubuntu '*) commands="zsh tmux nvim" ;; \
 		*) echo "ERROR: unsupported package family: ID=$${ID:-unknown} ID_LIKE=$${ID_LIKE:-none}"; exit 1 ;; \
 	esac; \
