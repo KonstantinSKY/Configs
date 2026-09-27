@@ -4,7 +4,7 @@
 if command -v zeditor >/dev/null 2>&1; then
   export VISUAL=zeditor
 
-  z() {
+  function z {
     if [ -n "${1:-}" ]; then
       zeditor "$1"
     else
