@@ -80,13 +80,10 @@ endif
 link l: ## Load shell/rc from ~/.zshrc and ~/.bashrc (via shell/Makefile) and link .p10k.zsh
 	@$(call require_exists,$(SHELL_MAKEFILE),shell layer Makefile)
 	@$(MAKE) --no-print-directory -f "$(SHELL_MAKEFILE)" link
+	@# The prompt is configured in shell/rc; zsh/.p10k.zsh is optional.
 	@if [ -e "$(P10K_SOURCE)" ]; then \
 		echo "🎨 Linking .p10k.zsh..."; \
 		$(call link,$(P10K_SOURCE),$(P10K_TARGET)); \
-	else \
-		echo "ℹ️  $(P10K_SOURCE) does not exist yet."; \
-		echo "   On first zsh launch, the p10k wizard will run and create ~/.p10k.zsh."; \
-		echo "   Copy that file back to the repo as zsh/.p10k.zsh and re-run 'make link'."; \
 	fi
 
 ## ---------------------------
@@ -126,10 +123,19 @@ ifeq ($(UNAME),Darwin)
 		&& echo "✅ powerlevel10k installed (Homebrew)" \
 		|| echo "❌ powerlevel10k not installed"
 else
-	@if pacman -Q $(P10K_PACKAGE) >/dev/null 2>&1; then \
-		echo "✅ $(P10K_PACKAGE) installed: $$(pacman -Q $(P10K_PACKAGE) | awk '{print $$2}')"; \
+	@# Same theme locations that shell/rc searches.
+	@theme=""; \
+	for path in \
+		/usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme \
+		/usr/share/powerlevel10k/powerlevel10k.zsh-theme \
+		/usr/local/share/powerlevel10k/powerlevel10k.zsh-theme \
+		"$$HOME/.powerlevel10k/powerlevel10k.zsh-theme"; do \
+		if [ -r "$$path" ]; then theme="$$path"; break; fi; \
+	done; \
+	if [ -n "$$theme" ]; then \
+		echo "✅ powerlevel10k found: $$theme"; \
 	else \
-		echo "❌ $(P10K_PACKAGE) not installed"; \
+		echo "ℹ️  powerlevel10k not installed; zsh uses a plain prompt"; \
 	fi
 endif
 	@if [ -e "$(ZSHRC_TARGET)" ]; then \
@@ -139,4 +145,4 @@ endif
 	else \
 		echo "❌ $(ZSHRC_TARGET) does not exist"; \
 	fi
-	@$(call verify_link,$(P10K_TARGET))
+	@if [ -e "$(P10K_SOURCE)" ]; then $(call verify_link,$(P10K_TARGET)); fi
