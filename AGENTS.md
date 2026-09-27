@@ -193,7 +193,7 @@ Existing leaf entry points, in that order, are:
 ```bash
 make -f workspace/Makefile symlinks
 make -f git/Makefile link
-make -f zsh/Makefile setup
+make -f zsh/Makefile setup      # zsh + p10k, shell/ loader block, chsh
 make -f xprofile/Makefile install
 make -f fonts/Makefile install
 make -f gtk/Makefile install
@@ -226,6 +226,68 @@ The implemented stages are `packages`, `workspace`, `user`, `desktop`, and
 recovery but do not override real package, link, or service inspection when a
 stage appears inconsistent.
 
+## Shell layer
+
+All interactive shell configuration lives in `shell/` and is shared by bash
+and zsh on every machine. `zsh/rc` was removed; do not reintroduce a
+zsh-only rc or per-machine rc files.
+
+```text
+shell/rc          shared: paths, editor, helpers, t1..t5/tl, AIX, claude/codex,
+                  pass helpers, upd/updf by package family, zsh prompt
+shell/gui.rc      only what needs a display: zeditor/z, winmt, cachyos
+shell/server.rc   gs, ports, svc-failed, logs; Proxmox aliases when pveversion exists
+shell/Makefile    status (read-only), link, verify
+```
+
+`shell/rc` picks the machine class on every start and exports it as
+`CONFIGS_SHELL_CLASS`: `gui` when `/usr/share/xsessions` or
+`/usr/share/wayland-sessions` exists, otherwise `server`. There are no roles,
+no class override file, and no per-host variables. Put new settings in
+`shell/rc` unless they truly need a display (`gui.rc`) or only make sense on
+servers (`server.rc`). Aliases for programs that are not installed are fine.
+
+Rules for editing `shell/`:
+
+- Code must run in both bash and zsh. Guard zsh-only code with
+  `[ -n "${ZSH_VERSION:-}" ]`.
+- Define functions as `function name { ... }`, not `name() { ... }`.
+  Frameworks such as oh-my-zsh (CachyOS) predefine aliases like `la`, and the
+  `name()` form then fails to parse and stops the rest of rc from loading.
+- The file must end with a successful status so the first prompt does not show
+  an error; use `if ...; fi` rather than a trailing `test && action`.
+- Do not start tmux automatically. AIX creates its own `aix-*` tmux sessions
+  only when launched outside tmux; the user attaches to plain shells with
+  `t1`..`t5`.
+- Configs is a public repository. Do not reference the private Security
+  directory from `shell/`; machine-local or private additions go in
+  `~/.config/configs/local.rc`, which `shell/rc` sources when present.
+- Check changes with `make -f shell/Makefile verify` and an interactive login
+  on at least one bash server and one zsh workstation.
+
+`make -f shell/Makefile link` (also called by `make -f zsh/Makefile link` and
+`setup`) writes a `# >>> configs shell >>>` block to `~/.bashrc`, and to
+`~/.zshrc` when zsh exists, replaces the old `custom shell config` block,
+keeps a backup of each changed file, and needs no sudo. The login shell must
+be bash or zsh; fish does not read these files.
+
+Current machines, all using `~/Work/Configs` from the shared Work disk:
+
+```text
+pve    Proxmox VE host (Debian 13)   server  bash  Work is the local btrfs disk
+end    EndeavourOS, i3 (VM 100)      gui     zsh   Work via virtiofs tag gdata
+dev    Ubuntu 26.04 (VM 101)         server  bash  Work via virtiofs tag gdata
+prod   Ubuntu 26.04 (VM 102)         server  bash  Work via virtiofs tag gdata
+cachy  CachyOS, sway (VM 104)        gui     zsh   Work via virtiofs tag gdata
+```
+
+VMs mount Work with this `/etc/fstab` line after the Proxmox VM has
+`virtiofs0: dirid=gdata`:
+
+```text
+gdata /home/sky/Work virtiofs rw,relatime,nofail,x-systemd.mount-timeout=10s 0 0
+```
+
 ## Optional and non-restore directories
 
 Only configure these roles when the user explicitly selects them:
@@ -243,8 +305,8 @@ Only configure these roles when the user explicitly selects them:
 - SSH targets: enable a network service and may change authentication policy.
 
 `projects`, `rust`, and `metatrader` are project generators or templates, not
-workstation restore stages. `tmux` currently contains configuration but has no
-Makefile installer.
+workstation restore stages. `tmux/Makefile` only links `tmux/.tmux.conf`; the
+tmux session helpers live in `shell/rc`.
 
 `browsers/Makefile` now uses the EndeavourOS package flow. Browser installation
 is still an application stage, not part of the minimal AI/Voice setup.
