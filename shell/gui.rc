@@ -1,0 +1,18 @@
+# Machines with a graphical session. Sourced by shell/rc.
+# Only what needs a display belongs here; everything else goes in rc.
+
+if command -v zeditor >/dev/null 2>&1; then
+  export VISUAL=zeditor
+
+  z() {
+    if [ -n "${1:-}" ]; then
+      zeditor "$1"
+    else
+      zeditor .
+    fi
+  }
+fi
+
+# SPICE consoles of Proxmox VMs
+alias winmt="ssh root@pve.home.arpa \"pvesh create /nodes/pve/qemu/103/spiceproxy --proxy pve\" | remote-viewer -"
+alias cachyos="open-cachyos"

@@ -1,0 +1,14 @@
+# Machines without a graphical session. Sourced by shell/rc.
+
+alias gs='git status --short --branch'
+alias ports='ss -tulpn'
+alias svc-failed='systemctl --no-pager --failed'
+alias logs='journalctl -xe --no-pager'
+
+# Proxmox VE host
+if command -v pveversion >/dev/null 2>&1; then
+  alias pvstat='pveversion && systemctl --no-pager --failed'
+  alias pvev='pveversion -v'
+  alias qml='sudo qm list'
+  alias pctl='sudo pct list'
+fi

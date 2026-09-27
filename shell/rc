@@ -1,0 +1,262 @@
+# Configs shell layer: shared by bash and zsh on every machine.
+#
+# Loaded from the block that `make -f shell/Makefile link` writes into
+# ~/.bashrc and ~/.zshrc. That block sets CONFIGS_SHELL_DIR first.
+#
+# Order: shared settings -> gui.rc or server.rc -> zsh prompt -> local.rc
+
+case $- in
+  *i*) ;;
+  *) return ;;
+esac
+
+# --- Paths ---------------------------------------------------------------
+
+[ -d "$HOME/Work" ] && WORK="$HOME/Work" || WORK="$HOME"
+export WORK
+export CONFIGS_PATH="$WORK/Configs"
+export PROJECTS_PATH="$WORK/Projects"
+export BACKUPS_PATH="$WORK/BackUps"
+CONFIGS_SHELL_DIR="${CONFIGS_SHELL_DIR:-$CONFIGS_PATH/shell}"
+
+_configs_path_prepend() {
+  [ -d "$1" ] || return 0
+  case ":$PATH:" in
+    *":$1:"*) ;;
+    *) PATH="$1:$PATH" ;;
+  esac
+}
+_configs_path_prepend "$HOME/.local/bin"
+_configs_path_prepend "$HOME/.cargo/bin"
+_configs_path_prepend "$HOME/.local/share/fnm"
+export PATH
+
+# --- Editor --------------------------------------------------------------
+
+if command -v nvim >/dev/null 2>&1; then
+  EDITOR=nvim
+elif command -v vim >/dev/null 2>&1; then
+  EDITOR=vim
+else
+  EDITOR=vi
+fi
+export EDITOR
+export VISUAL="$EDITOR"
+
+choose_editor() { command "$EDITOR" "$@"; }
+alias v=choose_editor
+alias vi=choose_editor
+
+# --- Everyday helpers ----------------------------------------------------
+
+alias Configs='cd "$CONFIGS_PATH"; ls -ls'
+alias Projects='cd "$PROJECTS_PATH"; ls -ls'
+
+la() { command ls "$@" -la --color=auto; }
+chx() { command chmod u+x "$@"; }
+cdl() { cd "$@" && ls -la --color=auto; }
+
+if command -v bat >/dev/null 2>&1; then
+  alias cat='bat --paging=never'
+  alias lcat='/usr/bin/cat'
+elif command -v batcat >/dev/null 2>&1; then
+  alias cat='batcat --paging=never'
+  alias lcat='/usr/bin/cat'
+fi
+
+# Send deletes to trash when the helper is available.
+if command -v trash >/dev/null 2>&1; then
+  alias rm='trash'
+  alias trashbox='trash --help'
+fi
+
+alias rsss="remote_start_sudo_script.sh"
+alias server="ssh server"
+
+# --- System update (by package family) -----------------------------------
+
+if command -v pacman >/dev/null 2>&1; then
+  alias upd='make -C "$CONFIGS_PATH/eos" update'
+  alias updf='make -C "$CONFIGS_PATH/eos" updf'
+elif command -v apt-get >/dev/null 2>&1; then
+  alias upd='sudo apt-get update && sudo apt-get full-upgrade'
+  alias updf='sudo apt-get update && sudo apt-get full-upgrade && sudo apt-get autoremove --purge'
+fi
+
+# --- tmux: t1..t5 attach to (or create) numbered sessions, tl lists them --
+
+_tmux_apply_status() {
+  tmux set-option -g mouse on >/dev/null
+  tmux set-option -g status-left-length 40 >/dev/null
+  tmux set-option -g status-left " #h:#S " >/dev/null
+}
+
+_tmux_connect() {
+  local session="$1"
+  _tmux_apply_status
+
+  if [ -n "${TMUX:-}" ]; then
+    tmux switch-client -t "$session"
+  else
+    tmux attach-session -t "$session"
+  fi
+}
+
+_tmux_slot() {
+  local slot="$1"
+  local host="${HOST:-${HOSTNAME:-$(hostname)}}"
+  local legacy_host_session="${host%%.*}_${slot}"
+
+  if tmux has-session -t "$slot" 2>/dev/null; then
+    _tmux_connect "$slot"
+    return
+  fi
+
+  if tmux has-session -t "$legacy_host_session" 2>/dev/null; then
+    tmux rename-session -t "$legacy_host_session" "$slot" 2>/dev/null || true
+
+    if tmux has-session -t "$slot" 2>/dev/null; then
+      _tmux_connect "$slot"
+    else
+      _tmux_connect "$legacy_host_session"
+    fi
+    return
+  fi
+
+  tmux new-session -d -s "$slot"
+  _tmux_connect "$slot"
+}
+
+for _t in 1 2 3 4 5; do
+  alias "t$_t"="_tmux_slot $_t"
+done
+unset _t
+alias tl="tmux list-sessions"
+
+# --- AIX and AI agents ---------------------------------------------------
+
+if [ -r "$WORK/AIX/env" ]; then
+  . "$WORK/AIX/env"
+fi
+
+ai() {
+  command make -s -C "$CONFIGS_PATH/ai" "$@"
+}
+
+alias ge=gemini
+alias claudem='CLAUDE_CONFIG_DIR=$HOME/.claude-m claude'
+alias claudek='CLAUDE_CONFIG_DIR=$HOME/.claude-k claude'
+alias claudes='CLAUDE_CONFIG_DIR=$HOME/.claude-s claude'
+alias codexs='CODEX_HOME=$HOME/.codex-s codex'
+alias codexm='CODEX_HOME=$HOME/.codex-m codex'
+alias codexk='CODEX_HOME=$HOME/.codex-k codex'
+# AIX dev variants: same accounts, but run freshly-built aix-mcp (AIX_DEV_HOME)
+alias codex-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev codex'
+alias codexs-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-s codex'
+alias codexm-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-m codex'
+alias codexk-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-k codex'
+alias claudem-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-m claude'
+alias claudek-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-k claude'
+alias claudes-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-s claude'
+
+# --- pass: pull before and push after every change -----------------------
+
+export PASSWORD_STORE_DIR="$WORK/.password-store"
+
+_pw_pull() {
+  command pass git pull --rebase --autostash
+}
+
+_pw_push() {
+  command pass git push || {
+    echo "pass push failed; local commit is kept"
+    return 1
+  }
+}
+
+pw() {
+  _pw_pull || return
+  command pass "$@"
+}
+
+pws() {
+  command pass git status --short --branch
+}
+
+pwsync() {
+  _pw_pull || return
+  _pw_push
+}
+
+pwedit() {
+  _pw_pull || return
+  command pass edit "$@" || return
+  _pw_push
+}
+
+pwadd() {
+  _pw_pull || return
+  command pass insert "$@" || return
+  _pw_push
+}
+
+pwgen() {
+  _pw_pull || return
+  command pass generate "$@" || return
+  _pw_push
+}
+
+# --- fnm (Node version manager) ------------------------------------------
+
+if command -v fnm >/dev/null 2>&1; then
+  eval "$(fnm env --use-on-cd --shell "${ZSH_VERSION:+zsh}${BASH_VERSION:+bash}")"
+fi
+
+# --- Machine class: gui (has a graphical session) or server --------------
+
+if [ -d /usr/share/xsessions ] || [ -d /usr/share/wayland-sessions ]; then
+  CONFIGS_SHELL_CLASS=gui
+else
+  CONFIGS_SHELL_CLASS=server
+fi
+export CONFIGS_SHELL_CLASS
+
+. "$CONFIGS_SHELL_DIR/$CONFIGS_SHELL_CLASS.rc"
+
+# --- zsh only: quiet line editor and powerlevel10k prompt ----------------
+
+if [ -n "${ZSH_VERSION:-}" ]; then
+  # Keep BEL for codex/claude notifications over SSH, not for editing errors.
+  unsetopt beep hist_beep list_beep
+
+  POWERLEVEL9K_LEFT_PROMPT_ELEMENTS=(context os_icon dir vcs)
+  POWERLEVEL9K_RIGHT_PROMPT_ELEMENTS=(status command_execution_time background_jobs direnv asdf virtualenv anaconda pyenv goenv nodenv nvm nodeenv rbenv rvm fvm luaenv jenv plenv phpenv scalaenv haskell_stack kubecontext terraform aws aws_eb_env azure gcloud google_app_cred toolbox ranger nnn xplr vim_shell midnight_commander nix_shell vi_mode todo timewarrior taskwarrior)
+  POWERLEVEL9K_OS_ICON_BACKGROUND='#2B2E37'
+  POWERLEVEL9K_OS_ICON_FOREGROUND='#3f7fbd'
+  POWERLEVEL9K_LINUX_ENDEAVOUROS_ICON=$''
+  POWERLEVEL9K_DIR_BACKGROUND='#3f7fbd'
+  POWERLEVEL9K_DIR_FOREGROUND='#d8dee9'
+  POWERLEVEL9K_CONTEXT_TEMPLATE='%n@%m'
+  unset POWERLEVEL9K_CONTEXT_DEFAULT_CONTENT_EXPANSION
+  unset POWERLEVEL9K_CONTEXT_DEFAULT_VISUAL_IDENTIFIER_EXPANSION
+
+  for _p10k_theme in \
+    /usr/share/zsh-theme-powerlevel10k/powerlevel10k.zsh-theme \
+    /usr/share/powerlevel10k/powerlevel10k.zsh-theme \
+    /opt/homebrew/share/powerlevel10k/powerlevel10k.zsh-theme \
+    /usr/local/share/powerlevel10k/powerlevel10k.zsh-theme \
+    "$HOME/.powerlevel10k/powerlevel10k.zsh-theme"; do
+    if [ -r "$_p10k_theme" ]; then
+      . "$_p10k_theme"
+      break
+    fi
+  done
+  unset _p10k_theme
+  (( $+functions[p10k] )) && p10k reload
+fi
+
+# --- Machine-local additions, kept outside git ---------------------------
+
+if [ -r "$HOME/.config/configs/local.rc" ]; then
+  . "$HOME/.config/configs/local.rc"
+fi

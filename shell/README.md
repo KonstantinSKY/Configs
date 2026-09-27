@@ -1,74 +1,56 @@
-# Shell Architecture
+# Shell layer
 
-This module is a draft layout for shared shell startup files.
-Nothing here is connected to `~/.bashrc`, `~/.zshrc`, or the existing
-`Configs/zsh/rc` until an install/link target is added and run on purpose.
-
-## Layout
+One shell configuration for every machine, loaded by both bash and zsh.
 
 ```text
-Configs/shell/
-  Makefile
-  README.md
-
-  rc.common
-  rc.interactive
-  rc.tmux
-
-  roles/
-    workstation.rc
-    proxmox.rc
-    dev.rc
-    prod.rc
-
-  shells/
-    bashrc
-    zshrc
+shell/
+  rc          shared settings for all machines
+  gui.rc      additions for machines with a graphical session
+  server.rc   additions for machines without one
+  Makefile    status, link, verify
 ```
 
-## Startup Model
-
-The shell wrapper loads the shared layers first, then an optional machine role.
+## How it loads
 
 ```text
-shells/bashrc or shells/zshrc
-  -> rc.common
-  -> rc.interactive
-  -> rc.tmux
-  -> roles/$CONFIGS_SHELL_ROLE.rc
+~/.bashrc or ~/.zshrc
+  -> shell/rc
+       shared: paths, editor, helpers, t1..t5/tl, AIX, claude/codex, pass, upd
+       -> gui.rc     if /usr/share/xsessions or /usr/share/wayland-sessions exists
+       -> server.rc  otherwise (plus Proxmox aliases when pveversion exists)
+       -> powerlevel10k (zsh only, when installed)
+       -> ~/.config/configs/local.rc (optional, machine-local, not in git)
 ```
 
-Role examples:
+The class is detected on every start and exported as `CONFIGS_SHELL_CLASS`.
+Aliases for programs that are not installed are harmless.
+
+tmux is never started automatically: use `t1`..`t5`. AIX creates its own
+tmux sessions when started from a plain shell.
+
+## Install
+
+```bash
+make -f shell/Makefile status
+make -f shell/Makefile link
+```
+
+`link` writes this block to `~/.bashrc`, and to `~/.zshrc` when zsh exists:
 
 ```sh
-CONFIGS_SHELL_ROLE=proxmox
-CONFIGS_TMUX_AUTO=ssh
+# >>> configs shell >>>
+export CONFIGS_SHELL_DIR="/home/sky/Work/Configs/shell"
+[ -r "$CONFIGS_SHELL_DIR/rc" ] && . "$CONFIGS_SHELL_DIR/rc"
+# <<< configs shell <<<
 ```
 
-```sh
-CONFIGS_SHELL_ROLE=workstation
-CONFIGS_TMUX_AUTO=off
-```
+It replaces the old `custom shell config` block that loaded `zsh/rc`, keeps a
+backup of each changed file, and does nothing when the file is already current.
+No sudo is needed.
 
-`CONFIGS_TMUX_AUTO` accepts:
+The login shell must be bash or zsh; fish does not read these files.
 
-```text
-off  - never auto-start tmux
-ssh  - auto-start tmux only for SSH sessions
-all  - auto-start tmux for every interactive terminal
-```
+## Private settings
 
-## Roles
-
-`workstation` is for the main graphical desktop.
-
-`proxmox` is for the Proxmox control and backup node.
-
-`dev` is for development VMs.
-
-`prod` is for production machines with a minimal and cautious shell.
-
-## Current Status
-
-This is a proposed structure only. The current `Configs/zsh/rc` remains the
-active workstation rc until we explicitly migrate or source this module.
+Configs is a public repository. Keep anything tied to private directories
+(for example Security) in `~/.config/configs/local.rc`, not here.
