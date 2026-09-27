@@ -25,6 +25,9 @@ PACKAGE_FAMILY := $(shell . /etc/os-release 2>/dev/null; \
 	esac)
 MACHINE_CLASS := $(shell if [ -d /usr/share/xsessions ] || [ -d /usr/share/wayland-sessions ]; then echo desktop; else echo server; fi)
 PACKAGE_PROFILE := $(if $(filter unsupported,$(PACKAGE_FAMILY)),unsupported,$(PACKAGE_FAMILY)-$(MACHINE_CLASS))
+# The desktop package group is the i3 desktop. Profiles add it only where an i3
+# session is already installed; `make install-desktop` still installs it anywhere.
+I3_SESSION := $(shell [ -e /usr/share/xsessions/i3.desktop ] && echo yes || echo no)
 
 BASE_PACKAGES_ARCH := \
 	ca-certificates \
@@ -133,7 +136,8 @@ detect: ## Print OS, package family, machine class, and package profile without 
 	echo "DISTRO_LIKE: $${ID_LIKE:-none}"; \
 	echo "PACKAGE_FAMILY: $(PACKAGE_FAMILY)"; \
 	echo "MACHINE_CLASS: $(MACHINE_CLASS)"; \
-	echo "PACKAGE_PROFILE: $(PACKAGE_PROFILE)"
+	echo "PACKAGE_PROFILE: $(PACKAGE_PROFILE)"; \
+	echo "I3_SESSION: $(I3_SESSION)"
 
 profile: ## Print the selected package profile name only
 	@echo "$(PACKAGE_PROFILE)"
@@ -218,13 +222,16 @@ install-profile: ## Install the package profile selected for this distro family 
 	@set -euo pipefail; \
 	echo "PROFILE: $(PACKAGE_PROFILE)"; \
 	case "$(PACKAGE_PROFILE)" in \
-		arch-desktop) targets="install-base install-tailscale install-workstation-core install-desktop install-fonts" ;; \
+		arch-desktop) targets="install-base install-tailscale install-workstation-core $(if $(filter yes,$(I3_SESSION)),install-desktop) install-fonts" ;; \
 		arch-server) targets="install-base install-tailscale install-server-core-arch" ;; \
 		debian-desktop|debian-server) targets="install-base install-tailscale install-workstation-core" ;; \
 		*) echo "ERROR: unsupported package profile: $(PACKAGE_PROFILE)"; exit 1 ;; \
 	esac; \
 	if [[ "$(PACKAGE_PROFILE)" == debian-desktop ]]; then \
 		echo "NOTE: desktop and font packages are mapped only for Arch; installing the CLI set."; \
+	fi; \
+	if [[ "$(PACKAGE_PROFILE)" == arch-desktop && "$(I3_SESSION)" != yes ]]; then \
+		echo "NOTE: no i3 session installed; skipping the i3 desktop group (make install-desktop adds it)."; \
 	fi; \
 	for target in $$targets; do \
 		$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" "$$target"; \
@@ -427,8 +434,9 @@ verify-server-core: ## Verify CLI commands used on machines without a graphical 
 verify-profile: ## Verify the package profile selected for this distro family and machine class
 	@set -euo pipefail; \
 	echo "PROFILE: $(PACKAGE_PROFILE)"; \
+	[[ "$(PACKAGE_PROFILE)" != arch-desktop || "$(I3_SESSION)" == yes ]] || echo "SKIPPED: i3 desktop group (no i3 session installed)"; \
 	case "$(PACKAGE_PROFILE)" in \
-		arch-desktop) targets="verify-base verify-tailscale verify-workstation-core verify-desktop verify-fonts" ;; \
+		arch-desktop) targets="verify-base verify-tailscale verify-workstation-core $(if $(filter yes,$(I3_SESSION)),verify-desktop) verify-fonts" ;; \
 		arch-server) targets="verify-base verify-tailscale verify-server-core" ;; \
 		debian-desktop|debian-server) targets="verify-base verify-tailscale verify-workstation-core" ;; \
 		*) echo "ERROR: unsupported package profile: $(PACKAGE_PROFILE)"; exit 1 ;; \

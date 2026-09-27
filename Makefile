@@ -164,7 +164,12 @@ restore-status: check-work ## Inspect full workstation restore progress without 
 	@set -u; \
 	profile="$$($(MAKE) --no-print-directory -s -f "$(PACKAGES_MAKEFILE)" profile)"; \
 	case "$$profile" in \
-		arch-desktop) commands="zsh alacritty nvim zeditor i3 rofi picom"; restore_supported=1 ;; \
+		arch-desktop) \
+			if [[ -e /usr/share/xsessions/i3.desktop ]]; then \
+				commands="zsh alacritty nvim zeditor i3 rofi picom"; restore_supported=1; \
+			else \
+				commands="zsh alacritty nvim zeditor"; restore_supported=0; \
+			fi ;; \
 		arch-server|debian-desktop|debian-server) commands="zsh tmux nvim"; restore_supported=0 ;; \
 		*) commands=""; restore_supported=0 ;; \
 	esac; \
