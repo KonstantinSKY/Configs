@@ -53,4 +53,4 @@ The login shell must be bash or zsh; fish does not read these files.
 ## Private settings
 
 Configs is a public repository. Keep anything tied to private directories
-(for example Security) in `~/.config/configs/local.rc`, not here.
+in `~/.config/configs/local.rc`, not here.

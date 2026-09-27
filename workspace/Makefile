@@ -27,8 +27,7 @@ XDG_SYMLINKS = \
 WORK_ONLY_DIRS = \
 	$(WORK_DIR)/Configs \
 	$(WORK_DIR)/Projects \
-	$(WORK_DIR)/Deploys \
-	$(WORK_DIR)/Security
+	$(WORK_DIR)/Deploys
 
 COMMON_SYMLINKS = $(XDG_SYMLINKS)
 

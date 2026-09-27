@@ -33,8 +33,8 @@ The module keeps the toolset intentionally small:
 - VM utility: `qemu-utils`
 
 It does not install Docker, Node.js, npm, libvirt clients, MegaCMD, or desktop
-packages. MegaCMD is installed from the Security module because it uses the
-MEGA account bootstrap path.
+packages. MegaCMD is installed from a separate private module because it uses
+the MEGA account bootstrap path.
 
 ## Status
 
@@ -103,7 +103,7 @@ make host-verify
 For auth-key based setup:
 
 ```bash
-make host-tailscale-up-key AUTH_KEY_FILE=/mnt/GDATA/Security/tailscale/proxmox.authkey
+make host-tailscale-up-key AUTH_KEY_FILE=/path/outside/git/proxmox.authkey
 ```
 
 ## Linux guest

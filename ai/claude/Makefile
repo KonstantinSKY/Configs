@@ -18,6 +18,9 @@ STATUSLINE_SOURCE = $(THIS_DIR)/statusline-command.sh
 STATUSLINE_TARGET = $(HOME)/.claude/statusline-command.sh
 CLAUDE_SETTINGS_SRC_DIR = $(THIS_DIR)/profiles
 CLAUDE_PROFILE_MAP = default:.claude:.claude.json m:.claude-m:.claude-m/.claude.json
+# Tracked claude.json leaves out the login and per-directory session state
+# (projects), which is machine-local and would publish local paths.
+CLAUDE_JSON_EXPORT = del(.oauthAccount, .projects)
 
 ## ---------------------------
 ## 🤖 Claude Code
@@ -36,7 +39,7 @@ backup-claude-settings: ## Copy live Claude settings into this repo
 		root_file="$${rest#*:}"; \
 		dest_dir="$(CLAUDE_SETTINGS_SRC_DIR)/$$profile"; \
 		mkdir -p "$$dest_dir"; \
-		jq 'del(.oauthAccount)' "$(HOME)/$$root_file" > "$$dest_dir/claude.json"; \
+		jq '$(CLAUDE_JSON_EXPORT)' "$(HOME)/$$root_file" > "$$dest_dir/claude.json"; \
 		cp -f "$(HOME)/$$config_dir/settings.json" "$$dest_dir/settings.json"; \
 		if [ -r "$(HOME)/$$config_dir/settings.local.json" ]; then \
 			cp -f "$(HOME)/$$config_dir/settings.local.json" "$$dest_dir/settings.local.json"; \
@@ -54,7 +57,14 @@ restore-claude-settings: ## Copy tracked Claude settings into live profile dirs
 		root_file="$${rest#*:}"; \
 		src_dir="$(CLAUDE_SETTINGS_SRC_DIR)/$$profile"; \
 		mkdir -p "$(HOME)/$$config_dir"; \
-		cp -f "$$src_dir/claude.json" "$(HOME)/$$root_file"; \
+		if [ -r "$(HOME)/$$root_file" ]; then \
+			tmp="$$(mktemp)"; \
+			jq --slurpfile live "$(HOME)/$$root_file" '. + {projects: ($$live[0].projects // {})}' \
+				"$$src_dir/claude.json" > "$$tmp"; \
+			mv "$$tmp" "$(HOME)/$$root_file"; \
+		else \
+			cp -f "$$src_dir/claude.json" "$(HOME)/$$root_file"; \
+		fi; \
 		cp -f "$$src_dir/settings.json" "$(HOME)/$$config_dir/settings.json"; \
 		if [ -r "$$src_dir/settings.local.json" ]; then \
 			cp -f "$$src_dir/settings.local.json" "$(HOME)/$$config_dir/settings.local.json"; \
@@ -72,7 +82,7 @@ verify-claude-settings: ## Compare tracked Claude settings with live files
 		root_file="$${rest#*:}"; \
 		src_dir="$(CLAUDE_SETTINGS_SRC_DIR)/$$profile"; \
 		tmp="$$(mktemp)"; \
-		jq 'del(.oauthAccount)' "$(HOME)/$$root_file" > "$$tmp"; \
+		jq '$(CLAUDE_JSON_EXPORT)' "$(HOME)/$$root_file" > "$$tmp"; \
 		if cmp -s "$$src_dir/claude.json" "$$tmp"; then \
 			rm -f "$$tmp"; \
 		else \

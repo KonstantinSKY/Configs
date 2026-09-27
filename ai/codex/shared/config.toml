@@ -13,12 +13,6 @@ gpt-6-astra = 4
 [projects."/home/sky"]
 trust_level = "trusted"
 
-[projects."/home/sky/Work/Security/voice.ptt"]
-trust_level = "trusted"
-
-[projects."/home/sky/Work/Security/voice-ptt"]
-trust_level = "trusted"
-
 [projects."/home/sky/Work/Configs"]
 trust_level = "trusted"
 

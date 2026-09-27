@@ -259,8 +259,8 @@ Rules for editing `shell/`:
 - Do not start tmux automatically. AIX creates its own `aix-*` tmux sessions
   only when launched outside tmux; the user attaches to plain shells with
   `t1`..`t5`.
-- Configs is a public repository. Do not reference the private Security
-  directory from `shell/`; machine-local or private additions go in
+- Configs is a public repository. Do not reference private directories from
+  `shell/`; machine-local or private additions go in
   `~/.config/configs/local.rc`, which `shell/rc` sources when present.
 - Check changes with `make -f shell/Makefile verify` and an interactive login
   on at least one bash server and one zsh workstation.
@@ -300,8 +300,8 @@ Only configure these roles when the user explicitly selects them:
   `proxmox/control`, `proxmox/host`, and `proxmox/guest`. Run the read-only
   `status`, `host-status`, or `guest-status` target first. Installation,
   service changes, user changes, and Tailscale authentication require explicit
-  authorization. Auth keys must live outside git, for example under a private
-  Security directory on GDATA.
+  authorization. Auth keys must live outside git, in a private directory that
+  this repository does not name.
 - SSH targets: enable a network service and may change authentication policy.
 
 `projects`, `rust`, and `metatrader` are project generators or templates, not

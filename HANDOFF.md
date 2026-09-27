@@ -59,7 +59,7 @@ ls -l /run/docker.sock /var/run/docker.sock
   - `megasync` package/service не установлен
   - `~/.config/systemd/user/mega-cmd-server.service` отсутствует
   - `Linger=no`
-- Не путать public `Configs/megasync` с отдельным `/home/sky/Work/Security`.
+- Не путать public `Configs/megasync` с отдельным приватным модулем MEGA вне репозитория.
 - `metatrader/` — генератор/шаблоны, не restore stage.
 - `projects/` Rust path рабочий; Node/Python toolkits намеренно не делались.
 
