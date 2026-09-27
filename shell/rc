@@ -19,7 +19,7 @@ export PROJECTS_PATH="$WORK/Projects"
 export BACKUPS_PATH="$WORK/BackUps"
 CONFIGS_SHELL_DIR="${CONFIGS_SHELL_DIR:-$CONFIGS_PATH/shell}"
 
-_configs_path_prepend() {
+function _configs_path_prepend {
   [ -d "$1" ] || return 0
   case ":$PATH:" in
     *":$1:"*) ;;
@@ -43,7 +43,7 @@ fi
 export EDITOR
 export VISUAL="$EDITOR"
 
-choose_editor() { command "$EDITOR" "$@"; }
+function choose_editor { command "$EDITOR" "$@"; }
 alias v=choose_editor
 alias vi=choose_editor
 
@@ -52,9 +52,11 @@ alias vi=choose_editor
 alias Configs='cd "$CONFIGS_PATH"; ls -ls'
 alias Projects='cd "$PROJECTS_PATH"; ls -ls'
 
-la() { command ls "$@" -la --color=auto; }
-chx() { command chmod u+x "$@"; }
-cdl() { cd "$@" && ls -la --color=auto; }
+# Frameworks such as oh-my-zsh predefine some of these names as aliases.
+unalias la chx cdl 2>/dev/null
+function la { command ls "$@" -la --color=auto; }
+function chx { command chmod u+x "$@"; }
+function cdl { cd "$@" && ls -la --color=auto; }
 
 if command -v bat >/dev/null 2>&1; then
   alias cat='bat --paging=never'
@@ -85,13 +87,13 @@ fi
 
 # --- tmux: t1..t5 attach to (or create) numbered sessions, tl lists them --
 
-_tmux_apply_status() {
+function _tmux_apply_status {
   tmux set-option -g mouse on >/dev/null
   tmux set-option -g status-left-length 40 >/dev/null
   tmux set-option -g status-left " #h:#S " >/dev/null
 }
 
-_tmux_connect() {
+function _tmux_connect {
   local session="$1"
   _tmux_apply_status
 
@@ -102,7 +104,7 @@ _tmux_connect() {
   fi
 }
 
-_tmux_slot() {
+function _tmux_slot {
   local slot="$1"
   local host="${HOST:-${HOSTNAME:-$(hostname)}}"
   local legacy_host_session="${host%%.*}_${slot}"
@@ -139,7 +141,7 @@ if [ -r "$WORK/AIX/env" ]; then
   . "$WORK/AIX/env"
 fi
 
-ai() {
+function ai {
   command make -s -C "$CONFIGS_PATH/ai" "$@"
 }
 
@@ -163,44 +165,44 @@ alias claudes-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HO
 
 export PASSWORD_STORE_DIR="$WORK/.password-store"
 
-_pw_pull() {
+function _pw_pull {
   command pass git pull --rebase --autostash
 }
 
-_pw_push() {
+function _pw_push {
   command pass git push || {
     echo "pass push failed; local commit is kept"
     return 1
   }
 }
 
-pw() {
+function pw {
   _pw_pull || return
   command pass "$@"
 }
 
-pws() {
+function pws {
   command pass git status --short --branch
 }
 
-pwsync() {
+function pwsync {
   _pw_pull || return
   _pw_push
 }
 
-pwedit() {
+function pwedit {
   _pw_pull || return
   command pass edit "$@" || return
   _pw_push
 }
 
-pwadd() {
+function pwadd {
   _pw_pull || return
   command pass insert "$@" || return
   _pw_push
 }
 
-pwgen() {
+function pwgen {
   _pw_pull || return
   command pass generate "$@" || return
   _pw_push
