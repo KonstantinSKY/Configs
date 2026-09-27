@@ -4,15 +4,27 @@ SHELL := /bin/bash
 	install-base install-base-arch install-base-debian \
 	install-tailscale install-tailscale-arch install-tailscale-debian \
 	install-workstation-core install-desktop install-fonts \
-	install-profile \
+	install-profile install-server-core-arch profile \
 	install-workstation-core-arch install-workstation-core-debian \
 	install-yay-arch install-desktop-arch install-fonts-arch \
 	unsupported-workstation-family unsupported-desktop-family unsupported-font-family \
 	verify-base verify-tailscale verify-workstation-core verify-desktop verify-fonts \
-	verify-profile
+	verify-server-core verify-profile
 .DEFAULT_GOAL := help
 
 SUDO := $(shell if [ "$$(id -u)" -eq 0 ]; then echo ""; else echo "sudo"; fi)
+
+# Package profile = distro family + machine class. The class uses the same
+# rule as shell/rc: an installed graphical session means "desktop".
+# case patterns use the (pattern) form so parentheses stay balanced for $(shell).
+PACKAGE_FAMILY := $(shell . /etc/os-release 2>/dev/null; \
+	case " $${ID:-} $${ID_LIKE:-} " in \
+		(*' endeavouros '*|*' arch '*) echo arch ;; \
+		(*' debian '*|*' ubuntu '*) echo debian ;; \
+		(*) echo unsupported ;; \
+	esac)
+MACHINE_CLASS := $(shell if [ -d /usr/share/xsessions ] || [ -d /usr/share/wayland-sessions ]; then echo desktop; else echo server; fi)
+PACKAGE_PROFILE := $(if $(filter unsupported,$(PACKAGE_FAMILY)),unsupported,$(PACKAGE_FAMILY)-$(MACHINE_CLASS))
 
 BASE_PACKAGES_ARCH := \
 	ca-certificates \
@@ -44,6 +56,12 @@ WORKSTATION_CORE_PACKAGES_ARCH := \
 	hunspell-ru
 
 WORKSTATION_CORE_PACKAGES_DEBIAN := \
+	zsh \
+	tmux \
+	neovim
+
+# CLI tools for Arch machines without a graphical session.
+SERVER_CORE_PACKAGES_ARCH := \
 	zsh \
 	tmux \
 	neovim
@@ -91,6 +109,7 @@ help: ## Show package bootstrap commands
 	@echo "  make install-workstation-core"
 	@echo "  make install-desktop"
 	@echo "  make install-fonts"
+	@echo "  make profile   print the selected package profile"
 	@echo "  make install-profile"
 	@echo "  make verify-base"
 	@echo "  make verify-tailscale"
@@ -101,7 +120,7 @@ help: ## Show package bootstrap commands
 
 status: detect ## Detect supported package family
 
-detect: ## Print OS and package family without changes
+detect: ## Print OS, package family, machine class, and package profile without changes
 	@set -euo pipefail; \
 	if [[ "$$(uname -s)" != Linux ]]; then \
 		echo "OS: $$(uname -s)"; \
@@ -109,16 +128,15 @@ detect: ## Print OS and package family without changes
 		exit 0; \
 	fi; \
 	. /etc/os-release; \
-	family=unsupported; profile=unsupported; \
-	case " $${ID:-} $${ID_LIKE:-} " in \
-		*' endeavouros '*|*' arch '*) family=arch; profile=arch-desktop ;; \
-		*' debian '*|*' ubuntu '*) family=debian; profile=debian-server ;; \
-	esac; \
 	echo "OS: Linux"; \
 	echo "DISTRO: $${ID:-unknown}"; \
 	echo "DISTRO_LIKE: $${ID_LIKE:-none}"; \
-	echo "PACKAGE_FAMILY: $$family"; \
-	echo "PACKAGE_PROFILE: $$profile"
+	echo "PACKAGE_FAMILY: $(PACKAGE_FAMILY)"; \
+	echo "MACHINE_CLASS: $(MACHINE_CLASS)"; \
+	echo "PACKAGE_PROFILE: $(PACKAGE_PROFILE)"
+
+profile: ## Print the selected package profile name only
+	@echo "$(PACKAGE_PROFILE)"
 
 install-base: ## Install public base packages for the detected package family
 	@set -euo pipefail; \
@@ -196,24 +214,26 @@ install-fonts: ## Install font packages for the detected package family
 		*) $(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" unsupported-font-family ;; \
 	esac
 
-install-profile: ## Install the package profile selected for this distro family
+install-profile: ## Install the package profile selected for this distro family and machine class
 	@set -euo pipefail; \
-	. /etc/os-release; \
-	case " $${ID:-} $${ID_LIKE:-} " in \
-		*' endeavouros '*|*' arch '*) \
-			echo "PROFILE: arch-desktop"; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-base; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-tailscale; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-workstation-core; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-desktop; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-fonts ;; \
-		*' debian '*|*' ubuntu '*) \
-			echo "PROFILE: debian-server"; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-base; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-tailscale; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" install-workstation-core ;; \
-		*) echo "ERROR: unsupported package family: ID=$${ID:-unknown} ID_LIKE=$${ID_LIKE:-none}"; exit 1 ;; \
-	esac
+	echo "PROFILE: $(PACKAGE_PROFILE)"; \
+	case "$(PACKAGE_PROFILE)" in \
+		arch-desktop) targets="install-base install-tailscale install-workstation-core install-desktop install-fonts" ;; \
+		arch-server) targets="install-base install-tailscale install-server-core-arch" ;; \
+		debian-desktop|debian-server) targets="install-base install-tailscale install-workstation-core" ;; \
+		*) echo "ERROR: unsupported package profile: $(PACKAGE_PROFILE)"; exit 1 ;; \
+	esac; \
+	if [[ "$(PACKAGE_PROFILE)" == debian-desktop ]]; then \
+		echo "NOTE: desktop and font packages are mapped only for Arch; installing the CLI set."; \
+	fi; \
+	for target in $$targets; do \
+		$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" "$$target"; \
+	done
+
+install-server-core-arch: ## Install CLI packages for Arch machines without a graphical session
+	@set -euo pipefail; \
+	command -v pacman >/dev/null 2>&1 || { echo "ERROR: pacman is required"; exit 1; }; \
+	$(SUDO) pacman -S --needed --noconfirm $(SERVER_CORE_PACKAGES_ARCH)
 
 install-yay-arch: ## Ensure yay on Arch-like systems: distro repository first, AUR yay-bin otherwise
 	@set -euo pipefail; \
@@ -391,21 +411,28 @@ verify-fonts: ## Verify workstation fonts on Arch/EndeavourOS; skip on Debian/Ub
 	done; \
 	exit "$$failed"
 
-verify-profile: ## Verify the package profile selected for this distro family
+verify-server-core: ## Verify CLI commands used on machines without a graphical session
 	@set -euo pipefail; \
-	. /etc/os-release; \
-	case " $${ID:-} $${ID_LIKE:-} " in \
-		*' endeavouros '*|*' arch '*) \
-			echo "PROFILE: arch-desktop"; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-base; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-tailscale; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-workstation-core; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-desktop; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-fonts ;; \
-		*' debian '*|*' ubuntu '*) \
-			echo "PROFILE: debian-server"; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-base; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-tailscale; \
-			$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" verify-workstation-core ;; \
-		*) echo "ERROR: unsupported package family: ID=$${ID:-unknown} ID_LIKE=$${ID_LIKE:-none}"; exit 1 ;; \
-	esac
+	failed=0; \
+	for command_name in zsh tmux nvim; do \
+		if command -v "$$command_name" >/dev/null 2>&1; then \
+			echo "OK: $$command_name"; \
+		else \
+			echo "MISSING: $$command_name"; \
+			failed=1; \
+		fi; \
+	done; \
+	exit "$$failed"
+
+verify-profile: ## Verify the package profile selected for this distro family and machine class
+	@set -euo pipefail; \
+	echo "PROFILE: $(PACKAGE_PROFILE)"; \
+	case "$(PACKAGE_PROFILE)" in \
+		arch-desktop) targets="verify-base verify-tailscale verify-workstation-core verify-desktop verify-fonts" ;; \
+		arch-server) targets="verify-base verify-tailscale verify-server-core" ;; \
+		debian-desktop|debian-server) targets="verify-base verify-tailscale verify-workstation-core" ;; \
+		*) echo "ERROR: unsupported package profile: $(PACKAGE_PROFILE)"; exit 1 ;; \
+	esac; \
+	for target in $$targets; do \
+		$(MAKE) --no-print-directory -f "$(abspath $(lastword $(MAKEFILE_LIST)))" "$$target"; \
+	done

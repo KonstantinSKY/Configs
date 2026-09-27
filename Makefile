@@ -162,14 +162,10 @@ restore-status: check-work ## Inspect full workstation restore progress without 
 	@$(MAKE) --no-print-directory packages-status
 	@echo "Restore checkpoints: $(RESTORE_STATE_DIR)"
 	@set -u; \
-	id="unknown"; like=""; \
-	if [[ -r /etc/os-release ]]; then \
-		. /etc/os-release; \
-		id="$${ID:-unknown}"; like="$${ID_LIKE:-}"; \
-	fi; \
-	case " $$id $$like " in \
-		*' endeavouros '*|*' arch '*) commands="zsh alacritty nvim zeditor i3 rofi picom"; restore_supported=1 ;; \
-		*' debian '*|*' ubuntu '*) commands="zsh tmux nvim"; restore_supported=0 ;; \
+	profile="$$($(MAKE) --no-print-directory -s -f "$(PACKAGES_MAKEFILE)" profile)"; \
+	case "$$profile" in \
+		arch-desktop) commands="zsh alacritty nvim zeditor i3 rofi picom"; restore_supported=1 ;; \
+		arch-server|debian-desktop|debian-server) commands="zsh tmux nvim"; restore_supported=0 ;; \
 		*) commands=""; restore_supported=0 ;; \
 	esac; \
 	next=""; \
