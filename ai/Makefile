@@ -1,4 +1,4 @@
-.PHONY: all install install-no-update i sync-rules sync-codex-rules sync-codex-rules-all link-ai-shared link-codex-shared link-claude-shared codex-profiles clone-codex clone-claude backup-codex-configs restore-codex-configs verify-codex-configs verify v k m s
+.PHONY: all install install-no-update i install-agents install-claude install-codex sync-rules sync-codex-rules sync-codex-rules-all link-ai-shared link-codex-shared link-claude-shared codex-profiles clone-codex clone-claude backup-codex-configs restore-codex-configs verify-codex-configs verify v k m s
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -9,9 +9,12 @@ ifeq ($(filter $(CONFIGS_DIR)/make/help.mk,$(MAKEFILE_LIST)),)
 include $(CONFIGS_DIR)/make/help.mk
 endif
 
-include $(CONFIGS_DIR)/make/update.mk
-
-AI_PACKAGES := claude-code openai-codex-bin
+# Agents are installed per user with the official installers, the same way on
+# every distro: no sudo, no system upgrade, binaries in ~/.local/bin, and the
+# programs update themselves.
+AGENT_BIN_DIR := $(HOME)/.local/bin
+CLAUDE_INSTALL_URL := https://claude.ai/install.sh
+CODEX_INSTALL_URL := https://chatgpt.com/codex/install.sh
 CODEX_RULES_DIR := $(HOME)/.codex/rules
 CODEX_SHARED_DIR := $(THIS_DIR)/codex/shared
 CODEX_RULES_SRC_DIR := $(CODEX_SHARED_DIR)/rules
@@ -24,17 +27,40 @@ CLAUDE_PROFILE_NAMES := k m s
 
 all: install ## Install AI packages, sync rules, and verify
 
-install i: ## Install AI packages, sync rules, and verify
-	@echo "📦 Installing AI CLI tools via yay..."
-	@$(call ensure_system_updated)
-	@$(MAKE) -s -f "$(THIS_MAKEFILE)" install-no-update
+install i: install-no-update ## Install claude and codex, sync rules, and verify
 
-install-no-update: ## Install AI packages without upgrading the system first
-	@echo "📦 Installing AI CLI tools via yay..."
-	@yay -S --needed --noconfirm $(AI_PACKAGES)
+install-no-update: ## Same as install (kept for the root Makefile)
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" install-agents
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" sync-rules
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" verify
 	@echo "✅ AI tools installed and configured."
+
+install-agents: install-claude install-codex ## Install claude and codex into ~/.local/bin if missing
+
+# $(call install_agent,name,url,extra env): run the official installer once.
+# ~/.local/bin is put on PATH first so the installer does not edit rc files.
+define install_agent
+	@set -eu; \
+	if [ "$$(id -u)" = 0 ]; then echo "❌ Run as the normal user, not root."; exit 1; fi; \
+	bin="$(AGENT_BIN_DIR)/$(1)"; \
+	if [ -x "$$bin" ]; then \
+		echo "✅ $(1) already installed: $$bin ($$("$$bin" --version 2>/dev/null | head -1))"; \
+		exit 0; \
+	fi; \
+	command -v curl >/dev/null 2>&1 || { echo "❌ curl is required"; exit 1; }; \
+	mkdir -p "$(AGENT_BIN_DIR)"; \
+	tmp="$$(mktemp)"; trap 'rm -f "$$tmp"' EXIT; \
+	echo "📦 Installing $(1) from $(2)..."; \
+	curl -fsSL "$(2)" -o "$$tmp"; \
+	env -u CLAUDE_CONFIG_DIR -u CODEX_HOME PATH="$(AGENT_BIN_DIR):$$PATH" $(3) bash "$$tmp"; \
+	"$$bin" --version >/dev/null && echo "✅ $(1) installed: $$bin ($$("$$bin" --version | head -1))"
+endef
+
+install-claude: ## Install Claude Code with the official installer
+	$(call install_agent,claude,$(CLAUDE_INSTALL_URL),)
+
+install-codex: ## Install Codex with the official installer
+	$(call install_agent,codex,$(CODEX_INSTALL_URL),CODEX_NON_INTERACTIVE=1)
 
 sync-rules: ## Link shared agent rules into runtime directories
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" sync-codex-rules
