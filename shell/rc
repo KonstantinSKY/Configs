@@ -155,21 +155,95 @@ function ai {
   command make -s -C "$CONFIGS_PATH/ai" "$@"
 }
 
-alias ge=gemini
-alias claudem='CLAUDE_CONFIG_DIR=$HOME/.claude-m claude'
-alias claudek='CLAUDE_CONFIG_DIR=$HOME/.claude-k claude'
-alias claudes='CLAUDE_CONFIG_DIR=$HOME/.claude-s claude'
-alias codexs='CODEX_HOME=$HOME/.codex-s codex'
-alias codexm='CODEX_HOME=$HOME/.codex-m codex'
-alias codexk='CODEX_HOME=$HOME/.codex-k codex'
+# An interactive agent started from a plain terminal runs in its own tmux
+# session (codexk, codexk-2, ...), so a closed window or a dropped ssh does
+# not end it. Inside tmux, for one-shot commands (claude -p, codex exec,
+# login, update, --version), or without tmux the agent runs directly.
+# `command codex` always runs it directly. AIX starts agents by absolute
+# path and never goes through these aliases.
+function _agent_is_batch {
+  local program="$1" arg
+  shift
+
+  case "$program:${1:-}" in
+    codex:exec|codex:e|codex:review|codex:login|codex:logout|codex:mcp|\
+    codex:mcp-server|codex:app-server|codex:completion|codex:sandbox|\
+    codex:debug|codex:apply|codex:a|codex:cloud|codex:features|codex:help|\
+    codex:update)
+      return 0 ;;
+    claude:mcp|claude:plugin|claude:plugins|claude:doctor|claude:update|\
+    claude:upgrade|claude:install|claude:setup-token|claude:config|\
+    claude:auth|claude:agents|claude:migrate-installer)
+      return 0 ;;
+    gemini:mcp|gemini:extensions)
+      return 0 ;;
+  esac
+
+  for arg in "$@"; do
+    case "$program:$arg" in
+      *:-h|*:--help|*:--version|codex:-V|claude:-v|gemini:-v) return 0 ;;
+      claude:-p|claude:--print|gemini:-p|gemini:--prompt) return 0 ;;
+    esac
+  done
+  return 1
+}
+
+# Usage: [VAR=value ...] _agent SESSION PROGRAM [ARGS...]
+function _agent {
+  local name="$1" program="$2" bin session n=2
+  shift 2
+
+  if [ -n "${TMUX:-}" ] || [ ! -t 0 ] || [ ! -t 1 ] ||
+     ! command -v tmux >/dev/null 2>&1 ||
+     _agent_is_batch "$program" "$@"; then
+    command "$program" "$@"
+    return
+  fi
+
+  if [ -n "${ZSH_VERSION:-}" ]; then
+    bin="$(whence -p "$program")"
+  else
+    bin="$(type -P "$program")"
+  fi
+  if [ -z "$bin" ]; then
+    echo "$program: not installed" >&2
+    return 127
+  fi
+
+  session="$name"
+  while tmux has-session -t "=$session" 2>/dev/null; do
+    session="$name-$n"
+    n=$((n + 1))
+  done
+
+  # A running tmux server does not pass this shell's environment on.
+  local -a envs
+  envs=(-e "PATH=$PATH")
+  if [ -n "${CODEX_HOME:-}" ]; then envs+=(-e "CODEX_HOME=$CODEX_HOME"); fi
+  if [ -n "${CLAUDE_CONFIG_DIR:-}" ]; then envs+=(-e "CLAUDE_CONFIG_DIR=$CLAUDE_CONFIG_DIR"); fi
+  if [ -n "${AIX_DEV_HOME:-}" ]; then envs+=(-e "AIX_DEV_HOME=$AIX_DEV_HOME"); fi
+
+  tmux new-session -s "$session" -c "$PWD" "${envs[@]}" -- "$bin" "$@"
+}
+
+alias claude='_agent claude claude'
+alias codex='_agent codex codex'
+alias gemini='_agent gemini gemini'
+alias ge='_agent gemini gemini'
+alias claudem='CLAUDE_CONFIG_DIR=$HOME/.claude-m _agent claudem claude'
+alias claudek='CLAUDE_CONFIG_DIR=$HOME/.claude-k _agent claudek claude'
+alias claudes='CLAUDE_CONFIG_DIR=$HOME/.claude-s _agent claudes claude'
+alias codexs='CODEX_HOME=$HOME/.codex-s _agent codexs codex'
+alias codexm='CODEX_HOME=$HOME/.codex-m _agent codexm codex'
+alias codexk='CODEX_HOME=$HOME/.codex-k _agent codexk codex'
 # AIX dev variants: same accounts, but run freshly-built aix-mcp (AIX_DEV_HOME)
-alias codex-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev codex'
-alias codexs-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-s codex'
-alias codexm-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-m codex'
-alias codexk-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-k codex'
-alias claudem-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-m claude'
-alias claudek-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-k claude'
-alias claudes-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-s claude'
+alias codex-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev _agent codex-dev codex'
+alias codexs-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-s _agent codexs-dev codex'
+alias codexm-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-m _agent codexm-dev codex'
+alias codexk-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-k _agent codexk-dev codex'
+alias claudem-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-m _agent claudem-dev claude'
+alias claudek-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-k _agent claudek-dev claude'
+alias claudes-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-s _agent claudes-dev claude'
 
 # --- pass: pull before and push after every change -----------------------
 

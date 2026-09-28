@@ -52,6 +52,13 @@ m         ~/.codex-m    codexm      ~/.claude-m    claudem
 s         ~/.codex-s    codexs      ~/.claude-s    claudes
 ```
 
+An interactive start from a plain terminal opens a tmux session named after
+the alias (`codexk`, then `codexk-2`, ...), so a closed window or a dropped
+ssh does not end the agent; reattach with `tmux attach -t codexk`. Inside
+tmux, for one-shot commands (`claude -p`, `codex exec`, `login`, `update`,
+`--version`), or when output is piped, the agent runs directly.
+`command codex` skips the wrapper.
+
 ```bash
 make -f ai/Makefile accounts   # create all dirs, link them to the shared config
 make -f ai/Makefile logins     # which accounts still need a login
