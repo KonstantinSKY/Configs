@@ -359,8 +359,9 @@ stop the others; the target fails at the end and names it. Only add a module
 whose `update` needs no sudo and asks nothing, because it runs unattended.
 Never add `eos`, `fonts`, or `flatpak`: their `update` targets use sudo.
 
-`autoupdate/` holds a systemd user timer (daily 04:00, random delay up to 30
-min, catches up after downtime) that runs `make user-update`. The unit files
+`autoupdate/` holds a systemd user timer (daily 04:00 America/Los_Angeles on
+every machine, random delay up to 30 min, catches up after downtime) that runs
+`make user-update`. The unit files
 live in the repository and are linked into `~/.config/systemd/user`.
 `make -f autoupdate/Makefile status` is read-only; `install` enables the timer
 on the current machine and needs the user's authorization. Machines without a

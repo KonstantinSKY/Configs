@@ -2,7 +2,7 @@
 Description=Daily Configs user-level updates
 
 [Timer]
-OnCalendar=*-*-* 04:00
+OnCalendar=*-*-* 04:00 America/Los_Angeles
 RandomizedDelaySec=30min
 Persistent=true
 

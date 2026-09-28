@@ -6,7 +6,8 @@ root Makefile (currently `ai`). Nothing here needs sudo except linger.
 
 ```text
 configs-update.service   runs make -C ~/Work/Configs user-update
-configs-update.timer     daily at 04:00, random delay up to 30 min,
+configs-update.timer     daily at 04:00 America/Los_Angeles (any system
+                         time zone), random delay up to 30 min,
                          catches up after the machine was off
 ```
 
