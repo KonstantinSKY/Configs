@@ -75,6 +75,13 @@ fi
 alias rsss="remote_start_sudo_script.sh"
 alias server="ssh server"
 
+# SSH to the machines by name; addresses live in the private ~/.ssh/config.
+alias pve='ssh pve'
+alias dev='ssh dev'
+alias end='ssh end'
+alias prod='ssh prod'
+alias cachy='ssh cachy'
+
 # --- System update (by package family) -----------------------------------
 
 if command -v pacman >/dev/null 2>&1; then
