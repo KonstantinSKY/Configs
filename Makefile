@@ -32,6 +32,7 @@ SYSTEM_DEPENDENCIES := \
 	base-devel \
 	git \
 	make \
+	curl \
 	yay \
 	libx11 \
 	alsa-lib \
@@ -110,8 +111,8 @@ status: ## Inspect setup state without sudo or filesystem changes
 	for command in yay xdotool xsel; do \
 		command -v "$$command" >/dev/null 2>&1 || missing="$$missing $$command"; \
 	done; \
-	for package in claude-code openai-codex-bin; do \
-		pacman -Q "$$package" >/dev/null 2>&1 || missing="$$missing $$package"; \
+	for agent in claude codex; do \
+		[[ -x "$$HOME/.local/bin/$$agent" ]] || missing="$$missing $$agent"; \
 	done; \
 	if [[ -n "$$missing" ]]; then \
 		echo "MISSING:$$missing"; \
