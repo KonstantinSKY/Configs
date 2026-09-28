@@ -1,6 +1,6 @@
 SHELL := /bin/bash
 
-.PHONY: help status mount setup upgrade dependencies ai voice-ptt verify check-work \
+.PHONY: help status mount setup upgrade dependencies ai voice-ptt verify check-work user-update \
 	detect restore-status restore-core restore-packages restore-workspace \
 	restore-user restore-desktop restore-verify \
 	packages-status packages-install-base packages-install-tailscale \
@@ -27,6 +27,11 @@ VOICE_PTT_AUTOSTART_DST := $(HOME)/.config/autostart/voice-ptt.desktop
 SETUP_STATE_DIR := $(HOME)/.local/state/configs
 SETUP_MARKER := $(SETUP_STATE_DIR)/setup-v1
 RESTORE_STATE_DIR := $(SETUP_STATE_DIR)/restore-core-v1
+
+# Modules updated by `make user-update` and the update timer, in order.
+# Each listed module's `update` target must run without sudo or prompts.
+# Do not add eos, fonts, or flatpak: their update targets use sudo.
+USER_UPDATE_MODULES := ai
 
 SYSTEM_DEPENDENCIES := \
 	base-devel \
@@ -57,6 +62,7 @@ help: ## Show the first-run and assistant setup commands
 	@echo "  make ai          Install and configure AI CLI tools"
 	@echo "  make voice-ptt   Install, autostart, and start Voice PTT"
 	@echo "  make verify      Verify the mounted workspace and Voice PTT"
+	@echo "  make user-update Update user-level tools without sudo: $(USER_UPDATE_MODULES)"
 	@echo ""
 	@echo "Public package bootstrap:"
 	@echo "  make packages-status            Detect distro package family"
@@ -377,6 +383,20 @@ dependencies: check-work ## Install build, AI installer, and Voice PTT dependenc
 
 ai: check-work ## Install AI CLI tools and synchronize their configuration
 	@$(MAKE) --no-print-directory -f "$(AI_MAKEFILE)" install-no-update
+
+user-update: check-work ## Update user-level tools without sudo (USER_UPDATE_MODULES)
+	@if [[ "$$(id -u)" = 0 ]]; then echo "ERROR: run as the normal user, not root."; exit 1; fi
+	@failed=""; \
+	for module in $(USER_UPDATE_MODULES); do \
+		echo "==> $$module"; \
+		$(MAKE) --no-print-directory -f "$(CONFIGS_DIR)/$$module/Makefile" update \
+			|| failed="$$failed $$module"; \
+	done; \
+	if [[ -n "$$failed" ]]; then \
+		echo "ERROR: update failed:$$failed"; \
+		exit 1; \
+	fi; \
+	echo "OK: updated $(USER_UPDATE_MODULES)"
 
 voice-ptt: check-work ## Install Voice PTT autostart entry and start it
 	@if [[ ! -s "$(VOICE_PTT_ENV)" ]]; then \

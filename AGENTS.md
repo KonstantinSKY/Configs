@@ -351,6 +351,14 @@ make -f ai/Makefile accounts         # account dirs linked to ai/*/shared
 - Do not install the agents with sudo, npm, or AUR, and do not change AIX
   account records (`exec_path`, homes) without a separate decision.
 
+## User-level updates
+
+`make user-update` runs the `update` target of each module in
+`USER_UPDATE_MODULES` (root Makefile), currently `ai`. A failed module does not
+stop the others; the target fails at the end and names it. Only add a module
+whose `update` needs no sudo and asks nothing, because it runs unattended.
+Never add `eos`, `fonts`, or `flatpak`: their `update` targets use sudo.
+
 ## Optional and non-restore directories
 
 Only configure these roles when the user explicitly selects them:
