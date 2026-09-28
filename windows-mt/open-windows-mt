@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 set -euo pipefail
 
-API='https://pve.home.arpa:8006/api2/json'
+API='https://pve:8006/api2/json'
 NODE='pve'
 VMID='103'
 TOKEN_ID='winmt@pve!spice'
