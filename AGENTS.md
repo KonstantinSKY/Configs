@@ -35,6 +35,11 @@ setup as a state-discovery task, not as permission to restart every stage.
   temporary clone.
 - `CONFIGS_NOT_FOUND`: stop and ask the user to inspect the mounted Work disk.
   Do not clone, copy, move, delete, or overwrite anything automatically.
+- `NOT_EOS_WORKSTATION`: the host is not EndeavourOS (for example the Proxmox
+  host, Ubuntu VMs, or CachyOS). Never recommend `make setup`, `make upgrade`,
+  or `restore-core` there. Use the printed `PACKAGE_PROFILE` and recommend the
+  read-only `make packages-verify-profile`; `make packages-install-profile`
+  only with authorization.
 - `SETUP_REQUIRED`: recommend `make setup`. Explain that it performs a full
   system upgrade and installs packages using sudo.
 - `VOICE_PTT_ENV_REQUIRED`: explain that `voice-ptt/.env` must be restored or
@@ -225,6 +230,36 @@ The implemented stages are `packages`, `workspace`, `user`, `desktop`, and
 `verify`. On rerun, completed checkpoints are skipped. Checkpoints assist
 recovery but do not override real package, link, or service inspection when a
 stage appears inconsistent.
+
+## Package profiles
+
+`packages/Makefile` picks one profile per machine from the distro family and
+the machine class. The class uses the same rule as `shell/rc`: an installed
+graphical session (`/usr/share/xsessions` or `/usr/share/wayland-sessions`)
+means `desktop`, otherwise `server`.
+
+```text
+arch-desktop    base, tailscale, workstation core, i3 desktop group*, fonts
+arch-server     base, tailscale, zsh/tmux/neovim
+debian-desktop  base, tailscale, CLI core (no Debian desktop set is mapped)
+debian-server   base, tailscale, CLI core (zsh/tmux/neovim)
+
+* only when /usr/share/xsessions/i3.desktop exists
+```
+
+`make -f packages/Makefile detect` prints the family, class, `I3_SESSION`, and
+profile; `profile` prints only the name. `install-profile` and `verify-profile`
+follow the table. The i3 desktop group is skipped on desktops without i3 (for
+example CachyOS with sway); an explicit `make -f packages/Makefile
+install-desktop` still installs it, and counts as the user's request for i3.
+
+Arch package groups need yay. `install-yay-arch` installs it from the distro
+repository (EndeavourOS, CachyOS) or builds `yay-bin` from AUR on plain Arch,
+and the Arch install targets call it first. `install-server-core-arch` uses
+pacman only.
+
+Root `restore-status` and `restore-core` target only `arch-desktop` machines
+with i3; other profiles report `PROFILE_NOT_SUPPORTED`.
 
 ## Shell layer
 

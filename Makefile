@@ -97,6 +97,15 @@ status: ## Inspect setup state without sudo or filesystem changes
 		echo "NEXT: cd $(CANONICAL_CONFIGS)"; \
 		exit 0; \
 	fi; \
+	os_id="$$(. /etc/os-release 2>/dev/null && echo "$${ID:-unknown}")"; \
+	if [[ "$$os_id" != endeavouros ]]; then \
+		echo "OS: $$(. /etc/os-release 2>/dev/null && echo "$${PRETTY_NAME:-$$os_id}")"; \
+		echo "PACKAGE_PROFILE: $$($(MAKE) --no-print-directory -s -f "$(PACKAGES_MAKEFILE)" profile)"; \
+		echo "STATE: NOT_EOS_WORKSTATION"; \
+		echo "NEXT: make packages-verify-profile"; \
+		echo "NOTE: make setup is the EndeavourOS first-run layer; do not run it on this host."; \
+		exit 0; \
+	fi; \
 	missing=""; \
 	for command in yay xdotool xsel; do \
 		command -v "$$command" >/dev/null 2>&1 || missing="$$missing $$command"; \
