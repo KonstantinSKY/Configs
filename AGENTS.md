@@ -323,6 +323,33 @@ VMs mount Work with this `/etc/fstab` line after the Proxmox VM has
 gdata /home/sky/Work virtiofs rw,relatime,nofail,x-systemd.mount-timeout=10s 0 0
 ```
 
+## AI agents
+
+Claude Code and Codex are installed per user with the official installers into
+`~/.local/bin` on every distro; the AUR packages are no longer used. Details
+are in `ai/README.md`.
+
+```bash
+make -f ai/Makefile status           # read-only: binaries, account links, logins
+make -f ai/Makefile install-agents   # no sudo; skips agents already installed
+make -f ai/Makefile accounts         # account dirs linked to ai/*/shared
+```
+
+- Accounts are `default`, `k`, `m`, `s` for both agents (`~/.codex-k`,
+  `~/.claude-m`, ...), started with the `codexk`/`claudem` aliases from
+  `shell/rc`.
+- Settings are shared through links to `ai/codex/shared` and
+  `ai/claude/shared`. Logins are per machine and are never copied, linked,
+  printed, or committed; the user logs in to each account.
+- `accounts` replaces existing files with links (keeping backups) and merges a
+  real `skills/` folder into the repository. Run it on a machine only with the
+  user's authorization.
+- The agents write to the shared files (Codex adds trusted projects to
+  `config.toml`). Review that diff before committing; do not commit private
+  paths.
+- Do not install the agents with sudo, npm, or AUR, and do not change AIX
+  account records (`exec_path`, homes) without a separate decision.
+
 ## Optional and non-restore directories
 
 Only configure these roles when the user explicitly selects them:
