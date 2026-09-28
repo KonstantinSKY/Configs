@@ -1,5 +1,5 @@
 {
-  "model": "opus",
+  "model": "opus[1m]",
   "hooks": {
     "Notification": [
       {
@@ -30,6 +30,16 @@
   "theme": "dark-ansi",
   "preferredNotifChannel": "terminal_bell",
   "autoMode": {
+    "allow": [
+      "$defaults",
+      "Bash(make check)",
+      "Bash(make status)"
+    ],
+    "soft_deny": [
+      "$defaults",
+      "Bash(make rollback)",
+      "Bash(make backup-prune)"
+    ],
     "environment": [
       "### Org-wide",
       "**Organization**: None configured",
@@ -55,16 +65,6 @@
       "**Trusted repo**: /home/sky/Work/AIX (the git repository the agent started in) and its configured remote(s) — currently none. When the repo's public/private visibility is given — by the Repository visibility entry or the user's own message — use it to scope what is OK to commit or push there: confidential material is fine in a private repo; in a public one, only that repo's own work is — and content ported, repointed, or first read from outside this session's repo is not its own work, whoever directed the port. Visibility scopes confidential material only: secrets and sensitive data (personal & entrusted) are never cleared into any repo by its visibility (see Definitions).",
       "**Org-specific CLIs**: None configured",
       "**Routine under this repo's prefix**: local make targets in /home/sky/Work/AIX (check, status, init) and read-only sqlite3 queries against databases inside this checkout"
-    ],
-    "allow": [
-      "$defaults",
-      "Bash(make check)",
-      "Bash(make status)"
-    ],
-    "soft_deny": [
-      "$defaults",
-      "Bash(make rollback)",
-      "Bash(make backup-prune)"
     ]
   }
 }
