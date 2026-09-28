@@ -332,6 +332,7 @@ are in `ai/README.md`.
 ```bash
 make -f ai/Makefile status           # read-only: binaries, account links, logins
 make -f ai/Makefile install-agents   # no sudo; skips agents already installed
+make -f ai/Makefile update           # latest claude + codex for all accounts
 make -f ai/Makefile accounts         # account dirs linked to ai/*/shared
 ```
 

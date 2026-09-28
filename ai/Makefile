@@ -1,4 +1,4 @@
-.PHONY: all install install-no-update i install-agents install-claude install-codex accounts logins status sync-rules sync-codex-rules sync-codex-rules-all link-ai-shared link-codex-shared link-claude-shared codex-profiles clone-codex clone-claude backup-codex-configs restore-codex-configs verify-codex-configs verify v k m s
+.PHONY: all install install-no-update i install-agents install-claude install-codex update accounts logins status sync-rules sync-codex-rules sync-codex-rules-all link-ai-shared link-codex-shared link-claude-shared codex-profiles clone-codex clone-claude backup-codex-configs restore-codex-configs verify-codex-configs verify v k m s
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -37,23 +37,28 @@ install-no-update: ## Same as install (kept for the root Makefile)
 
 install-agents: install-claude install-codex ## Install claude and codex into ~/.local/bin if missing
 
-# $(call install_agent,name,url,extra env): run the official installer once.
+# $(call install_agent,name,url,extra env,force): run the official installer,
+# skipping an agent that is already installed unless force is set. The account
+# dir variables are cleared so the program always lands in the default dirs.
 # ~/.local/bin is put on PATH first so the installer does not edit rc files.
 define install_agent
 	@set -eu; \
 	if [ "$$(id -u)" = 0 ]; then echo "❌ Run as the normal user, not root."; exit 1; fi; \
 	bin="$(AGENT_BIN_DIR)/$(1)"; \
-	if [ -x "$$bin" ]; then \
+	if [ -x "$$bin" ] && [ -z "$(4)" ]; then \
 		echo "✅ $(1) already installed: $$bin ($$("$$bin" --version 2>/dev/null | head -1))"; \
 		exit 0; \
 	fi; \
 	command -v curl >/dev/null 2>&1 || { echo "❌ curl is required"; exit 1; }; \
 	mkdir -p "$(AGENT_BIN_DIR)"; \
 	tmp="$$(mktemp)"; trap 'rm -f "$$tmp"' EXIT; \
-	echo "📦 Installing $(1) from $(2)..."; \
+	before="$$([ -x "$$bin" ] && "$$bin" --version 2>/dev/null | head -1 || echo none)"; \
+	echo "📦 Installing $(1) from $(2) (current: $$before)..."; \
 	curl -fsSL "$(2)" -o "$$tmp"; \
 	env -u CLAUDE_CONFIG_DIR -u CODEX_HOME PATH="$(AGENT_BIN_DIR):$$PATH" $(3) bash "$$tmp"; \
-	"$$bin" --version >/dev/null && echo "✅ $(1) installed: $$bin ($$("$$bin" --version | head -1))"
+	after="$$("$$bin" --version | head -1)"; \
+	if [ "$$before" = "$$after" ]; then echo "✅ $(1) is up to date: $$after"; \
+	else echo "✅ $(1): $$before -> $$after"; fi
 endef
 
 install-claude: ## Install Claude Code with the official installer
@@ -61,6 +66,10 @@ install-claude: ## Install Claude Code with the official installer
 
 install-codex: ## Install Codex with the official installer
 	$(call install_agent,codex,$(CODEX_INSTALL_URL),CODEX_NON_INTERACTIVE=1)
+
+update: ## Update claude and codex to the latest version (all accounts on this machine)
+	$(call install_agent,claude,$(CLAUDE_INSTALL_URL),,force)
+	$(call install_agent,codex,$(CODEX_INSTALL_URL),CODEX_NON_INTERACTIVE=1,force)
 
 sync-rules: ## Link shared agent rules into runtime directories
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" sync-codex-rules

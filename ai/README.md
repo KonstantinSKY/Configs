@@ -25,6 +25,17 @@ The official installers are used on every distro (`claude.ai/install.sh`,
 the programs update themselves. An agent that is already in `~/.local/bin` is
 left alone. Run as the normal user, never with sudo.
 
+Update both agents on this machine (every account uses the same program, so
+all of them get the new version):
+
+```bash
+make -f ai/Makefile update
+```
+
+`update` always installs into the default dirs, even when started from an
+account alias. Do not run `codex update` from `codexk`/`codexm`/`codexs`: with
+their `CODEX_HOME` the new version would be stored inside that account dir.
+
 AUR packages (`claude-code`, `openai-codex-bin`) are no longer used. Where
 they are still installed, they sit in `/usr/bin` next to the official copy.
 
