@@ -1,4 +1,4 @@
-.PHONY: all install install-no-update i install-agents install-claude install-codex accounts logins sync-rules sync-codex-rules sync-codex-rules-all link-ai-shared link-codex-shared link-claude-shared codex-profiles clone-codex clone-claude backup-codex-configs restore-codex-configs verify-codex-configs verify v k m s
+.PHONY: all install install-no-update i install-agents install-claude install-codex accounts logins status sync-rules sync-codex-rules sync-codex-rules-all link-ai-shared link-codex-shared link-claude-shared codex-profiles clone-codex clone-claude backup-codex-configs restore-codex-configs verify-codex-configs verify v k m s
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -328,13 +328,46 @@ verify-codex-configs: ## Compare shared Codex config.toml with live profile dirs
 		fi; \
 	done
 
-verify v: ## Verify packages and synced rule files
+status: ## Read-only: agent binaries, account dirs linked to shared config, logins
+	@echo "🤖 AI agents on $$(hostname)"
+	@for name in claude codex; do \
+		bin="$(AGENT_BIN_DIR)/$$name"; \
+		if [ -x "$$bin" ]; then echo "  ✅ $$name: $$bin ($$("$$bin" --version 2>/dev/null | head -1))"; \
+		else echo "  ❌ $$name: not in $(AGENT_BIN_DIR) (run: make -f ai/Makefile install-agents)"; fi; \
+		found="$$(command -v "$$name" 2>/dev/null || true)"; \
+		if [ -n "$$found" ] && [ "$$found" != "$$bin" ]; then echo "     ⚠️  PATH runs $$found first"; fi; \
+		if [ -x "/usr/bin/$$name" ]; then echo "     ℹ️  a system package copy also exists: /usr/bin/$$name"; fi; \
+	done
+	@echo "🔗 Account dirs:"
+	@for profile in default $(CODEX_PROFILE_NAMES); do \
+		if [ "$$profile" = default ]; then dir="$(HOME)/.codex"; else dir="$(HOME)/.codex-$$profile"; fi; \
+		[ -d "$$dir" ] || { echo "  ➖ $$dir"; continue; }; \
+		bad=""; \
+		for name in config.toml rules skills; do \
+			[ "$$(readlink "$$dir/$$name" 2>/dev/null)" = "$(CODEX_SHARED_DIR)/$$name" ] || bad="$$bad $$name"; \
+		done; \
+		if [ -z "$$bad" ]; then echo "  ✅ $$dir"; else echo "  ⚠️  $$dir not linked:$$bad"; fi; \
+	done
+	@for profile in default $(CLAUDE_PROFILE_NAMES); do \
+		if [ "$$profile" = default ]; then dir="$(HOME)/.claude"; else dir="$(HOME)/.claude-$$profile"; fi; \
+		[ -d "$$dir" ] || { echo "  ➖ $$dir"; continue; }; \
+		bad=""; \
+		for name in settings.json settings.local.json commands agents skills rules; do \
+			[ "$$(readlink "$$dir/$$name" 2>/dev/null)" = "$(CLAUDE_SHARED_DIR)/$$name" ] || bad="$$bad $$name"; \
+		done; \
+		if [ -z "$$bad" ]; then echo "  ✅ $$dir"; else echo "  ⚠️  $$dir not linked:$$bad"; fi; \
+	done
+	@echo "     (fix links with: make -f ai/Makefile accounts)"
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" logins
+
+verify v: ## Verify agent binaries in ~/.local/bin and the synced Codex rules
 	@echo "🔎 Verifying AI tools..."
-	@for pkg in $(AI_PACKAGES); do \
-		if yay -Qi "$$pkg" >/dev/null 2>&1; then \
-			echo "✅ $$pkg is installed"; \
+	@for name in claude codex; do \
+		bin="$(AGENT_BIN_DIR)/$$name"; \
+		if [ -x "$$bin" ] && "$$bin" --version >/dev/null 2>&1; then \
+			echo "✅ $$name: $$bin ($$("$$bin" --version | head -1))"; \
 		else \
-			echo "❌ $$pkg is not installed"; \
+			echo "❌ $$name is not installed in $(AGENT_BIN_DIR)"; \
 			exit 1; \
 		fi; \
 	done
