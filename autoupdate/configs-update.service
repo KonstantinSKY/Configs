@@ -1,0 +1,7 @@
+[Unit]
+Description=Configs user-level updates (make user-update)
+Documentation=file:%h/Work/Configs/autoupdate/README.md
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/make -C %h/Work/Configs user-update
