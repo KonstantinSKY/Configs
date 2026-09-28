@@ -21,8 +21,8 @@ make -f ai/Makefile install          # the same, plus Codex rules and verify
 ```
 
 The official installers are used on every distro (`claude.ai/install.sh`,
-`chatgpt.com/codex/install.sh`). They need no sudo, run no system upgrade, and
-the programs update themselves. An agent that is already in `~/.local/bin` is
+`chatgpt.com/codex/install.sh`). They need no sudo and run no system upgrade.
+Claude updates itself in the background; Codex only reports a new version. An agent that is already in `~/.local/bin` is
 left alone. Run as the normal user, never with sudo.
 
 Update both agents on this machine (every account uses the same program, so
