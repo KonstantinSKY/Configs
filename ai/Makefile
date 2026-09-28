@@ -1,4 +1,4 @@
-.PHONY: all install install-no-update i install-agents install-claude install-codex sync-rules sync-codex-rules sync-codex-rules-all link-ai-shared link-codex-shared link-claude-shared codex-profiles clone-codex clone-claude backup-codex-configs restore-codex-configs verify-codex-configs verify v k m s
+.PHONY: all install install-no-update i install-agents install-claude install-codex accounts logins sync-rules sync-codex-rules sync-codex-rules-all link-ai-shared link-codex-shared link-claude-shared codex-profiles clone-codex clone-claude backup-codex-configs restore-codex-configs verify-codex-configs verify v k m s
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -172,6 +172,28 @@ link-claude-shared: ## Link shared Claude settings/commands/agents/skills/rules 
 		ln -sfnT "$(THIS_DIR)/claude/statusline-command.sh" "$$profile_dir/statusline-command.sh"; \
 		chmod +x "$(THIS_DIR)/claude/statusline-command.sh"; \
 		echo "linked Claude profile: $$profile"; \
+	done
+
+accounts: link-ai-shared ## Create all Codex/Claude account dirs linked to shared config, then show logins
+	@$(MAKE) -s -f "$(THIS_MAKEFILE)" logins
+
+# Login state is detected by the presence of the credentials file only; its
+# contents are never read. Account k runs as codexk / claudek (see shell/rc).
+logins: ## Show which Codex/Claude accounts on this machine still need a login
+	@echo "🔑 Agent logins on $$(hostname):"
+	@for profile in default $(CODEX_PROFILE_NAMES); do \
+		if [ "$$profile" = default ]; then dir="$(HOME)/.codex"; cmd=codex; \
+		else dir="$(HOME)/.codex-$$profile"; cmd="codex$$profile"; fi; \
+		if [ -e "$$dir/auth.json" ]; then echo "  ✅ $$cmd"; \
+		elif [ -d "$$dir" ]; then echo "  ⏳ $$cmd  (run: $$cmd, then log in)"; \
+		else echo "  ➖ $$cmd  (no $$dir; run: make -f ai/Makefile accounts)"; fi; \
+	done
+	@for profile in default $(CLAUDE_PROFILE_NAMES); do \
+		if [ "$$profile" = default ]; then dir="$(HOME)/.claude"; cmd=claude; \
+		else dir="$(HOME)/.claude-$$profile"; cmd="claude$$profile"; fi; \
+		if [ -e "$$dir/.credentials.json" ]; then echo "  ✅ $$cmd"; \
+		elif [ -d "$$dir" ]; then echo "  ⏳ $$cmd  (run: $$cmd, then /login)"; \
+		else echo "  ➖ $$cmd  (no $$dir; run: make -f ai/Makefile accounts)"; fi; \
 	done
 
 codex-profiles: link-codex-shared ## Restore tracked Codex profile links without auth/history/state
