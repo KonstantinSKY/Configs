@@ -3,6 +3,7 @@ SHELL := /bin/bash
 .PHONY: help status mount setup upgrade dependencies ai voice-ptt verify check-work user-update \
 	detect restore-status restore-core restore-packages restore-workspace \
 	restore-user restore-desktop restore-verify \
+	cloudflared cloudflared-install cloudflared-verify \
 	packages-status packages-install-base packages-install-tailscale \
 	packages-install-workstation-core packages-install-desktop packages-install-fonts \
 	packages-install-profile packages-verify packages-verify-workstation-core \
@@ -17,6 +18,7 @@ CANONICAL_CONFIGS := $(WORK_DIR)/Configs
 LINUX_MAKEFILE := $(CONFIGS_DIR)/linux/Makefile
 PACKAGES_MAKEFILE := $(CONFIGS_DIR)/packages/Makefile
 AI_MAKEFILE := $(CONFIGS_DIR)/ai/Makefile
+CLOUDFLARED_MAKEFILE := $(CONFIGS_DIR)/cloudflared/Makefile
 VOICE_PTT_MAKEFILE := $(CONFIGS_DIR)/voice-ptt/Makefile
 EOS_MAKEFILE := $(CONFIGS_DIR)/eos/Makefile
 VOICE_PTT_ENV := $(CONFIGS_DIR)/voice-ptt/.env
@@ -61,6 +63,7 @@ help: ## Show the first-run and assistant setup commands
 	@echo "  make dependencies Install system and Voice PTT dependencies"
 	@echo "  make ai          Install and configure AI CLI tools"
 	@echo "  make voice-ptt   Install, autostart, and start Voice PTT"
+	@echo "  make cloudflared Install Cloudflare Tunnel client"
 	@echo "  make verify      Verify the mounted workspace and Voice PTT"
 	@echo "  make user-update Update user-level tools without sudo: $(USER_UPDATE_MODULES)"
 	@echo ""
@@ -225,6 +228,12 @@ mount: ## Mount Work; this target may be run from a temporary clone
 
 packages-status: ## Detect public package bootstrap family
 	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" status
+
+cloudflared cloudflared-install: ## Install Cloudflare Tunnel client
+	@$(MAKE) --no-print-directory -f "$(CLOUDFLARED_MAKEFILE)" install
+
+cloudflared-verify: ## Verify Cloudflare Tunnel client
+	@$(MAKE) --no-print-directory -f "$(CLOUDFLARED_MAKEFILE)" verify
 
 packages-install-base: ## Install public base packages for this distro family
 	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-base
