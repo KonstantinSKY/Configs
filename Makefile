@@ -3,6 +3,7 @@ SHELL := /bin/bash
 .PHONY: help status mount setup upgrade dependencies ai voice-ptt verify check-work user-update \
 	detect restore-status restore-core restore-packages restore-workspace \
 	restore-user restore-desktop restore-verify \
+	dev dev-status dev-verify \
 	cloudflared cloudflared-install cloudflared-verify \
 	packages-status packages-install-base packages-install-tailscale \
 	packages-install-workstation-core packages-install-desktop packages-install-fonts \
@@ -19,6 +20,8 @@ LINUX_MAKEFILE := $(CONFIGS_DIR)/linux/Makefile
 PACKAGES_MAKEFILE := $(CONFIGS_DIR)/packages/Makefile
 AI_MAKEFILE := $(CONFIGS_DIR)/ai/Makefile
 CLOUDFLARED_MAKEFILE := $(CONFIGS_DIR)/cloudflared/Makefile
+DEV_MAKEFILE := $(CONFIGS_DIR)/dev/Makefile
+TMUX_MAKEFILE := $(CONFIGS_DIR)/tmux/Makefile
 VOICE_PTT_MAKEFILE := $(CONFIGS_DIR)/voice-ptt/Makefile
 EOS_MAKEFILE := $(CONFIGS_DIR)/eos/Makefile
 VOICE_PTT_ENV := $(CONFIGS_DIR)/voice-ptt/.env
@@ -66,6 +69,9 @@ help: ## Show the first-run and assistant setup commands
 	@echo "  make cloudflared Install Cloudflare Tunnel client"
 	@echo "  make verify      Verify the mounted workspace and Voice PTT"
 	@echo "  make user-update Update user-level tools without sudo: $(USER_UPDATE_MODULES)"
+	@echo "  make dev-status Inspect dev restore progress (without AIX)"
+	@echo "  make dev        Restore dev profile (without AIX)"
+	@echo "  make dev-verify Verify dev profile (without AIX)"
 	@echo ""
 	@echo "Public package bootstrap:"
 	@echo "  make packages-status            Detect distro package family"
@@ -235,6 +241,15 @@ cloudflared cloudflared-install: ## Install Cloudflare Tunnel client
 cloudflared-verify: ## Verify Cloudflare Tunnel client
 	@$(MAKE) --no-print-directory -f "$(CLOUDFLARED_MAKEFILE)" verify
 
+dev-status: ## Inspect dev restore progress without AIX
+	@$(MAKE) --no-print-directory -f "$(DEV_MAKEFILE)" status
+
+dev: ## Restore dev profile without AIX
+	@$(MAKE) --no-print-directory -f "$(DEV_MAKEFILE)" restore
+
+dev-verify: ## Verify dev profile without AIX
+	@$(MAKE) --no-print-directory -f "$(DEV_MAKEFILE)" verify
+
 packages-install-base: ## Install public base packages for this distro family
 	@$(MAKE) --no-print-directory -f "$(PACKAGES_MAKEFILE)" install-base
 
@@ -335,6 +350,7 @@ restore-workspace: check-work ## Restore Work directories and XDG home symlinks
 	fi
 
 restore-user: check-work ## Restore Git, zsh, and X11 session environment
+	@$(MAKE) --no-print-directory -f "$(TMUX_MAKEFILE)" install
 	@if [[ -f "$(RESTORE_STATE_DIR)/user" ]]; then \
 		echo "SKIP: user checkpoint already completed"; \
 	else \

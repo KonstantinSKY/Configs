@@ -10,6 +10,7 @@ screen_reader_detection_done = true
 "gpt-5.5" = 4
 "gpt-5.6-sol" = 4
 gpt-6-astra = 4
+"gpt-6.1-sol" = 4
 
 [projects."/home/sky"]
 trust_level = "trusted"
@@ -437,4 +438,4 @@ hide_rate_limit_model_nudge = true
 
 [notice.model_migrations]
 "gpt-5.3-codex" = "gpt-5.5"
-"gpt-5.5" = "gpt-5.6-sol"
+"gpt-5.5" = "gpt-6.1-sol"
