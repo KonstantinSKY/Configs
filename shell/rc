@@ -77,11 +77,13 @@ alias rsss="remote_start_sudo_script.sh"
 alias pve='ssh pve'
 alias dev='ssh dev'
 alias end='ssh end'
+alias eos='ssh eos'
 alias prod='ssh prod'
 alias cachy='ssh cachy'
 alias pve-ts='ssh pve-ts'
 alias dev-ts='ssh dev-ts'
 alias end-ts='ssh end-ts'
+alias eos-ts='ssh eos-ts'
 alias prod-ts='ssh prod-ts'
 alias cachy-ts='ssh cachy-ts'
 
