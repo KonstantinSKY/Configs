@@ -80,12 +80,14 @@ alias end='ssh end'
 alias eos='ssh eos'
 alias prod='ssh prod'
 alias cachy='ssh cachy'
+alias win='ssh win'
 alias pve-ts='ssh pve-ts'
 alias dev-ts='ssh dev-ts'
 alias end-ts='ssh end-ts'
 alias eos-ts='ssh eos-ts'
 alias prod-ts='ssh prod-ts'
 alias cachy-ts='ssh cachy-ts'
+alias win-ts='ssh win-ts'
 
 # --- System update (by package family) -----------------------------------
 
