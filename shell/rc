@@ -80,7 +80,6 @@ alias end='ssh end'
 alias eos='ssh eos'
 alias prod='ssh prod'
 alias cachy='ssh cachy'
-alias win='ssh win'
 alias pve-ts='ssh pve-ts'
 alias dev-ts='ssh dev-ts'
 alias end-ts='ssh end-ts'
@@ -88,6 +87,19 @@ alias eos-ts='ssh eos-ts'
 alias prod-ts='ssh prod-ts'
 alias cachy-ts='ssh cachy-ts'
 alias win-ts='ssh win-ts'
+
+# win: Windows shell kept in a tmux session on pve, so it survives connection drops.
+unalias win 2>/dev/null
+function win {
+  if [ "$(hostname -s)" != pve ]; then
+    ssh -t pve tmux new-session -A -s win ssh win
+  elif [ -n "${TMUX:-}" ]; then
+    tmux has-session -t win 2>/dev/null || tmux new-session -d -s win ssh win
+    tmux switch-client -t win
+  else
+    tmux new-session -A -s win ssh win
+  fi
+}
 
 # --- System update (by package family) -----------------------------------
 
