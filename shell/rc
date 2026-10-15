@@ -88,18 +88,25 @@ alias prod-ts='ssh prod-ts'
 alias cachy-ts='ssh cachy-ts'
 alias win-ts='ssh win-ts'
 
-# win: Windows shell kept in a tmux session on pve, so it survives connection drops.
-unalias win 2>/dev/null
-function win {
+# win/win2/win3: independent Windows shells kept in tmux sessions on pve,
+# so they survive connection drops.
+function _win_session {
+  local session="$1"
+
   if [ "$(hostname -s)" != pve ]; then
-    ssh -t pve tmux new-session -A -s win ssh win
+    ssh -t pve tmux new-session -A -s "$session" ssh win
   elif [ -n "${TMUX:-}" ]; then
-    tmux has-session -t win 2>/dev/null || tmux new-session -d -s win ssh win
-    tmux switch-client -t win
+    tmux has-session -t "=$session" 2>/dev/null || tmux new-session -d -s "$session" ssh win
+    tmux switch-client -t "=$session"
   else
-    tmux new-session -A -s win ssh win
+    tmux new-session -A -s "$session" ssh win
   fi
 }
+
+unalias win win2 win3 2>/dev/null
+function win { _win_session win; }
+function win2 { _win_session win-2; }
+function win3 { _win_session win-3; }
 
 # --- System update (by package family) -----------------------------------
 
@@ -242,13 +249,50 @@ function _agent {
   tmux new-session -s "$session" -c "$PWD" "${envs[@]}" -- "$bin" "$@"
 }
 
-alias claude='_agent claude claude'
+# Run one Claude account through the shared session wrapper.  The profile is the
+# only input: this helper owns both the config directory and the session name, so
+# aliases cannot accidentally point one account at another account's state.
+# Usage: [AIX_DEV_HOME=...] _claude PROFILE [ARGS...]
+function _claude {
+  local profile="$1" config_dir session
+  shift
+
+  case "$profile" in
+    default)
+      config_dir="$HOME/.claude"
+      session="claude"
+      ;;
+    k|m|s)
+      config_dir="$HOME/.claude-$profile"
+      session="claude-$profile"
+      ;;
+    *)
+      echo "claude: unknown account profile: $profile" >&2
+      return 2
+      ;;
+  esac
+
+  if [ -n "${AIX_DEV_HOME:-}" ]; then
+    session="$session-dev"
+  fi
+
+  CLAUDE_CONFIG_DIR="$config_dir" _agent "$session" claude "$@"
+}
+
+# Canonical Claude account commands.
+alias claude='_claude default'
+alias claude-k='_claude k'
+alias claude-m='_claude m'
+alias claude-s='_claude s'
+
+# Backward-compatible spellings.
+alias claudek='_claude k'
+alias claudem='_claude m'
+alias claudes='_claude s'
+
 alias codex='_agent codex codex'
 alias gemini='_agent gemini gemini'
 alias ge='_agent gemini gemini'
-alias claudem='CLAUDE_CONFIG_DIR=$HOME/.claude-m _agent claudem claude'
-alias claudek='CLAUDE_CONFIG_DIR=$HOME/.claude-k _agent claudek claude'
-alias claudes='CLAUDE_CONFIG_DIR=$HOME/.claude-s _agent claudes claude'
 alias codexs='CODEX_HOME=$HOME/.codex-s _agent codexs codex'
 alias codexm='CODEX_HOME=$HOME/.codex-m _agent codexm codex'
 alias codexk='CODEX_HOME=$HOME/.codex-k _agent codexk codex'
@@ -257,9 +301,15 @@ alias codex-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev _agent codex-dev codex'
 alias codexs-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-s _agent codexs-dev codex'
 alias codexm-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-m _agent codexm-dev codex'
 alias codexk-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CODEX_HOME=$HOME/.codex-k _agent codexk-dev codex'
-alias claudem-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-m _agent claudem-dev claude'
-alias claudek-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-k _agent claudek-dev claude'
-alias claudes-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev CLAUDE_CONFIG_DIR=$HOME/.claude-s _agent claudes-dev claude'
+alias claude-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev _claude default'
+alias claude-k-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev _claude k'
+alias claude-m-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev _claude m'
+alias claude-s-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev _claude s'
+
+# Backward-compatible dev spellings.
+alias claudek-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev _claude k'
+alias claudem-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev _claude m'
+alias claudes-dev='AIX_DEV_HOME=$HOME/Work/Projects/aixdev _claude s'
 
 # --- pass: pull before and push after every change -----------------------
 

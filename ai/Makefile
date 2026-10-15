@@ -187,7 +187,7 @@ accounts: link-ai-shared ## Create all Codex/Claude account dirs linked to share
 	@$(MAKE) -s -f "$(THIS_MAKEFILE)" logins
 
 # Login state is detected by the presence of the credentials file only; its
-# contents are never read. Account k runs as codexk / claudek (see shell/rc).
+# contents are never read. Account k runs as codexk / claude-k (see shell/rc).
 logins: ## Show which Codex/Claude accounts on this machine still need a login
 	@echo "🔑 Agent logins on $$(hostname):"
 	@for profile in default $(CODEX_PROFILE_NAMES); do \
@@ -199,7 +199,7 @@ logins: ## Show which Codex/Claude accounts on this machine still need a login
 	done
 	@for profile in default $(CLAUDE_PROFILE_NAMES); do \
 		if [ "$$profile" = default ]; then dir="$(HOME)/.claude"; cmd=claude; \
-		else dir="$(HOME)/.claude-$$profile"; cmd="claude$$profile"; fi; \
+		else dir="$(HOME)/.claude-$$profile"; cmd="claude-$$profile"; fi; \
 		if [ -e "$$dir/.credentials.json" ]; then echo "  ✅ $$cmd"; \
 		elif [ -d "$$dir" ]; then echo "  ⏳ $$cmd  (run: $$cmd, then /login)"; \
 		else echo "  ➖ $$cmd  (no $$dir; run: make -f ai/Makefile accounts)"; fi; \

@@ -32,6 +32,7 @@ I3_SESSION := $(shell [ -e /usr/share/xsessions/i3.desktop ] && echo yes || echo
 BASE_PACKAGES_ARCH := \
 	ca-certificates \
 	curl \
+	github-cli \
 	git \
 	make \
 	openssh
@@ -39,6 +40,7 @@ BASE_PACKAGES_ARCH := \
 BASE_PACKAGES_DEBIAN := \
 	ca-certificates \
 	curl \
+	gh \
 	git \
 	make \
 	openssh-client \
@@ -308,7 +310,7 @@ unsupported-font-family:
 verify-base: ## Verify public base commands and SSH service without changes
 	@set -euo pipefail; \
 	failed=0; \
-	for command_name in curl git make ssh sshd; do \
+	for command_name in curl gh git make ssh sshd; do \
 		if command -v "$$command_name" >/dev/null 2>&1 || [[ -x "/usr/sbin/$$command_name" || -x "/sbin/$$command_name" ]]; then \
 			echo "OK: $$command_name"; \
 		else \

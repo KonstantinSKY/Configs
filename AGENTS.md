@@ -337,9 +337,9 @@ make -f ai/Makefile accounts         # account dirs linked to ai/*/shared
 ```
 
 - Accounts are `default`, `k`, `m`, `s` for both agents (`~/.codex-k`,
-  `~/.claude-m`, ...), started with the `codexk`/`claudem` aliases from
+  `~/.claude-m`, ...), started with the `codexk`/`claude-m` aliases from
   `shell/rc`.
-- The aliases (`claude`, `codex`, `codexk`, `claudem-dev`, `ge`, ...) start an
+- The aliases (`claude`, `claude-k`, `codex`, `codexk`, `claude-m-dev`, `ge`, ...) start an
   interactive agent from a plain terminal in its own tmux session named after
   the alias (`codexk`, `codexk-2`, ...). Inside tmux, for one-shot commands
   (`claude -p`, `codex exec`, `login`, `update`, `--version`), or when output

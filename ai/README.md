@@ -47,14 +47,14 @@ aliases in `shell/rc` pick the dir:
 ```text
 account   Codex                     Claude
 default   ~/.codex      codex       ~/.claude      claude
-k         ~/.codex-k    codexk      ~/.claude-k    claudek
-m         ~/.codex-m    codexm      ~/.claude-m    claudem
-s         ~/.codex-s    codexs      ~/.claude-s    claudes
+k         ~/.codex-k    codexk      ~/.claude-k    claude-k
+m         ~/.codex-m    codexm      ~/.claude-m    claude-m
+s         ~/.codex-s    codexs      ~/.claude-s    claude-s
 ```
 
 An interactive start from a plain terminal opens a tmux session named after
-the alias (`codexk`, then `codexk-2`, ...), so a closed window or a dropped
-ssh does not end the agent; reattach with `tmux attach -t codexk`. Inside
+the alias (`claude-k`, then `claude-k-2`, ...), so a closed window or a dropped
+ssh does not end the agent; reattach with `tmux attach -t claude-k`. Inside
 tmux, for one-shot commands (`claude -p`, `codex exec`, `login`, `update`,
 `--version`), or when output is piped, the agent runs directly.
 `command codex` skips the wrapper.
@@ -76,7 +76,7 @@ Existing files are kept as `<name>.backup.<date>`. A real `skills/` folder is
 merged into the shared one before it is replaced by the link.
 
 Log in to each account once per machine by starting it (`codexk`, then
-`claudem` and `/login`, and so on). Logins stay local: never copy, link, or
+`claude-m` and `/login`, and so on). Logins stay local: never copy, link, or
 commit `auth.json`, `.credentials.json`, `.claude.json` (`oauthAccount`),
 histories, sessions, caches, or SQLite state. Sharing a login between
 machines breaks it when one of them refreshes the token.
