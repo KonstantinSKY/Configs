@@ -81,6 +81,9 @@ trust_level = "trusted"
 [projects."/tmp/claude-1000/-home-sky-Work-Projects-aixdev/ba77c65b-1371-49db-831b-79a9f8a80aac/scratchpad/smoke/work"]
 trust_level = "trusted"
 
+[projects."/home/sky/Work/Projects/efs-platform"]
+trust_level = "trusted"
+
 [mcp_servers.aix]
 command = "/home/sky/Work/AIX/bin/aix-mcp"
 
@@ -432,6 +435,9 @@ approval_mode = "approve"
 
 [mcp_servers.openaiDeveloperDocs]
 url = "https://developers.openai.com/mcp"
+
+[mcp_servers.efs]
+url = "http://192.168.1.102:8787/mcp"
 
 [notice]
 hide_rate_limit_model_nudge = true
