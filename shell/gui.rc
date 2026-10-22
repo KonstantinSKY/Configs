@@ -16,3 +16,17 @@ fi
 # SPICE consoles of Proxmox VMs
 alias winmt="open-windows-mt"
 alias cachyos="open-cachyos"
+
+# MT4 screen on dev over VNC. The VNC password is fetched once over ssh and
+# cached locally; the address comes from the "dev" entry in ~/.ssh/config.
+unalias mt4vnc 2>/dev/null
+function mt4vnc {
+  local pw="$HOME/.config/mt4/vnc.passwd"
+  if [ ! -s "$pw" ]; then
+    mkdir -p "${pw%/*}"
+    (umask 077; ssh dev cat .vnc/passwd > "$pw") || { rm -f "$pw"; return 1; }
+  fi
+  local host
+  host=$(ssh -G dev | awk '$1 == "hostname" { print $2 }')
+  vncviewer -passwd "$pw" "$host::5900" >/dev/null 2>&1 &
+}

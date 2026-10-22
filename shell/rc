@@ -108,6 +108,10 @@ function win { _win_session win; }
 function win2 { _win_session win-2; }
 function win3 { _win_session win-3; }
 
+# MT4 under Wine on dev (systemd --user units, terminal in ~/mt4 there).
+alias mt4restart='ssh dev systemctl --user restart mt4-roboforex-02'
+alias mt4status='ssh dev systemctl --user --no-pager status mt4-roboforex-02 mt4-vnc'
+
 # --- System update (by package family) -----------------------------------
 
 if command -v pacman >/dev/null 2>&1; then
