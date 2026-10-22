@@ -122,7 +122,7 @@ elif command -v apt-get >/dev/null 2>&1; then
   alias updf='sudo apt-get update && sudo apt-get full-upgrade && sudo apt-get autoremove --purge'
 fi
 
-# --- tmux: t1..t5 attach to (or create) numbered sessions, tl lists them --
+# --- tmux: t1..t5 use numbered sessions, tm attaches, tl lists them --------
 
 function _tmux_apply_status {
   tmux set-option -g mouse on >/dev/null
@@ -170,6 +170,7 @@ for _t in 1 2 3 4 5; do
   alias "t$_t"="_tmux_slot $_t"
 done
 unset _t
+alias tm="_tmux_connect"
 alias tl="tmux list-sessions"
 
 # --- AIX and AI agents ---------------------------------------------------

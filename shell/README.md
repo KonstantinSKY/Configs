@@ -15,7 +15,7 @@ shell/
 ```text
 ~/.bashrc or ~/.zshrc
   -> shell/rc
-       shared: paths, editor, helpers, t1..t5/tl, AIX, claude/codex, pass, upd
+       shared: paths, editor, helpers, t1..t5/tm/tl, AIX, claude/codex, pass, upd
        -> gui.rc     if /usr/share/xsessions or /usr/share/wayland-sessions exists
        -> server.rc  otherwise (plus Proxmox aliases when pveversion exists)
        -> powerlevel10k (zsh only, when installed)
@@ -25,8 +25,9 @@ shell/
 The class is detected on every start and exported as `CONFIGS_SHELL_CLASS`.
 Aliases for programs that are not installed are harmless.
 
-tmux is never started automatically: use `t1`..`t5`. AIX creates its own
-tmux sessions when started from a plain shell.
+tmux is never started automatically: use `t1`..`t5`, `tm <session>` to attach
+to any named session, and `tl` to list sessions. AIX creates its own tmux
+sessions when started from a plain shell.
 
 ## Install
 
