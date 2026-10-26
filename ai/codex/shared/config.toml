@@ -442,6 +442,9 @@ url = "http://192.168.1.102:8787/mcp"
 [mcp_servers.efs.tools.mt4_reference_fill]
 approval_mode = "approve"
 
+[mcp_servers.efs.tools.mt4_history_load]
+approval_mode = "approve"
+
 [notice]
 hide_rate_limit_model_nudge = true
 

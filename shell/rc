@@ -112,6 +112,25 @@ function win3 { _win_session win-3; }
 alias mt4restart='ssh dev systemctl --user restart mt4-roboforex-02'
 alias mt4status='ssh dev systemctl --user --no-pager status mt4-roboforex-02 mt4-vnc'
 
+# MT4 under Wine on the iMac (LaunchAgent in sky's GUI session gui/503, ~/mt4 there).
+unalias imt4 2>/dev/null
+function imt4 {
+  ssh imac '
+    launchctl print gui/503/local.mt4.roboforex-03 >/dev/null 2>&1 &&
+      launchctl kickstart gui/503/local.mt4.roboforex-03 ||
+      launchctl bootstrap gui/503 Library/LaunchAgents/local.mt4.roboforex-03.plist'
+}
+alias imt4stop='ssh imac launchctl bootout gui/503/local.mt4.roboforex-03'
+alias imt4restart='ssh imac launchctl kickstart -k gui/503/local.mt4.roboforex-03'
+unalias imt4status 2>/dev/null
+function imt4status {
+  ssh imac '
+    launchctl print gui/503/local.mt4.roboforex-03 2>/dev/null | grep -E "^\s+(state|pid|last exit code) =" ||
+      echo "LaunchAgent not loaded (imt4)"
+    pids=$(pgrep -d, -f "terminal.exe /portable") &&
+      ps -o pid,%cpu,rss,etime,command -p "$pids" || echo "terminal.exe not running"'
+}
+
 # --- System update (by package family) -----------------------------------
 
 if command -v pacman >/dev/null 2>&1; then
