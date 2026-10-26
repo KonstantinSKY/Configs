@@ -113,8 +113,9 @@ alias mt4restart='ssh dev systemctl --user restart mt4-roboforex-02'
 alias mt4status='ssh dev systemctl --user --no-pager status mt4-roboforex-02 mt4-vnc'
 
 # MT4 under Wine on the iMac, same layout as dev: Xvfb :99, x11vnc on the
-# Tailscale address port 5901, terminal in ~/mt4 there. LaunchAgents
-# local.mt4.{xvfb,vnc,roboforex-03} in sky's session gui/503.
+# Tailscale address port 5901, terminal in ~/mt4 there. LaunchDaemons
+# local.mt4.{xvfb,vnc,roboforex-03} start at boot and run as sky; the
+# ~/mt4/bin/ctl.sh helper there controls the terminal without sudo.
 # On the Mac itself the commands run locally; elsewhere they go through "ssh imac".
 function _imac_sh {
   if [ "$(uname -s)" = Darwin ]; then
@@ -127,12 +128,7 @@ unalias imt4 imt4vnc imt4stop imt4restart imt4status 2>/dev/null
 
 # Start whatever is not running, then open the MT4 screen when this machine has a display.
 function imt4 {
-  _imac_sh '
-    for l in xvfb vnc roboforex-03; do
-      launchctl print gui/503/local.mt4.$l >/dev/null 2>&1 &&
-        launchctl kickstart gui/503/local.mt4.$l ||
-        launchctl bootstrap gui/503 Library/LaunchAgents/local.mt4.$l.plist
-    done' || return 1
+  _imac_sh 'mt4/bin/ctl.sh start' || return 1
   if [ "$(uname -s)" = Darwin ] || { [ -n "${DISPLAY:-}${WAYLAND_DISPLAY:-}" ] && command -v vncviewer >/dev/null 2>&1; }; then
     imt4vnc
   else
@@ -158,19 +154,10 @@ function imt4vnc {
 }
 
 # Stop and restart touch only the terminal; the screen and VNC keep running.
-function imt4stop { _imac_sh 'launchctl bootout gui/503/local.mt4.roboforex-03'; }
-function imt4restart { _imac_sh 'launchctl kickstart -k gui/503/local.mt4.roboforex-03'; }
-function imt4status {
-  _imac_sh '
-    for l in xvfb vnc roboforex-03; do
-      printf "%-24s " local.mt4.$l
-      launchctl print gui/503/local.mt4.$l 2>/dev/null | grep -E "^\s+(state|pid) =" | tr -s " \t\n" " " || printf "not loaded (imt4)"
-      echo
-    done
-    netstat -an | grep -E "\.5901 .*LISTEN" || echo "VNC is not listening on 5901"
-    pids=$(pgrep -d, -f "^terminal.exe /portable") &&
-      ps -o pid,%cpu,rss,etime,command -p "$pids" || echo "terminal.exe not running"'
-}
+# imt4stop holds the terminal down (also across reboots) until the next imt4.
+function imt4stop { _imac_sh 'mt4/bin/ctl.sh stop'; }
+function imt4restart { _imac_sh 'mt4/bin/ctl.sh restart'; }
+function imt4status { _imac_sh 'mt4/bin/ctl.sh status'; }
 
 # --- System update (by package family) -----------------------------------
 
