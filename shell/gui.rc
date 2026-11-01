@@ -2,14 +2,14 @@
 # Only what needs a display belongs here; everything else goes in rc.
 
 if command -v zeditor >/dev/null 2>&1; then
-  export VISUAL=zeditor
+  # --wait: block until the file is closed, so git commit / crontab -e work.
+  export VISUAL="zeditor --wait"
 
   function z {
-    if [ -n "${1:-}" ]; then
-      zeditor "$1"
-    else
-      zeditor .
-    fi
+    # Work is shared between VMs; external writes may not emit local inotify events.
+    # No arguments: open the current directory. Otherwise pass all of them.
+    if [ "$#" -eq 0 ]; then set -- .; fi
+    ZED_FILE_WATCHER_MODE=poll zeditor "$@"
   }
 fi
 

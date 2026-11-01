@@ -29,6 +29,22 @@ tmux is never started automatically: use `t1`..`t5`, `tm <session>` to attach
 to any named session, and `tl` to list sessions. AIX creates its own tmux
 sessions when started from a plain shell.
 
+## Zed on the shared Work filesystem
+
+The `z` function starts Zed with `ZED_FILE_WATCHER_MODE=poll`. Polling detects
+changes made by another VM on the shared Work filesystem even when the local
+kernel sends no file-change event. The variable applies only to that Zed
+invocation; it is not exported into the rest of the shell.
+
+`z` opens the current directory; `z /path/to/project` opens that path, and
+`z a.txt b.txt` opens several files in one call.
+`VISUAL` is `zeditor --wait`, so `git commit` and `crontab -e` wait until the
+file is closed in Zed.
+After changing the function, open a new terminal or source `shell/gui.rc`.
+Fully quit an already running Zed before starting it through `z`: a CLI
+invocation can otherwise forward to the existing process with its old watcher
+mode. Direct `zeditor` and desktop-menu launches do not use this function.
+
 ## Install
 
 ```bash
