@@ -124,119 +124,89 @@
   "buffer_font_fallbacks": ["Noto Color Emoji"],
   "cursor_blink": true,
   // "color": "red",
-  "experimental.theme_overrides": {
-    //font colors
-    "syntax": {
-      "keyword": {
-        "color": "#884ea0",
-        "font_weight": 400,
-        "font_style": "italic",
-      },
-      "variable": {
-        "color": "#FF99CC ",
-        "font_weight": 100,
-      },
-      "string": {
-        "color": "#8FAA91",
-        "font_weight": 100,
-        "font_style": "italic",
-      },
-      "comment": {
-        "color": "#5C6370",
-        "font_weight": 100,
-        "font_style": "italic",
-        // "font-size": "8px"
-      },
-      "number": {
-        "color": "#7dcea0",
-        "font_weight": 100,
-      },
-      "operator": {
-        "color": "#c39bd3",
-        "font_weight": 100,
-      },
-      "punctuation": {
-        "color": "#c39bd3",
-        "font_weight": 100,
-      },
-      "boolean": {
-        "color": "#ca6f1e",
-        "font_weight": 100,
-      },
-      "null": {
-        "color": "#8FAA91",
-        "font_weight": 100,
-      },
-      "undefined": {
-        "color": "#8FAA91",
-        "font_weight": 100,
-      },
-      "key": {
-        "color": "#a9cce3",
-        "font_weight": 100,
-      },
-      "value": {
-        "color": "#8FAA91",
-        "font_weight": 100,
-      },
-      "property": {
-        "color": "#ffebee",
-        "font_weight": 100,
-      },
-      "attribute": {
-        "color": "#E5C07B",
-        "font_weight": 100,
-      },
-      "namespaces": {
-        "color": "#56B6C2",
-        "font_weight": 200,
-      },
-      "names": {
-        "color": "#D19A66",
-        "font_weight": 200,
-      },
-      "constant": {
-        "color": "#e57373",
-        "font_weight": 200,
-      },
-      "functions": {
-        "color": "#61AFEF",
-        "font_weight": 200,
-      },
-      "brackets": {
-        "color": "#FF0000",
-        "font_weight": 100,
-      },
-      "cursor": {
-        "color": "#85c1e9",
-        "font_weight": 400,
-      },
-      "module": {
-        "color": "#FF0000",
-        "font_weight": 200,
-      },
-      "type": {
-        "color": "#00796b",
-        "font_weight": 100,
-        "font_style": "italic",
-      },
-      "method": {
-        "color": "#0288d1",
-        "font_weight": 100,
-      },
-      "import": {
-        "color": "#FF0000",
-        "font_weight": 100,
-      },
-      "export": {
-        "color": "#FF0000",
-        "font_weight": 100,
-      },
+  "theme_overrides": {
+    "One Dark": {
+      //font colors
+      "syntax": {
+        "keyword": {
+          "color": "#884ea0",
+          "font_weight": 400,
+          "font_style": "italic",
+        },
+        "variable": {
+          "color": "#FF99CC",
+          "font_weight": 100,
+        },
+        "string": {
+          "color": "#8FAA91",
+          "font_weight": 100,
+          "font_style": "italic",
+        },
+        "comment": {
+          "color": "#5C6370",
+          "font_weight": 100,
+          "font_style": "italic",
+          // "font-size": "8px"
+        },
+        "number": {
+          "color": "#7dcea0",
+          "font_weight": 100,
+        },
+        "operator": {
+          "color": "#c39bd3",
+          "font_weight": 100,
+        },
+        "punctuation": {
+          "color": "#c39bd3",
+          "font_weight": 100,
+        },
+        "boolean": {
+          "color": "#ca6f1e",
+          "font_weight": 100,
+        },
+        "constant.builtin": {
+          "color": "#8FAA91",
+          "font_weight": 100,
+        },
+        "property": {
+          "color": "#ffebee",
+          "font_weight": 100,
+        },
+        "attribute": {
+          "color": "#E5C07B",
+          "font_weight": 100,
+        },
+        "namespace": {
+          "color": "#56B6C2",
+          "font_weight": 200,
+        },
+        "constant": {
+          "color": "#e57373",
+          "font_weight": 200,
+        },
+        "function": {
+          "color": "#61AFEF",
+          "font_weight": 200,
+        },
+        "punctuation.bracket": {
+          "color": "#D19A66",
+          "font_weight": 100,
+        },
+        "type": {
+          "color": "#00796b",
+          "font_weight": 100,
+          "font_style": "italic",
+        },
+        "function.method": {
+          "color": "#0288d1",
+          "font_weight": 100,
+        },
 
-      // "inlayhints": {
-      //   "color": "#FF5555",
-      //   "font_weight": 100
-      // }
+        // "inlayhints": {
+        //   "color": "#FF5555",
+        //   "font_weight": 100
+        // }
+      },
     },
   },
   // ==========================================
@@ -278,10 +248,8 @@
     "show_type_hints": true,
     "show_parameter_hints": true,
     "show_other_hints": true,
-    "toggle_on_modifier_press": "alt",
+    "toggle_on_modifiers_press": { "alt": true },
   },
-  "spell_check": true,
-  "spell_check_languages": ["en_US", "ru_RU"],
   "file_types": {
     // "C++": ["mq4", "mq5", "mqh", "c"], // .c is plain C, not C++
     "C++": ["mq4", "mq5", "mqh"],

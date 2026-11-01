@@ -19,8 +19,7 @@ SEPARATOR := -------------------------------------------------------------------
 # - gnome-keyring + libsecret: persistent credential storage so Zed's auth
 #   token survives restarts (without these, Zed prompts for login every launch
 #   because libsecret has no Secret Service backend).
-# - hunspell + en_US/ru dictionaries: power Zed's spell_check_languages.
-ZED_DEPS := zed gnome-keyring libsecret hunspell hunspell-en_us hunspell-ru
+ZED_DEPS := zed gnome-keyring libsecret
 
 ZED_TARGET_DIR := $(HOME)/.config/zed
 ZED_SETTINGS_NAME := settings.json
