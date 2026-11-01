@@ -5,9 +5,38 @@ if command -v zeditor >/dev/null 2>&1; then
   # --wait: block until the file is closed, so git commit / crontab -e work.
   export VISUAL="zeditor --wait"
 
+  # All development and agents run on dev. z opens paths there over SSH, where
+  # dev's own inotify sees the agents' writes. If dev is unreachable or a path
+  # is outside the shared Work tree, it falls back to local Zed with polling:
+  # Work is shared between VMs, and external writes may not emit local inotify events.
+  # No arguments: open the current directory. Otherwise pass all of them.
   function z {
-    # Work is shared between VMs; external writes may not emit local inotify events.
-    # No arguments: open the current directory. Otherwise pass all of them.
+    if [ "$#" -eq 0 ]; then set -- .; fi
+    local remote="${Z_REMOTE_HOST:-dev}" shared="$HOME/Work" p abs
+    local self; self=$(hostname | tr '[:upper:]' '[:lower:]')
+    local urls=() use_remote=1
+
+    [ "$self" = "$remote" ] && use_remote=0
+    if [ "$use_remote" -eq 1 ]; then
+      for p in "$@"; do
+        abs=$(realpath -m -- "$p")
+        case "$abs" in
+          "$shared"|"$shared"/*) urls+=("ssh://$remote$abs") ;;
+          *) use_remote=0; break ;;
+        esac
+      done
+    fi
+    if [ "$use_remote" -eq 1 ] &&
+       ssh -o BatchMode=yes -o ConnectTimeout=3 "$remote" true 2>/dev/null; then
+      zeditor "${urls[@]}"
+    else
+      [ "$use_remote" -eq 1 ] && echo "z: $remote unreachable, opening locally with polling" >&2
+      zl "$@"
+    fi
+  }
+
+  # Local Zed with polling, never over SSH.
+  function zl {
     if [ "$#" -eq 0 ]; then set -- .; fi
     ZED_FILE_WATCHER_MODE=poll zeditor "$@"
   }

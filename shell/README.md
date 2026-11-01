@@ -31,9 +31,16 @@ sessions when started from a plain shell.
 
 ## Zed on the shared Work filesystem
 
-The `z` function starts Zed with `ZED_FILE_WATCHER_MODE=poll`. Polling detects
-changes made by another VM on the shared Work filesystem even when the local
-kernel sends no file-change event. The variable applies only to that Zed
+All development and agents run on `dev`. The `z` function opens paths under
+`~/Work` on `dev` over SSH Remote (`ssh://dev/...`). There, dev's own file
+watcher sees the agents' changes, including git, without polling. Set
+`Z_REMOTE_HOST` to use another host.
+
+`z` falls back to local Zed through `zl` when `dev` does not answer SSH within
+3 seconds, when a path is outside `~/Work`, or when the shell already runs on
+`dev`. `zl` always opens locally with `ZED_FILE_WATCHER_MODE=poll`. Polling
+detects changes made by another VM on the shared Work filesystem even when the
+local kernel sends no file-change event. The variable applies only to that Zed
 invocation; it is not exported into the rest of the shell.
 
 `z` opens the current directory; `z /path/to/project` opens that path, and
