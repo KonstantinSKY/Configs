@@ -106,6 +106,9 @@ For auth-key based setup:
 make host-tailscale-up-key AUTH_KEY_FILE=/path/outside/git/proxmox.authkey
 ```
 
+The Thermalright SSD cooler display driver for the host lives in
+`host/thermalright-ssd-display/` (see its README; `make status` there).
+
 ## Linux guest
 
 The guest layer is for Linux VMs. It installs and verifies QEMU Guest Agent,

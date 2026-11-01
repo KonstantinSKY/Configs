@@ -1,0 +1,6 @@
+# Which NVMe controller the cooler sits on: nvme0 = Samsung 990 PRO 2TB, nvme1 = Samsung 970 EVO Plus 500GB
+TR_DISK=nvme0
+# Screens to rotate: temp,busy,read,write
+TR_PHASES=temp,busy,read,write
+TR_PHASE_SECONDS=3
+TR_COLOR=255,255,255

@@ -1,0 +1,12 @@
+[Unit]
+Description=Thermalright SSD cooler digital display (USB 0416:8001)
+
+[Service]
+EnvironmentFile=-/etc/default/thermalright-ssd-display
+ExecStart=/usr/bin/python3 -I /usr/local/bin/thermalright-ssd-display
+Restart=always
+RestartSec=5
+Nice=10
+
+[Install]
+WantedBy=multi-user.target

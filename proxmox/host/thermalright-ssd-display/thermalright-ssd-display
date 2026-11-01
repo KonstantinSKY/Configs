@@ -1,0 +1,206 @@
+#!/usr/bin/env python3
+"""Thermalright SSD cooler digital display driver (USB 0416:8001, LED style LF11).
+
+Shows NVMe temperature, busy %, read MB/s and write MB/s, rotating phases.
+Protocol ported from trcc-linux (github.com/Lexonight1/thermalright-trcc-linux).
+
+Config via environment:
+  TR_DISK=nvme0        block-device controller to show (nvme0, nvme1, ...)
+  TR_PHASES=temp,busy,read,write   which screens to rotate through
+  TR_PHASE_SECONDS=3   seconds per screen
+  TR_COLOR=255,255,255 RGB color of segments
+"""
+import glob
+import os
+import select
+import sys
+import time
+
+VID, PID = "00000416", "00008001"
+MAGIC = b"\xDA\xDB\xDC\xDD"
+SCALE = 0.4
+NLEDS = 38
+
+# LF11 layout (logical indices)
+IND_SSD, IND_PCT, IND_MBS = 0, 1, 2
+DIGITS = (
+    (3, 4, 5, 6, 7, 8, 9),
+    (10, 11, 12, 13, 14, 15, 16),
+    (17, 18, 19, 20, 21, 22, 23),
+    (24, 25, 26, 27, 28, 29, 30),
+    (31, 32, 33, 34, 35, 36, 37),
+)
+# physical wire index -> logical index
+REMAP = (
+    2, 1,
+    33, 34, 35, 37, 32, 31, 0, 36,
+    26, 27, 28, 30, 25, 24, 29,
+    19, 20, 21, 23, 18, 17, 22,
+    12, 13, 14, 16, 11, 10, 15,
+    5, 6, 7, 9, 4, 3, 8,
+)
+SEG = {
+    "0": "abcdef", "1": "bc", "2": "abdeg", "3": "abcdg", "4": "bcfg",
+    "5": "acdfg", "6": "acdefg", "7": "abc", "8": "abcdefg", "9": "abcdfg",
+    " ": "", "C": "adef", "-": "g",
+}
+WIRE = "abcdefg"
+
+
+def log(*a):
+    print(*a, file=sys.stderr, flush=True)
+
+
+def find_hidraw():
+    for d in sorted(glob.glob("/sys/class/hidraw/hidraw*")):
+        try:
+            ue = open(os.path.join(d, "device/uevent")).read()
+        except OSError:
+            continue
+        if f"HID_ID=0003:{VID}:{PID}" in ue:
+            return "/dev/" + os.path.basename(d)
+    return None
+
+
+def put_char(ch, leds, mask):
+    for i, s in enumerate(WIRE):
+        if s in SEG.get(ch, ""):
+            mask[leds[i]] = True
+
+
+def put_number(value, ndigits, digits, mask):
+    v = max(0, min(10 ** ndigits - 1, int(value)))
+    s = str(v).rjust(ndigits)
+    for ch, leds in zip(s, digits):
+        put_char(ch, leds, mask)
+
+
+def build_mask(kind, value):
+    mask = [False] * NLEDS
+    if kind == "temp":
+        mask[IND_SSD] = True
+        put_number(value, 3, DIGITS[0:3], mask)
+        put_char("C", DIGITS[3], mask)
+    elif kind == "busy":
+        mask[IND_PCT] = True
+        put_number(value, 5, DIGITS, mask)
+    else:
+        mask[IND_MBS] = True
+        put_number(value, 5, DIGITS, mask)
+    return mask
+
+
+def build_packet(mask, color):
+    r, g, b = (min(255, int(c * SCALE)) for c in color)
+    body = bytearray()
+    for logical in REMAP:
+        body += bytes((r, g, b)) if mask[logical] else b"\0\0\0"
+    hdr = bytearray(20)
+    hdr[0:4] = MAGIC
+    hdr[12] = 2
+    hdr[16:18] = len(body).to_bytes(2, "little")
+    pkt = bytes(hdr) + bytes(body)
+    pkt += b"\0" * (-len(pkt) % 64)
+    return [pkt[i:i + 64] for i in range(0, len(pkt), 64)]
+
+
+def handshake(fd):
+    pkt = bytearray(64)
+    pkt[0:4] = MAGIC
+    pkt[12] = 1
+    os.write(fd, b"\0" + bytes(pkt))
+    r, _, _ = select.select([fd], [], [], 1.0)
+    if r:
+        resp = os.read(fd, 64)
+        log(f"handshake reply: SUB={resp[4]} PM={resp[5]}")
+    else:
+        log("handshake: no reply (device already initialised this power cycle) - continuing")
+
+
+class Disk:
+    def __init__(self, ctrl):
+        self.ctrl = ctrl
+        self.hwmon = None
+        for h in glob.glob(f"/sys/class/nvme/{ctrl}/hwmon*/temp1_input") + \
+                 glob.glob(f"/sys/class/nvme/{ctrl}/device/hwmon/hwmon*/temp1_input"):
+            self.hwmon = h
+            break
+        ns = sorted(glob.glob(f"/sys/class/nvme/{ctrl}/{ctrl}n*"))
+        if not ns:
+            ns = sorted(glob.glob(f"/sys/block/{ctrl}n*"))
+        self.stat = os.path.join("/sys/block", os.path.basename(ns[0]), "stat") if ns else None
+        self.prev = None
+        self.busy = self.rd = self.wr = 0.0
+        log(f"disk {ctrl}: temp={self.hwmon} stat={self.stat}")
+
+    def temp(self):
+        try:
+            return int(open(self.hwmon).read()) / 1000
+        except Exception:
+            return 0
+
+    def sample(self):
+        if not self.stat:
+            return
+        f = open(self.stat).read().split()
+        now = time.monotonic()
+        cur = (now, int(f[2]), int(f[6]), int(f[9]))  # sectors read, sectors written, io_ticks ms
+        if self.prev:
+            dt = cur[0] - self.prev[0]
+            if dt > 0:
+                self.rd = (cur[1] - self.prev[1]) * 512 / dt / 1e6
+                self.wr = (cur[2] - self.prev[2]) * 512 / dt / 1e6
+                self.busy = min(100.0, (cur[3] - self.prev[3]) / (dt * 10))
+        self.prev = cur
+
+
+def run():
+    disk = Disk(os.environ.get("TR_DISK", "nvme0"))
+    phases = [p.strip() for p in os.environ.get("TR_PHASES", "temp,busy,read,write").split(",") if p.strip()]
+    per_phase = float(os.environ.get("TR_PHASE_SECONDS", "3"))
+    color = tuple(int(x) for x in os.environ.get("TR_COLOR", "255,255,255").split(","))
+    tick = 0.5
+
+    while True:
+        path = find_hidraw()
+        if not path:
+            log("display not found, retrying...")
+            time.sleep(5)
+            continue
+        try:
+            fd = os.open(path, os.O_RDWR)
+        except OSError as e:
+            log(f"open {path}: {e}")
+            time.sleep(5)
+            continue
+        log(f"using {path}")
+        try:
+            handshake(fd)
+            start = time.monotonic()
+            while True:
+                disk.sample()
+                idx = int((time.monotonic() - start) / per_phase) % len(phases)
+                kind = phases[idx]
+                value = {"temp": disk.temp, "busy": lambda: disk.busy,
+                         "read": lambda: disk.rd, "write": lambda: disk.wr}[kind]()
+                for chunk in build_packet(build_mask(kind, value), color):
+                    os.write(fd, b"\0" + chunk)
+                # drain any input reports
+                while select.select([fd], [], [], 0)[0]:
+                    os.read(fd, 64)
+                time.sleep(tick)
+        except OSError as e:
+            log(f"device error: {e}; reconnecting")
+        finally:
+            try:
+                os.close(fd)
+            except OSError:
+                pass
+        time.sleep(2)
+
+
+if __name__ == "__main__":
+    try:
+        run()
+    except KeyboardInterrupt:
+        pass
