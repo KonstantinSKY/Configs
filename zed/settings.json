@@ -8,12 +8,10 @@
   },
   "auto_install_extensions": {
     "material-icon-theme": true,
-    "gruvbox": true,
     "glsl": true,
     "lua": true,
     "dockerfile": true,
     "sql": true,
-    "bash": true,
     "toml": true,
     "make": true,
     "html": true,
@@ -25,7 +23,6 @@
     "github-theme": true,
     "csv": true,
     "docker-compose": true,
-    "pylsp": true,
     "env": true,
     "javascript-snippets": true,
   },
@@ -99,6 +96,19 @@
     "diagnostics": "all",
     "git_diff": true,
   },
+  // Error text at the end of the line, aligned from column 80.
+  "diagnostics": {
+    "inline": {
+      "enabled": true,
+      "min_column": 80,
+    },
+  },
+  // Keep the enclosing impl / fn / match visible at the top while scrolling.
+  "sticky_scroll": {
+    "enabled": true,
+  },
+  // Each nesting level of brackets gets its own color.
+  "colorize_brackets": true,
 
   // ==========================================
   // THEMES
