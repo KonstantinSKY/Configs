@@ -271,6 +271,8 @@
   },
   "languages": {
     "Rust": {
+      // rust-analyzer refines tree-sitter colors: mut, traits, params, inactive cfg.
+      "semantic_tokens": "combined",
       "tab_size": 4,
       "hard_tabs": false,
       // "formatter": ["rustfmt"],
