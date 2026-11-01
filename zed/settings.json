@@ -47,6 +47,8 @@
   "buffer_line_height": "comfortable",
   "project_panel": {
     "dock": "left",
+    "diagnostic_badges": true, // error / warning counts next to names
+    "git_status_indicator": true, // M / D / ? letters, so git status is not mistaken for errors
     "file_scan_exclusions": [
       "**/.git",
       "**/target",
@@ -126,6 +128,8 @@
   // "color": "red",
   "theme_overrides": {
     "One Dark": {
+      // Git "deleted" is red like errors in One Dark; make it purple so red means errors only.
+      "deleted": "#b48ead",
       //font colors
       "syntax": {
         "keyword": {
