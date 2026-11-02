@@ -28,6 +28,7 @@ VOICE_PTT_ENV := $(CONFIGS_DIR)/voice-ptt/.env
 VOICE_PTT_SYSTEMD_USER_DIR := $(HOME)/.config/systemd/user
 VOICE_PTT_SERVICE_DST := $(VOICE_PTT_SYSTEMD_USER_DIR)/voice-ptt.service
 VOICE_PTT_RESUME_WATCHER_DST := $(VOICE_PTT_SYSTEMD_USER_DIR)/voice-ptt-resume-watcher.service
+VOICE_PTT_AUDIO_WATCHER_DST := $(VOICE_PTT_SYSTEMD_USER_DIR)/voice-ptt-audio-watcher.service
 VOICE_PTT_AUTOSTART_DST := $(HOME)/.config/autostart/voice-ptt.desktop
 SETUP_STATE_DIR := $(HOME)/.local/state/configs
 SETUP_MARKER := $(SETUP_STATE_DIR)/setup-v1
@@ -461,6 +462,12 @@ verify: check-work ## Verify required files, commands, autostart, and process st
 		status=1; \
 	else \
 		echo "NOTE: Voice PTT resume watcher is not installed for legacy autostart"; \
+	fi; \
+	if [[ -f "$(VOICE_PTT_AUDIO_WATCHER_DST)" ]]; then \
+		echo "OK: Voice PTT audio watcher is installed"; \
+	elif [[ -f "$(VOICE_PTT_SERVICE_DST)" ]]; then \
+		echo "ERROR: Voice PTT audio watcher is not installed"; \
+		status=1; \
 	fi; \
 	voice_state="$$(systemctl --user show -p ActiveState --value voice-ptt.service 2>/dev/null || true)"; \
 	if [[ "$$voice_state" == "active" ]]; then \

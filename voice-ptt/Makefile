@@ -26,6 +26,10 @@ ENV_FILE           := $(APP_DIR)/.env
 ENV_EXAMPLE        := $(APP_DIR)/.env.example
 ENV_PLACEHOLDER    := sk-\.\.\.
 
+AUDIO_WATCHER_NAME := voice-ptt-audio-watcher.service
+AUDIO_WATCHER_SRC  := $(APP_DIR)/$(AUDIO_WATCHER_NAME)
+AUDIO_WATCHER_DST  := $(SYSTEMD_USER_DIR)/$(AUDIO_WATCHER_NAME)
+
 RESTART_SCRIPT     := $(APP_DIR)/restart_voice_ptt.sh
 
 .DEFAULT_GOAL := help
@@ -50,6 +54,8 @@ install-linux: ## Install on Linux (systemd user service), then start if .env is
 	@echo "Installed $(SYSTEMD_SERVICE_DST)"
 	@install -m 644 "$(RESUME_WATCHER_SRC)" "$(RESUME_WATCHER_DST)"
 	@echo "Installed $(RESUME_WATCHER_DST)"
+	@install -m 644 "$(AUDIO_WATCHER_SRC)" "$(AUDIO_WATCHER_DST)"
+	@echo "Installed $(AUDIO_WATCHER_DST)"
 	@systemctl --user daemon-reload
 	@systemctl --user disable --now 'app-voice\x2dptt@autostart.service' >/dev/null 2>&1 || true
 	@systemctl --user disable --now bluetooth-headset-watch.service >/dev/null 2>&1 || true
@@ -57,6 +63,7 @@ install-linux: ## Install on Linux (systemd user service), then start if .env is
 		echo "Starting voice-ptt..."; \
 		systemctl --user enable --now "$(SYSTEMD_SERVICE_NAME)"; \
 		systemctl --user enable --now "$(RESUME_WATCHER_NAME)"; \
+		systemctl --user enable --now "$(AUDIO_WATCHER_NAME)"; \
 	else \
 		echo "voice-ptt will not start — fix .env and run: make install-linux"; \
 	fi

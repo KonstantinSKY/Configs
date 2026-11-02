@@ -1,0 +1,13 @@
+[Unit]
+Description=Restart Voice PTT when the default microphone changes
+After=pipewire-pulse.service wireplumber.service voice-ptt.service
+Wants=pipewire-pulse.service
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/env bash /home/sky/Work/Configs/voice-ptt/watch_audio_restart_voice_ptt.sh voice-ptt.service
+Restart=always
+RestartSec=3
+
+[Install]
+WantedBy=default.target

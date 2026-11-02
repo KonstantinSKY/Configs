@@ -18,7 +18,8 @@
 	bluetooth-disconnect disconnect dc \
 	bluetooth-a2dp a2dp \
 	bluetooth-headset headset hfp \
-	bluetooth-audio-status audio
+	bluetooth-audio-status audio \
+	bluetooth-headset-config headset-config
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -40,7 +41,13 @@ BLUETOOTH_MAIN_CONF := /etc/bluetooth/main.conf
 BT_DEVICE ?=
 BT_CARD ?= $(if $(strip $(BT_DEVICE)),bluez_card.$(subst :,_,$(BT_DEVICE)),)
 BT_A2DP_PROFILE ?= a2dp-sink
-BT_HEADSET_PROFILE ?= headset-head-unit
+# CVSD: on the EndeavourOS VM (USB-passthrough adapter) mSBC gives a working
+# mic but silent headphones. See wireplumber/51-bt-headset-mic.conf.
+BT_HEADSET_PROFILE ?= headset-head-unit-cvsd
+WIREPLUMBER_CONF_NAME := 51-bt-headset-mic.conf
+WIREPLUMBER_CONF_SRC := $(THIS_DIR)/wireplumber/$(WIREPLUMBER_CONF_NAME)
+WIREPLUMBER_CONF_DIR := $(HOME)/.config/wireplumber/wireplumber.conf.d
+WIREPLUMBER_CONF_DST := $(WIREPLUMBER_CONF_DIR)/$(WIREPLUMBER_CONF_NAME)
 BT_LOG_LINES ?= 80
 SINCE ?= 10 minutes ago
 
@@ -181,3 +188,14 @@ bluetooth-audio-status audio: ## Show current PipeWire/Pulse audio card state fo
 	@pactl list cards short | grep -E 'bluez_card|alsa_card' || true
 	@echo ""
 	@wpctl status
+
+bluetooth-headset-config headset-config: ## Link the WirePlumber headset rule (HFP CVSD with mic, no autoswitch) and apply it; no sudo
+	@mkdir -p "$(WIREPLUMBER_CONF_DIR)"
+	@if [ -e "$(WIREPLUMBER_CONF_DST)" ] && [ ! -L "$(WIREPLUMBER_CONF_DST)" ]; then \
+		mv "$(WIREPLUMBER_CONF_DST)" "$(WIREPLUMBER_CONF_DST).bak.$$(date +%Y%m%d%H%M%S)"; \
+		echo "Backed up existing $(WIREPLUMBER_CONF_DST)"; \
+	fi
+	@ln -sfn "$(WIREPLUMBER_CONF_SRC)" "$(WIREPLUMBER_CONF_DST)"
+	@echo "Linked $(WIREPLUMBER_CONF_DST) -> $(WIREPLUMBER_CONF_SRC)"
+	@systemctl --user restart wireplumber.service
+	@echo "✅ WirePlumber restarted; reconnect the headset if its profile did not change."
