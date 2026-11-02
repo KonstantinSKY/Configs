@@ -377,7 +377,17 @@ standing login need `sudo loginctl enable-linger sky` once.
 
 Only configure these roles when the user explicitly selects them:
 
-- `bluetooth`: installs packages and enables a system service.
+- `bluetooth`: installs packages and enables a system service. The Sony
+  WH-XB910N headset (sound and mic in the headset, HFP mSBC) is restored with
+  one command, after `make voice-ptt`:
+  `make -f bluetooth/Makefile headset-install` (sudo for packages/service, then
+  WirePlumber rule, pairing — the headset must be in pairing mode — and
+  verify). `headset-verify` is read-only and safe to run anytime. With the
+  headset off, WirePlumber falls back to HDMI sound and the webcam mic, and
+  `voice-ptt-audio-watcher` restarts Voice PTT on the mic change. In the
+  EndeavourOS VM mSBC needs the whole USB controller passed through via VFIO;
+  `headset-verify` warns when the adapter sits behind QEMU XHCI (then only
+  CVSD works).
 - `docker`: enables Docker and adds the user to the privileged `docker` group.
 - `kvm`: changes libvirt/QEMU services, groups, configuration, and networking.
 - `megasync`: installs a user service and may enable user lingering.

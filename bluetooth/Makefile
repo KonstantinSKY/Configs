@@ -19,7 +19,10 @@
 	bluetooth-a2dp a2dp \
 	bluetooth-headset headset hfp \
 	bluetooth-audio-status audio \
-	bluetooth-headset-config headset-config
+	bluetooth-headset-config headset-config \
+	bluetooth-headset-pair headset-pair \
+	bluetooth-headset-verify headset-verify \
+	bluetooth-headset-install headset-install
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -39,6 +42,10 @@ BLUETOOTH_PACKAGES = \
 BLUETOOTH_SERVICE := bluetooth.service
 BLUETOOTH_MAIN_CONF := /etc/bluetooth/main.conf
 BT_DEVICE ?=
+# Sony WH-XB910N. Must match device.name in wireplumber/51-bt-headset-mic.conf.
+BT_HEADSET ?= 90:7A:58:EB:79:4D
+BT_HEADSET_CARD := bluez_card.$(subst :,_,$(BT_HEADSET))
+BT_SCAN_SECONDS ?= 30
 BT_CARD ?= $(if $(strip $(BT_DEVICE)),bluez_card.$(subst :,_,$(BT_DEVICE)),)
 BT_A2DP_PROFILE ?= a2dp-sink
 # mSBC (wideband HFP). Works in the EndeavourOS VM since the whole USB
@@ -49,6 +56,7 @@ WIREPLUMBER_CONF_NAME := 51-bt-headset-mic.conf
 WIREPLUMBER_CONF_SRC := $(THIS_DIR)/wireplumber/$(WIREPLUMBER_CONF_NAME)
 WIREPLUMBER_CONF_DIR := $(HOME)/.config/wireplumber/wireplumber.conf.d
 WIREPLUMBER_CONF_DST := $(WIREPLUMBER_CONF_DIR)/$(WIREPLUMBER_CONF_NAME)
+WIREPLUMBER_STATE_DIR := $(HOME)/.local/state/wireplumber
 BT_LOG_LINES ?= 80
 SINCE ?= 10 minutes ago
 
@@ -198,5 +206,78 @@ bluetooth-headset-config headset-config: ## Link the WirePlumber headset rule (H
 	fi
 	@ln -sfn "$(WIREPLUMBER_CONF_SRC)" "$(WIREPLUMBER_CONF_DST)"
 	@echo "Linked $(WIREPLUMBER_CONF_DST) -> $(WIREPLUMBER_CONF_SRC)"
-	@systemctl --user restart wireplumber.service
+	@# WirePlumber restores the last manually chosen profile over the rule's
+	@# priorities; drop the remembered one so the rule (mSBC) decides.
+	@systemctl --user stop wireplumber.service
+	@sed -i '/^$(BT_HEADSET_CARD)=/d' "$(WIREPLUMBER_STATE_DIR)/default-profile" 2>/dev/null || true
+	@systemctl --user start wireplumber.service
 	@echo "✅ WirePlumber restarted; reconnect the headset if its profile did not change."
+
+bluetooth-headset-pair headset-pair: ## Pair, trust, and connect BT_HEADSET (put the headset in pairing mode first); skips pairing if already paired
+	@bluetoothctl power on >/dev/null
+	@if bluetoothctl info $(BT_HEADSET) 2>/dev/null | grep -q 'Paired: yes'; then \
+		echo "✅ $(BT_HEADSET) is already paired"; \
+	else \
+		echo "🎧 Put the headset in pairing mode now (Sony WH-XB910N: hold power ~7 s until the LED flashes blue twice repeatedly)."; \
+		echo "🔍 Scanning for $(BT_HEADSET) for up to $(BT_SCAN_SECONDS) s..."; \
+		bluetoothctl --timeout $(BT_SCAN_SECONDS) scan on >/dev/null 2>&1 & scan_pid=$$!; \
+		found=0; i=0; \
+		while [ $$i -lt $(BT_SCAN_SECONDS) ]; do \
+			if bluetoothctl devices | grep -q '$(BT_HEADSET)'; then found=1; break; fi; \
+			sleep 1; i=$$((i + 1)); \
+		done; \
+		kill $$scan_pid 2>/dev/null; wait $$scan_pid 2>/dev/null; \
+		if [ $$found -ne 1 ]; then echo "❌ $(BT_HEADSET) not found. Is it in pairing mode? Rerun: make headset-pair"; exit 1; fi; \
+		bluetoothctl --agent NoInputNoOutput --timeout 30 pair $(BT_HEADSET) || exit 1; \
+	fi
+	@bluetoothctl trust $(BT_HEADSET) >/dev/null && echo "✅ $(BT_HEADSET) trusted (auto-reconnect)"
+	@if bluetoothctl info $(BT_HEADSET) | grep -q 'Connected: yes'; then \
+		echo "✅ $(BT_HEADSET) connected"; \
+	else \
+		bluetoothctl --timeout 20 connect $(BT_HEADSET) || { \
+			echo "⚠️  Connect failed. Power-cycle the headset; it reconnects by itself once trusted."; exit 1; }; \
+	fi
+
+bluetooth-headset-verify headset-verify: ## Read-only check of the headset setup (packages, service, rule, pairing, codec, voice-ptt)
+	@status=0; \
+	ok() { echo "OK: $$*"; }; bad() { echo "ERROR: $$*"; status=1; }; warn() { echo "WARN: $$*"; }; \
+	for pkg in $(BLUETOOTH_PACKAGES) pipewire pipewire-pulse wireplumber; do \
+		pacman -Q $$pkg >/dev/null 2>&1 && ok "package $$pkg" || bad "package $$pkg is not installed (make setup)"; \
+	done; \
+	[ "$$(systemctl is-enabled $(BLUETOOTH_SERVICE) 2>/dev/null)" = enabled ] && ok "$(BLUETOOTH_SERVICE) enabled" || bad "$(BLUETOOTH_SERVICE) not enabled (make setup)"; \
+	[ "$$(systemctl is-active $(BLUETOOTH_SERVICE) 2>/dev/null)" = active ] && ok "$(BLUETOOTH_SERVICE) active" || bad "$(BLUETOOTH_SERVICE) not active"; \
+	grep -q '^AutoEnable=true' $(BLUETOOTH_MAIN_CONF) 2>/dev/null && ok "AutoEnable=true" || bad "AutoEnable=true missing in $(BLUETOOTH_MAIN_CONF) (make configure-bluetooth)"; \
+	[ "$$(readlink -f $(WIREPLUMBER_CONF_DST) 2>/dev/null)" = "$$(readlink -f $(WIREPLUMBER_CONF_SRC))" ] && ok "WirePlumber rule linked" || bad "WirePlumber rule not linked (make headset-config)"; \
+	btif="$$(ls -d /sys/bus/usb/drivers/btusb/*:1.0 2>/dev/null | head -n 1)"; \
+	if [ -z "$$btif" ]; then \
+		bad "no btusb Bluetooth adapter found"; \
+	else \
+		pci="$$(readlink -f "$$btif" | grep -oE '[0-9a-f]{4}:[0-9a-f]{2}:[0-9a-f]{2}\.[0-9]' | tail -n 1)"; \
+		if [ "$$(cat /sys/bus/pci/devices/$$pci/vendor 2>/dev/null):$$(cat /sys/bus/pci/devices/$$pci/device 2>/dev/null)" = "0x1b36:0x000d" ]; then \
+			warn "adapter is behind the emulated QEMU XHCI (usb-host passthrough): mSBC gives silent headphones."; \
+			warn "pass the whole USB controller via VFIO on Proxmox, or put headset-head-unit-cvsd first in $(WIREPLUMBER_CONF_SRC)"; \
+		else \
+			ok "adapter on real USB controller $$pci (SCO/mSBC OK)"; \
+		fi; \
+	fi; \
+	info="$$(bluetoothctl info $(BT_HEADSET) 2>/dev/null)"; \
+	echo "$$info" | grep -q 'Paired: yes' && ok "headset $(BT_HEADSET) paired" || bad "headset $(BT_HEADSET) not paired (make headset-pair)"; \
+	echo "$$info" | grep -q 'Trusted: yes' && ok "headset trusted" || bad "headset not trusted (make headset-pair)"; \
+	if echo "$$info" | grep -q 'Connected: yes'; then \
+		profile="$$(pactl list cards 2>/dev/null | awk -v c='$(BT_HEADSET_CARD)' '$$2==c{f=1} f&&/Active Profile:/{print $$3; exit}')"; \
+		[ "$$profile" = "$(BT_HEADSET_PROFILE)" ] && ok "headset profile $$profile" || bad "headset profile is '$$profile', expected $(BT_HEADSET_PROFILE)"; \
+		case "$$(pactl get-default-source 2>/dev/null)" in bluez_input.*) ok "default mic is the headset";; *) bad "default mic is not the headset";; esac; \
+	else \
+		warn "headset not connected; profile and mic not checked"; \
+	fi; \
+	for unit in voice-ptt.service voice-ptt-audio-watcher.service; do \
+		[ "$$(systemctl --user is-active $$unit 2>/dev/null)" = active ] && ok "$$unit active" || warn "$$unit not active (make voice-ptt)"; \
+	done; \
+	exit $$status
+
+bluetooth-headset-install headset-install: ## Full headset restore: packages+service (sudo), WirePlumber rule, pair, verify
+	@$(MAKE) -s -f $(THIS_MAKEFILE) bluetooth-setup
+	@$(MAKE) -s -f $(THIS_MAKEFILE) headset-config
+	@$(MAKE) -s -f $(THIS_MAKEFILE) headset-pair
+	@sleep 3
+	@$(MAKE) -s -f $(THIS_MAKEFILE) headset-verify
