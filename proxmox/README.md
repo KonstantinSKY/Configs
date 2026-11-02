@@ -109,6 +109,11 @@ make host-tailscale-up-key AUTH_KEY_FILE=/path/outside/git/proxmox.authkey
 The Thermalright SSD cooler display driver for the host lives in
 `host/thermalright-ssd-display/` (see its README; `make status` there).
 
+VM 100 (EndeavourOS) gets a whole chipset USB controller (`0000:14:00.0`)
+through VFIO, so that the Bluetooth headset works with mSBC. The configuration,
+the devices that go to the VM with it, and the restore steps are in
+[`host/vm100-usb-passthrough.md`](host/vm100-usb-passthrough.md).
+
 ## Linux guest
 
 The guest layer is for Linux VMs. It installs and verifies QEMU Guest Agent,
