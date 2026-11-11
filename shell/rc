@@ -328,6 +328,19 @@ function _agent {
   if [ -n "${CLAUDE_CONFIG_DIR:-}" ]; then envs+=(-e "CLAUDE_CONFIG_DIR=$CLAUDE_CONFIG_DIR"); fi
   if [ -n "${AIX_DEV_HOME:-}" ]; then envs+=(-e "AIX_DEV_HOME=$AIX_DEV_HOME"); fi
 
+  # A token must not reach tmux through its arguments (visible in ps) or its
+  # session environment: hand it over in a private file that the new session
+  # reads and removes before the agent starts.
+  if [ -n "${CLAUDE_CODE_OAUTH_TOKEN:-}" ]; then
+    local token_file
+    token_file="$(umask 077 && mktemp "${XDG_RUNTIME_DIR:-${TMPDIR:-/tmp}}/agent-token.XXXXXX")" || return 1
+    printf '%s' "$CLAUDE_CODE_OAUTH_TOKEN" > "$token_file"
+    tmux new-session -s "$session" -c "$PWD" "${envs[@]}" -e "AGENT_TOKEN_FILE=$token_file" -- \
+      sh -c 'CLAUDE_CODE_OAUTH_TOKEN=$(cat "$AGENT_TOKEN_FILE"); rm -f "$AGENT_TOKEN_FILE"; unset AGENT_TOKEN_FILE; export CLAUDE_CODE_OAUTH_TOKEN; exec "$0" "$@"' \
+      "$bin" "$@"
+    return
+  fi
+
   tmux new-session -s "$session" -c "$PWD" "${envs[@]}" -- "$bin" "$@"
 }
 
@@ -358,7 +371,17 @@ function _claude {
     session="$session-dev"
   fi
 
-  CLAUDE_CONFIG_DIR="$config_dir" _agent "$session" claude "$@"
+  # A long-lived token (`claude setup-token`) next to the account's own state
+  # wins over its /login; without one the account logs in as before.
+  local token=""
+  if [ -r "$config_dir/.oauth-token" ]; then
+    token="$(head -n1 "$config_dir/.oauth-token" | tr -d '[:space:]')"
+  fi
+  if [ -n "$token" ]; then
+    CLAUDE_CONFIG_DIR="$config_dir" CLAUDE_CODE_OAUTH_TOKEN="$token" _agent "$session" claude "$@"
+  else
+    CLAUDE_CONFIG_DIR="$config_dir" _agent "$session" claude "$@"
+  fi
 }
 
 # Canonical Claude account commands.
