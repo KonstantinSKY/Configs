@@ -348,6 +348,9 @@ make -f ai/Makefile accounts         # account dirs linked to ai/*/shared
 - Settings are shared through links to `ai/codex/shared` and
   `ai/claude/shared`. Logins are per machine and are never copied, linked,
   printed, or committed; the user logs in to each account.
+- Exception: a long-lived `claude setup-token` token at
+  `<account dir>/.oauth-token` (usually a link to private storage) is used by
+  `_claude` in `shell/rc` instead of `/login`. Never print, copy, or commit it.
 - `accounts` replaces existing files with links (keeping backups) and merges a
   real `skills/` folder into the repository. Run it on a machine only with the
   user's authorization.

@@ -81,6 +81,13 @@ commit `auth.json`, `.credentials.json`, `.claude.json` (`oauthAccount`),
 histories, sessions, caches, or SQLite state. Sharing a login between
 machines breaks it when one of them refreshes the token.
 
+The exception is a long-lived token from `claude setup-token`: it is never
+refreshed, so one token per account can serve several machines. When
+`<account dir>/.oauth-token` exists (a file, or a link to private storage
+outside this repository), the `claude`/`claude-k`/... aliases pass it as
+`CLAUDE_CODE_OAUTH_TOKEN` for that launch only, and it wins over `/login`.
+Remove the file to go back to `/login`. Never commit or print it.
+
 ## Shared files are written by the agents
 
 The agents update their own settings. Codex, for example, adds a trusted
