@@ -27,7 +27,10 @@ Aliases for programs that are not installed are harmless.
 
 tmux is never started automatically: use `t1`..`t5`, `tm <session>` to attach
 to any named session, and `tl` to list sessions. AIX creates its own tmux
-sessions when started from a plain shell.
+sessions when started from a plain shell. `upd` and `updf` run the system
+update in a tmux session named `upd`, so a dropped ssh (for example when the
+update restarts tailscaled) does not leave apt or pacman hanging; run `upd`
+again to attach to an update that is still in progress.
 
 ## Zed on the shared Work filesystem
 

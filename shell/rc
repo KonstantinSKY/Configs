@@ -164,12 +164,39 @@ function imt4status { _imac_sh 'mt4/bin/ctl.sh status'; }
 
 # --- System update (by package family) -----------------------------------
 
+# upd/updf run in a tmux session named "upd", so a dropped ssh does not leave
+# apt or pacman orphaned halfway (an update of tailscale restarts tailscaled and
+# cuts the ssh it came over; an orphaned apt keeps blocking shutdown). Running
+# upd again while one is in progress attaches to it instead of starting another.
+# Inside tmux, without a terminal, or without tmux the update runs directly.
+function _upd_run {
+  if [ -n "${TMUX:-}" ] || [ ! -t 0 ] || [ ! -t 1 ] ||
+     ! command -v tmux >/dev/null 2>&1; then
+    sh -c "$1"
+    return
+  fi
+
+  if tmux has-session -t "=upd" 2>/dev/null; then
+    echo "upd: an update is already running, attaching" >&2
+    tmux attach-session -t "=upd"
+    return
+  fi
+
+  # A running tmux server does not pass this shell's environment on.
+  tmux new-session -s upd -e "PATH=$PATH" -e "CONFIGS_PATH=$CONFIGS_PATH" -- \
+    sh -c "$1"'; s=$?; echo; printf "upd: finished (status %s). Press Enter to close. " "$s"; read -r _; exit "$s"'
+}
+
 if command -v pacman >/dev/null 2>&1; then
-  alias upd='make -C "$CONFIGS_PATH/eos" update'
-  alias updf='make -C "$CONFIGS_PATH/eos" updf'
+  _UPD_CMD='make -C "$CONFIGS_PATH/eos" update'
+  _UPDF_CMD='make -C "$CONFIGS_PATH/eos" updf'
 elif command -v apt-get >/dev/null 2>&1; then
-  alias upd='sudo apt-get update && sudo apt-get full-upgrade'
-  alias updf='sudo apt-get update && sudo apt-get full-upgrade && sudo apt-get autoremove --purge'
+  _UPD_CMD='sudo apt-get update && sudo apt-get full-upgrade'
+  _UPDF_CMD="$_UPD_CMD && sudo apt-get autoremove --purge"
+fi
+if [ -n "${_UPD_CMD:-}" ]; then
+  alias upd='_upd_run "$_UPD_CMD"'
+  alias updf='_upd_run "$_UPDF_CMD"'
 fi
 
 # --- tmux: t1..t5 use numbered sessions, tm attaches, tl lists them --------
