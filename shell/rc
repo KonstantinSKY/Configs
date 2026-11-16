@@ -254,6 +254,14 @@ alias tl="tmux list-sessions"
 
 if [ -r "$WORK/AIX/env" ]; then
   . "$WORK/AIX/env"
+
+  # s ARGS = aix s ARGS (aix session: list, attach, kill launched sessions).
+  # m ARGS = aix run manager ARGS (launch the manager role).
+  # a ARGS = aix run admin ARGS (launch the admin role).
+  unalias s m a 2>/dev/null
+  alias s='aix s'
+  alias m='aix run manager'
+  alias a='aix run admin'
 fi
 
 function ai {
