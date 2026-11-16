@@ -390,9 +390,9 @@ Only configure these roles when the user explicitly selects them:
   `voice-ptt-audio-watcher` restarts Voice PTT on the mic change. In the
   EndeavourOS VM mSBC needs the whole USB controller passed through via VFIO;
   `headset-verify` warns when the adapter sits behind QEMU XHCI (then only
-  CVSD works). Where mSBC is silent (the laptop with Realtek 0bda:4853),
-  pass `WIREPLUMBER_CONF_NAME=51-bt-headset-cvsd.conf` to `headset-config`
-  and `headset-verify`: CVSD only, A2DP with autoswitch to the headset mic.
+  CVSD works). mSBC also works on the laptop with a Realtek 0bda:4853
+  adapter; a single silent mSBC recording there was a transient glitch, so
+  retest before falling back to CVSD.
 - `docker`: enables Docker and adds the user to the privileged `docker` group.
 - `kvm`: changes libvirt/QEMU services, groups, configuration, and networking.
 - `megasync`: installs a user service and may enable user lingering.
