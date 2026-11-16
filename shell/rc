@@ -52,6 +52,7 @@ alias vi=choose_editor
 alias Configs='cd "$CONFIGS_PATH"; ls -ls'
 alias Projects='cd "$PROJECTS_PATH"; ls -ls'
 alias aixdev='cd "$PROJECTS_PATH/aixdev"'
+alias efsp='cd "$PROJECTS_PATH/efs-platform"'
 
 # Frameworks such as oh-my-zsh predefine some of these names as aliases.
 unalias la chx cdl 2>/dev/null
