@@ -1,0 +1,13 @@
+# Global Cargo config for DEV machines only.
+# Linked as ~/.cargo/config.toml by `make -f dev/Makefile restore-rust`
+# (target: cargo-config-link). Do not link on PROD or release-build hosts.
+#
+# Parallel rustc frontend: ~20% faster clean `cargo check`/`build`
+# (measured on aixdev, 16 vCPU, 2026-11-20); threads=16 gave no extra gain.
+# RUSTC_BOOTSTRAP=1 lets stable toolchains accept -Z flags.
+# Caveat: unstable #![feature] code compiles here but fails in CI/PROD.
+[build]
+rustflags = ["-Z", "threads=8"]
+
+[env]
+RUSTC_BOOTSTRAP = "1"

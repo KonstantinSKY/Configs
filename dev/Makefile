@@ -4,7 +4,7 @@ export PATH := $(HOME)/.local/bin:$(HOME)/.cargo/bin:$(PATH)
 .PHONY: help h status st restore r restore-packages restore-workspace restore-user \
 	restore-ai restore-desktop restore-devtools verify v verify-shell verify-ai \
 	verify-devtools restore-rust restore-python-tools rust-install python-tools-install \
-	verify-rust devtools-install devtools-verify
+	verify-rust devtools-install devtools-verify cargo-config-link
 .DEFAULT_GOAL := help
 
 THIS_MAKEFILE := $(abspath $(lastword $(MAKEFILE_LIST)))
@@ -21,6 +21,14 @@ AI_MAKEFILE := $(CONFIGS_DIR)/ai/Makefile
 TMUX_MAKEFILE := $(CONFIGS_DIR)/tmux/Makefile
 RUST_MAKEFILE := $(CONFIGS_DIR)/rust/Makefile
 
+ifeq ($(filter $(CONFIGS_DIR)/make/link.mk,$(MAKEFILE_LIST)),)
+include $(CONFIGS_DIR)/make/link.mk
+endif
+
+# Dev-only global Cargo config (parallel rustc frontend). Never link on PROD.
+CARGO_CONFIG_SOURCE := $(CANONICAL_CONFIGS)/rust/cargo-config.toml
+CARGO_CONFIG_TARGET := $(HOME)/.cargo/config.toml
+
 SUDO := $(shell if [ "$$(id -u)" -eq 0 ]; then echo ""; else echo "sudo"; fi)
 
 DEV_PACKAGES_ARCH := \
@@ -34,6 +42,12 @@ DEV_PACKAGES_ARCH := \
 	clang \
 	pkgconf \
 	openssl \
+	cmake \
+	alsa-lib \
+	dbus \
+	fontconfig \
+	wayland \
+	libxkbcommon \
 	docker \
 	docker-compose
 
@@ -47,8 +61,15 @@ DEV_PACKAGES_DEBIAN := \
 	python3-venv \
 	sqlite3 \
 	clang \
+	libclang-dev \
 	pkg-config \
+	cmake \
 	libssl-dev \
+	libasound2-dev \
+	libdbus-1-dev \
+	libfontconfig1-dev \
+	libwayland-dev \
+	libxkbcommon-dev \
 	docker.io \
 	docker-compose-v2
 
@@ -66,7 +87,7 @@ help h: ## Show dev restore commands
 	@echo "  restore-ai         Codex/Claude binaries and shared profile links"
 	@echo "  restore-desktop    desktop packages/fonts when supported"
 	@echo "  restore-devtools   Rust/Node/Python/Docker/SQLite build tools"
-	@echo "  restore-rust       Rust toolchains, components, targets, and cargo tools"
+	@echo "  restore-rust       Rust toolchains, components, targets, cargo tools, ~/.cargo/config.toml link"
 	@echo "  restore-python-tools Modern Python tools, currently uv"
 	@echo
 	@echo "AIX is intentionally not installed or verified by this profile."
@@ -174,6 +195,10 @@ restore-rust: check-work ## Install Rust toolchains, components, targets, and ca
 		mkdir -p "$(STATE_DIR)"; \
 		printf '%s\n' rust > "$(STATE_DIR)/rust"; \
 	fi
+	@$(MAKE) --no-print-directory -f "$(THIS_MAKEFILE)" cargo-config-link
+
+cargo-config-link: check-work ## Link ~/.cargo/config.toml → Configs/rust/cargo-config.toml (dev only)
+	@$(call link,$(CARGO_CONFIG_SOURCE),$(CARGO_CONFIG_TARGET))
 
 restore-python-tools: check-work python-tools-install ## Install modern Python tooling and save checkpoint
 	@mkdir -p "$(STATE_DIR)"
@@ -233,7 +258,7 @@ verify-ai: ## Verify Codex/Claude binaries and shared config links
 verify-devtools devtools-verify: ## Verify development tools without AIX
 	@set -euo pipefail; \
 	failed=0; \
-	for command_name in git make ssh curl zsh tmux nvim node npm sqlite3 clang docker; do \
+	for command_name in git make ssh curl zsh tmux nvim node npm sqlite3 clang cmake pkg-config docker; do \
 		if command -v "$$command_name" >/dev/null 2>&1; then echo "OK: $$command_name"; \
 		else echo "MISSING: $$command_name"; failed=1; fi; \
 	done; \
@@ -267,5 +292,8 @@ verify-rust: ## Verify Rust toolchains, targets, and cargo tools
 	rustup toolchain list 2>/dev/null | grep -q '^stable' && echo "OK: stable toolchain" || { echo "MISSING: stable toolchain"; failed=1; }; \
 	rustup toolchain list 2>/dev/null | grep -q '^nightly' && echo "OK: nightly toolchain" || { echo "MISSING: nightly toolchain"; failed=1; }; \
 	rustup target list --installed 2>/dev/null | grep -qx 'wasm32-unknown-unknown' && echo "OK: wasm32-unknown-unknown" || { echo "MISSING: wasm32-unknown-unknown"; failed=1; }; \
+	if [[ -L "$(CARGO_CONFIG_TARGET)" && "$$(readlink "$(CARGO_CONFIG_TARGET)")" = "$(CARGO_CONFIG_SOURCE)" && -e "$(CARGO_CONFIG_TARGET)" ]]; then \
+		echo "OK: $(CARGO_CONFIG_TARGET) -> $(CARGO_CONFIG_SOURCE)"; \
+	else echo "MISSING: $(CARGO_CONFIG_TARGET) link -> $(CARGO_CONFIG_SOURCE)"; failed=1; fi; \
 	if [[ "$(STATUS_ONLY)" = 1 ]]; then exit 0; fi; \
 	exit "$$failed"
